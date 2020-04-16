@@ -1,0 +1,60 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: im-varsel
+  namespace: default
+  labels:
+    team: {{team}}
+spec:
+  image: {{image}}:{{tag}}
+  port: 8080
+  liveness:
+    path: isalive
+    initialDelay: 10
+    periodSeconds: 3
+    failureThreshold: 10
+  readiness:
+    path: isready
+    initialDelay: 10
+    timeout: 1
+    periodSeconds: 3
+    failureThreshold: 10
+  ingresses:
+    - https://im-varsel.nais.adeo.no
+  replicas:
+    max: 1
+    min: 1
+  resources:
+    limits:
+      cpu: 400m
+      memory: 256Mi
+    requests:
+      cpu: 200m
+      memory: 64Mi
+  vault:
+    enabled: true
+    paths:
+      - kvPath: /kv/prod/fss/im-varsel/default
+        mountPath: /var/run/secrets/nais.io/vault
+      - mountPath: /var/run/secrets/nais.io/service_user
+        kvPath: /serviceuser/data/prod/srvimvarsel
+  webproxy: true
+  env:
+  - name: KOIN_PROFILE
+    value: PROD
+  - name: DATABASE_HOST
+    value: A01DBVL009.adeo.no
+  - name: DATABASE_PORT
+    value: "5432"
+  - name: DATABASE_NAME
+    value: im-varsel
+  - name: VAULT_MOUNTPATH
+    value: postgresql/prod-fss/
+  - name: PARTNER_GATEWAY_ALTINN_ENDPOINT
+    value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
+  - name: SECURITYTOKENSERVICE_URL
+    value: https://sts.adeo.no/SecurityTokenServiceProvider/
+  - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
+    value: aapen-helse-spre-arbeidsgiver
+  - name: KAFKA_ENDPOINTS
+    value: a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443
