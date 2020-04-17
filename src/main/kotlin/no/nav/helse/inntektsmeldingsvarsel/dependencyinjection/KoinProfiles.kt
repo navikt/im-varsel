@@ -18,6 +18,8 @@ import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.getDataSource
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.MeldingsfilterRepository
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresMeldingsfilterRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
@@ -94,7 +96,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { VarslingMapper(get()) }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { VarslingService(get(), get(), get()) }
+    single { PostgresMeldingsfilterRepository(get()) as VarslingRepository }
+    single { VarslingService(get(), get(), get(), get()) }
 
     single { DummyVarslingSender(get()) as VarslingSender }
     single { VarslingsmeldingProcessor(get(), get()) }
@@ -148,7 +151,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
     }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { VarslingService(get(), VarslingMapper(get()), get()) }
+    single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
+    single { VarslingService(get(), VarslingMapper(get()), get(), get()) }
 
     single { SendVarslingJob(get(), get()) }
 }
@@ -174,7 +178,8 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { VarslingMapper(get()) }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { VarslingService(get(), get(), get()) }
+    single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
+    single { VarslingService(get(), get(), get(), get()) }
     single { DummyVarslingSender(get()) as VarslingSender }
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }

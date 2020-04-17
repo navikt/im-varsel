@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.MeldingsfilterRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsMeldingMelding
 import org.slf4j.LoggerFactory
@@ -12,7 +13,8 @@ import java.time.LocalDateTime
 class VarslingService(
         private val repository: VarslingRepository,
         private val mapper: VarslingMapper,
-        private val om: ObjectMapper
+        private val om: ObjectMapper,
+        private val hashRepo: MeldingsfilterRepository
 ) {
 
     val logger = LoggerFactory.getLogger(VarslingService::class.java)
@@ -37,6 +39,12 @@ class VarslingService(
     fun aggregate(jsonMessageString: String) {
         val kafkaMessage = om.readValue(jsonMessageString, ManglendeInntektsMeldingMelding::class.java)
         logger.info("Fikk en melding fra kafka på virksomhetsnummer ${kafkaMessage.organisasjonsnummer} fra ${kafkaMessage.opprettet}")
+        val periodeHash = kafkaMessage.periodeHash()
+
+        if (hashRepo.exists(periodeHash)) {
+            logger.info("Denne periode er allerede sett")
+            return
+        }
 
         val aggregateStrategy = resolveAggregationStrategy(kafkaMessage)
         val aggregatPeriode = aggregateStrategy.toPeriodeId(kafkaMessage.opprettet.toLocalDate())
@@ -64,6 +72,8 @@ class VarslingService(
             domainVarsling.liste.add(person)
             repository.updateData(domainVarsling.uuid, mapper.mapDto(domainVarsling).data)
         }
+
+        hashRepo.insert(periodeHash)
     }
 
     /**
