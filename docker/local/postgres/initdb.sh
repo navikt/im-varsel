@@ -2,10 +2,10 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE USER im-varsel WITH PASSWORD 'im-varsel';
-    CREATE DATABASE im-varsel;
-    CREATE SCHEMA im-varsel;
-    GRANT ALL PRIVILEGES ON DATABASE im-varsel TO im-varsel;
+    CREATE USER "im-varsel" WITH PASSWORD 'im-varsel';
+    CREATE DATABASE "im-varsel";
+    CREATE SCHEMA "im-varsel";
+    GRANT ALL PRIVILEGES ON DATABASE "im-varsel" TO "im-varsel";
 EOSQL
 
 psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
