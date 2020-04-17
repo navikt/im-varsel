@@ -4,7 +4,7 @@ metadata:
   name: im-varsel
   namespace: default
   labels:
-    team: {{team}}
+    team: helsearbeidsgiver
 spec:
   image: {{image}}
   port: 8080
