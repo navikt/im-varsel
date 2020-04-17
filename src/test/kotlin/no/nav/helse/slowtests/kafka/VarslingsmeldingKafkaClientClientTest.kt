@@ -102,6 +102,10 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinComponent {
         val oneMessageExpected = client.getMessagesToProcess()
         assertThat(oneMessageExpected).hasSize(1)
 
+        val stillSameMEssageExpected = client.getMessagesToProcess()
+        assertThat(stillSameMEssageExpected).hasSize(1)
+        assertThat(oneMessageExpected.first()).isEqualTo(stillSameMEssageExpected.first())
+
         client.confirmProcessingDone()
 
         val zeroMessagesExpected = client.getMessagesToProcess()
