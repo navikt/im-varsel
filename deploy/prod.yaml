@@ -6,7 +6,7 @@ metadata:
   labels:
     team: {{team}}
 spec:
-  image: {{image}}:{{tag}}
+  image: {{image}}
   port: 8080
   liveness:
     path: isalive
@@ -40,21 +40,21 @@ spec:
         kvPath: /serviceuser/data/prod/srvimvarsel
   webproxy: true
   env:
-  - name: KOIN_PROFILE
-    value: PROD
-  - name: DATABASE_HOST
-    value: A01DBVL009.adeo.no
-  - name: DATABASE_PORT
-    value: "5432"
-  - name: DATABASE_NAME
-    value: im-varsel
-  - name: VAULT_MOUNTPATH
-    value: postgresql/prod-fss/
-  - name: PARTNER_GATEWAY_ALTINN_ENDPOINT
-    value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
-  - name: SECURITYTOKENSERVICE_URL
-    value: https://sts.adeo.no/SecurityTokenServiceProvider/
-  - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
-    value: aapen-helse-spre-arbeidsgiver
-  - name: KAFKA_ENDPOINTS
-    value: a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443
+    - name: KOIN_PROFILE
+      value: PROD
+    - name: DATABASE_HOST
+      value: A01DBVL009.adeo.no
+    - name: DATABASE_PORT
+      value: "5432"
+    - name: DATABASE_NAME
+      value: im-varsel
+    - name: VAULT_MOUNTPATH
+      value: postgresql/prod-fss/
+    - name: PARTNER_GATEWAY_ALTINN_ENDPOINT
+      value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
+    - name: SECURITYTOKENSERVICE_URL
+      value: https://sts.adeo.no/SecurityTokenServiceProvider/
+    - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
+      value: aapen-helse-spre-arbeidsgiver
+    - name: KAFKA_ENDPOINTS
+      value: a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443
