@@ -79,5 +79,5 @@ class VarslingService(
     /**
      * Finner strategien som skal brukes for å aggregere varsler for denne meldingen. Kan i fremtiden baseres på org-nr etc
      */
-    private fun resolveAggregationStrategy(kafkaMessage: ManglendeInntektsMeldingMelding) = DailyVarslingStrategy()
+    private fun resolveAggregationStrategy(kafkaMessage: ManglendeInntektsMeldingMelding) = WeeklyVarslingStrategy()
 }
