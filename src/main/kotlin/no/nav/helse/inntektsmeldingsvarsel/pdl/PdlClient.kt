@@ -34,7 +34,6 @@ class PdlClient(
                  httpClient.post<PdlPersonResponse> {
                     url(pdlUrl)
                     body = TextContent(om.writeValueAsString(entity), contentType = ContentType.Application.Json)
-                    contentType(ContentType.Application.Json)
                     header("Tema", "SYK")
                     header("Authorization", "Bearer $stsToken")
                     header("Nav-Consumer-Token", "Bearer $stsToken")

@@ -56,7 +56,6 @@ class RestStsClient(username: String, password: String, stsEndpoint: String) {
             val accessToken = ObjectMapper().readValue(response.body(), STSOidcResponse::class.java).access_token
                     ?: throw IllegalStateException("Feilet ved kall til STS")
 
-
             return JwtToken(accessToken)
         } catch (e: InterruptedException) {
             throw IllegalStateException("Feilet ved kall til STS", e)
