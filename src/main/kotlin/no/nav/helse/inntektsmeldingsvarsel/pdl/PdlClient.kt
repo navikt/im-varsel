@@ -19,7 +19,7 @@ class PdlClient(
         private val httpClient: HttpClient,
         private val om: ObjectMapper
 ) {
-    private val query = this::class.java.getResource("/pdl/hentPerson.graphql").readText().replace("[\n\r]", "")
+    private val query = this::class.java.getResource("/pdl/hentPerson.graphql").readText().replace(Regex("[\n\r]"), "")
 
     init {
         LOG.info("Query: $query")
