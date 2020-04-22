@@ -22,12 +22,11 @@ class PdlClient(
     private val query = this::class.java.getResource("/pdl/hentPerson.graphql").readText().replace(Regex("[\n\r]"), "")
 
     init {
-        LOG.info("Query: $query")
+        LOG.debug("Query: $query")
     }
 
     fun person(ident: String): PdlHentPerson? {
         val stsToken = stsClient.getOidcToken()
-        LOG.info("token: $stsToken")
         val entity = PdlRequest(query, Variables(ident))
         try {
             val pdlPersonReponse = runBlocking {
