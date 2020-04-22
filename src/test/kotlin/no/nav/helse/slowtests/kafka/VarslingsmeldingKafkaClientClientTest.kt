@@ -94,8 +94,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinComponent {
                         LocalDate.now(),
                         LocalDate.now().plusDays(7),
                         LocalDateTime.now(),
-                        "0102030405718",
-                        "Hans Ingenmann"
+                        "0102030405718"
                 )))
         ).get(10, TimeUnit.SECONDS)
 

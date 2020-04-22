@@ -92,8 +92,7 @@ fun Application.nais() {
                         LocalDate.now().minusDays(1),
                         LocalDate.now().plusDays(7),
                         LocalDateTime.now().minusWeeks(2),
-                        person.identitetsnummer,
-                        person.fornavn + " " + person.etternavn
+                        person.identitetsnummer
                 ))
                 producer.send(ProducerRecord(topicName, messageString)).get(10, TimeUnit.SECONDS)
 

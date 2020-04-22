@@ -10,8 +10,7 @@ data class ManglendeInntektsMeldingMelding(
         val fom: LocalDate,
         val tom: LocalDate,
         val opprettet: LocalDateTime, // Dette er tidspunktet da vedtakssystemet ville ha en inntektsmelding
-        val fødselsnummer: String,
-        val navn: String = ""
+        val fødselsnummer: String
 ) {
     /**
      * Gir en hash av fom, tom, fødselsnummer og organisasjonsnummer
