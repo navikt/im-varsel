@@ -57,5 +57,7 @@ spec:
     value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
   - name: SECURITYTOKENSERVICE_URL
     value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
+  - name: SECURITYTOKENSERVICE_REST_URL
+    value: https://security-token-service.nais.preprod.local/rest/v1/sts/token
   - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
     value: helse-spam-mottak-test

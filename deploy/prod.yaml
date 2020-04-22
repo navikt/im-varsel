@@ -55,6 +55,10 @@ spec:
       value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts.adeo.no/SecurityTokenServiceProvider/
+    - name: SECURITYTOKENSERVICE_REST_URL
+      value: https://security-token-service.nais.adeo.no/rest/v1/sts/token
+    - name: PDL_URL
+      value: https://pdl-api.nais.adeo.no/graphql
     - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
       value: aapen-helse-spre-arbeidsgiver
     - name: KAFKA_ENDPOINTS

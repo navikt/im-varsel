@@ -153,8 +153,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
-    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_url")) }
-    single { PdlClient(config.getString("pdl.url"), get(), get() ) }
+    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url")) }
+    single { PdlClient(config.getString("pdl_url"), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get()) }
 
@@ -184,8 +184,8 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
 
-    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_url")) }
-    single { PdlClient(config.getString("pdl.url"), get(), get() ) }
+    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url")) }
+    single { PdlClient(config.getString("pdl_url"), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get()) }
     single { DummyVarslingSender(get()) as VarslingSender }
