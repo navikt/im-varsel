@@ -1,10 +1,12 @@
 package no.nav.helse.inntektsmeldingsvarsel.pdl
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
+import io.ktor.http.content.TextContent
 import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.inntektsmeldingsvarsel.RestStsClient
@@ -14,17 +16,18 @@ import org.slf4j.LoggerFactory
 class PdlClient(
         private val pdlUrl: String,
         private val stsClient: RestStsClient,
-        private val httpClient: HttpClient
+        private val httpClient: HttpClient,
+        private val om: ObjectMapper
 ) {
+    private val query = this::class.java.getResource("/pdl/hentPerson.graphql").readText().replace("[\n\r]", "")
     fun person(ident: String): PdlHentPerson? {
         val stsToken = stsClient.getOidcToken()
-        val query = this::class.java.getResource("/pdl/hentPerson.graphql").readText().replace("[\n\r]", "")
         val entity = PdlRequest(query, Variables(ident))
         try {
             val pdlPersonReponse = runBlocking {
                  httpClient.post<PdlPersonResponse> {
                     url(pdlUrl)
-                    body = entity
+                    body = TextContent(om.writeValueAsString(entity), contentType = ContentType.Application.Json)
                     contentType(ContentType.Application.Json)
                     header("Tema", "SYK")
                     header("Authorization", "Bearer $stsToken")

@@ -13,7 +13,7 @@ class SendVarslingJob(
         coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
         waitTimeWhenEmptyQueue: Duration = Duration.ofHours(1)
 ) : RecurringJob(coroutineScope, waitTimeWhenEmptyQueue) {
-    val periodeStrategy: VarslingsPeriodeStrategy = WeeklyVarslingStrategy()
+    val periodeStrategy: VarslingsPeriodeStrategy = DailyVarslingStrategy()
 
     override fun doJob() {
         val now = LocalDateTime.now()
