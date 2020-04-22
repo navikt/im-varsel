@@ -4,6 +4,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.url
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.inntektsmeldingsvarsel.RestStsClient
 import org.apache.cxf.ws.security.tokenstore.SecurityToken
@@ -23,6 +25,7 @@ class PdlClient(
                  httpClient.post<PdlPersonResponse> {
                     url(pdlUrl)
                     body = entity
+                    contentType(ContentType.Application.Json)
                     header("Tema", "SYK")
                     header("Authorization", "Bearer $stsToken")
                     header("Nav-Consumer-Token", "Bearer $stsToken")
