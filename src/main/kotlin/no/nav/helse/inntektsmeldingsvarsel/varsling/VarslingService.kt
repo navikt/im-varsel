@@ -1,6 +1,7 @@
 package no.nav.helse.inntektsmeldingsvarsel.varsling
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.helse.inntektsmeldingsvarsel.ANTALL_DUPLIKATMELDINGER
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
@@ -45,6 +46,7 @@ class VarslingService(
 
         if (hashRepo.exists(periodeHash)) {
             logger.info("Denne periode er allerede sett")
+            ANTALL_DUPLIKATMELDINGER.inc()
             return
         }
 

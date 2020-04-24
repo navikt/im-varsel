@@ -11,6 +11,12 @@ val ANTALL_INNKOMMENDE_MELDINGER: Counter = Counter.build()
         .help("Teller antall innkommene meldinger om manglende IM")
         .register()
 
+val ANTALL_DUPLIKATMELDINGER: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name("duplikatmeldiger")
+        .help("Teller antall innkommene meldinger der perioden er sett før")
+        .register()
+
 val ANTALL_SENDTE_VARSLER: Counter = Counter.build()
         .namespace(METRICS_NS)
         .name("sendte_varsler")
