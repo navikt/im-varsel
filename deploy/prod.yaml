@@ -40,6 +40,8 @@ spec:
       - mountPath: /var/run/secrets/nais.io/service_user
         kvPath: /serviceuser/data/prod/srvimvarsel
   webproxy: true
+  prometheus:
+    enabled: true
   env:
     - name: KOIN_PROFILE
       value: PROD
