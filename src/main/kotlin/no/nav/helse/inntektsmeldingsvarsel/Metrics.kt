@@ -3,7 +3,7 @@ package no.nav.helse.inntektsmeldingsvarsel
 import io.prometheus.client.Counter
 import io.prometheus.client.Summary
 
-const val METRICS_NS = "im-varsel"
+const val METRICS_NS = "helsearbeidsgiverimvarsel"
 
 val ANTALL_INNKOMMENDE_MELDINGER: Counter = Counter.build()
         .namespace(METRICS_NS)
