@@ -29,6 +29,7 @@ class AltinnVarselSender(private val altinnVarselMapper: AltinnVarselMapper,
                 log.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.receiptStatusCode)
                 throw RuntimeException("Feil ved sending varsel om manglende innsending av sykepengesøknad til Altinn")
             }
+            ANTALL_SENDTE_VARSLER.inc()
         } catch (e: ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage) {
             log.error("Feil ved sending varsel om manglende innsending av inntektsmelding til Altinn", e)
             throw RuntimeException("Feil ved sending varsel om manglende innsending av inntektsmelding til Altinn", e)

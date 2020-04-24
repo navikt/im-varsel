@@ -1,5 +1,6 @@
 package no.nav.helse.inntektsmeldingsvarsel.varsling.mottak
 
+import no.nav.helse.inntektsmeldingsvarsel.ANTALL_INNKOMMENDE_MELDINGER
 import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheck
 import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheckType
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -64,6 +65,7 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
 
     override fun confirmProcessingDone() {
         consumer.commitSync()
+        ANTALL_INNKOMMENDE_MELDINGER.inc(currentBatch.size.toDouble())
         currentBatch = emptyList()
     }
 
