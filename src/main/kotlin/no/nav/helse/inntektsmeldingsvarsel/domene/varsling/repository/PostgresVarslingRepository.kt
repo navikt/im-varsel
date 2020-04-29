@@ -1,6 +1,8 @@
 package no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository
 
+import org.slf4j.LoggerFactory
 import java.sql.ResultSet
+import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
@@ -9,23 +11,40 @@ import javax.sql.DataSource
 class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepository {
 
     private val tableName = "varsling"
-    private val insertStatement = "INSERT INTO $tableName (data, status, opprettet, virksomhetsNr, uuid, aggregatPeriode) VALUES(?::json, ?, ?, ?, ?::uuid, ?)"
+    private val logger = LoggerFactory.getLogger(PostgresVarslingRepository::class.java)
+
+    private val insertStatement = "INSERT INTO $tableName (data, sent, opprettet, virksomhetsNr, uuid, aggregatPeriode) VALUES(?::json, ?, ?, ?, ?::uuid, ?)"
 
     private val updateDataStatement = "UPDATE $tableName SET data = ?::json WHERE uuid = ?"
-    private val updateStatusStatement = "UPDATE $tableName SET status = ?, behandlet = ? WHERE uuid = ?"
+    private val updatesentStatement = "UPDATE $tableName SET sent = ?, behandlet = ? WHERE uuid = ?"
+    private val updateReadStatusStatement = "UPDATE $tableName SET read = ? WHERE uuid = ?"
 
     private val deleteStatement = "DELETE FROM $tableName WHERE uuid = ?"
-    private val nextStatement = "SELECT * FROM $tableName WHERE status=? AND aggregatPeriode=? LIMIT ?"
+    private val waitingAggregatesStatement = "SELECT * FROM $tableName WHERE sent=? AND aggregatPeriode=? LIMIT ?"
+    private val selectUneadStatusStatement = "SELECT * FROM $tableName WHERE read=false and sent = true LIMIT ?"
 
     private val getByVirksomhetsnummerAndAggperiode = "SELECT * FROM $tableName WHERE virksomhetsNr=? AND aggregatPeriode=?"
 
-    override fun findByStatus(status: Boolean, max: Int, aggregatPeriode: String): List<VarslingDbEntity> {
+    override fun findBySentStatus(sent: Boolean, max: Int, aggregatPeriode: String): List<VarslingDbEntity> {
         ds.connection.use {
             val resultList = ArrayList<VarslingDbEntity>()
-            val res = it.prepareStatement(nextStatement).apply {
-                setBoolean(1, status)
+            val res = it.prepareStatement(waitingAggregatesStatement).apply {
+                setBoolean(1, sent)
                 setString(2, aggregatPeriode)
                 setInt(3, max)
+            }.executeQuery()
+            while (res.next()) {
+                resultList.add(mapToDto(res))
+            }
+            return resultList
+        }
+    }
+
+    override fun findSentButUnread(max: Int): List<VarslingDbEntity> {
+        ds.connection.use {
+            val resultList = ArrayList<VarslingDbEntity>()
+            val res = it.prepareStatement(selectUneadStatusStatement).apply {
+                setInt(1, max)
             }.executeQuery()
             while (res.next()) {
                 resultList.add(mapToDto(res))
@@ -57,11 +76,20 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
         }
     }
 
+    override fun updateReadStatus(uuid: String, readStatus: Boolean) {
+        ds.connection.use {
+            it.prepareStatement(updateReadStatusStatement).apply {
+                setBoolean(1, readStatus)
+                setString(2, uuid)
+            }.executeUpdate()
+        }
+    }
+
     override fun insert(dbEntity: VarslingDbEntity) {
         ds.connection.use {
             it.prepareStatement(insertStatement).apply {
                 setString(1, dbEntity.data)
-                setBoolean(2, dbEntity.status)
+                setBoolean(2, dbEntity.sent)
                 setTimestamp(3, Timestamp.valueOf(dbEntity.opprettet))
                 setString(4, dbEntity.virksomhetsNr)
                 setString(5, dbEntity.uuid)
@@ -78,10 +106,10 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
         }
     }
 
-    override fun updateStatus(uuid: String, timeOfUpdate: LocalDateTime, status: Boolean) {
+    override fun updateSentStatus(uuid: String, timeOfUpdate: LocalDateTime, sent: Boolean) {
         ds.connection.use {
-            it.prepareStatement(updateStatusStatement).apply {
-                setBoolean(1, status)
+            it.prepareStatement(updatesentStatement).apply {
+                setBoolean(1, sent)
                 setTimestamp(2, Timestamp.valueOf(timeOfUpdate))
                 setString(3, uuid)
             }.executeUpdate()
@@ -92,7 +120,8 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
         return VarslingDbEntity(
                 data = res.getString("data"),
                 uuid = res.getString("uuid"),
-                status = res.getBoolean("status"),
+                sent = res.getBoolean("sent"),
+                read = res.getBoolean("read"),
                 opprettet = res.getTimestamp("opprettet").toLocalDateTime(),
                 behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
                 aggregatperiode = res.getString("aggregatPeriode"),

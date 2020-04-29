@@ -8,7 +8,7 @@ class DummyVarslingSender(private val service: VarslingService) : VarslingSender
     override fun
             send(varsling: Varsling) {
         println("Sender varsling med id ${varsling.uuid} til {${varsling.virksomhetsNr} med ${varsling.liste.size} personer i")
-        service.oppdaterStatus(varsling, true)
+        service.oppdaterSendtStatus(varsling, true)
         ANTALL_SENDTE_VARSLER.inc()
         ANTALL_PERSONER_I_SENDTE_VARSLER.inc(varsling.liste.size.toDouble())
     }

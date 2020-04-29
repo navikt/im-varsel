@@ -17,5 +17,6 @@ data class Varsling(
         val liste: MutableSet<PersonVarsling>,
         val uuid: String = UUID.randomUUID().toString(), // Uuid sendes også til Altinn som referanse
         val opprettet: LocalDateTime = LocalDateTime.now(),
-        val varslingSendt: Boolean = false
+        val varslingSendt: Boolean = false,
+        val varslingLest: Boolean= false
 )

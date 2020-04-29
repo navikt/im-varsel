@@ -28,7 +28,7 @@ class SendVarslingJob(
             isEmpty = varslinger.isEmpty()
             varslinger.forEach {
                 sender.send(it)
-                service.oppdaterStatus(it, true)
+                service.oppdaterSendtStatus(it, true)
             }
         } while (!isEmpty)
     }

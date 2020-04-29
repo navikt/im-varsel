@@ -24,7 +24,8 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
     private val dbVarsling = VarslingDbEntity(
             uuid = UUID.randomUUID().toString(),
             data = "[]",
-            status = false,
+            sent = false,
+            read = false,
             opprettet = LocalDateTime.now(),
             aggregatperiode = "D-2020-01-01",
             virksomhetsNr = "123456789"
@@ -50,23 +51,32 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
     @Test
     internal fun `kan oppdatere data`() {
         val timeOfUpdate = LocalDateTime.now()
-        repo.updateStatus(dbVarsling.uuid, timeOfUpdate, true)
+        repo.updateSentStatus(dbVarsling.uuid, timeOfUpdate, true)
         val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
 
         assertThat(afterUpdate?.behandlet).isEqualTo(timeOfUpdate)
-        assertThat(afterUpdate?.status).isEqualTo(true)
+        assertThat(afterUpdate?.sent).isEqualTo(true)
     }
 
     @Test
     internal fun `kan oppdatere sendt status`() {
         val timeOfUpdate = LocalDateTime.now()
 
-        repo.updateStatus(dbVarsling.uuid, timeOfUpdate, true)
+        repo.updateSentStatus(dbVarsling.uuid, timeOfUpdate, true)
 
         val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
 
         assertThat(afterUpdate?.behandlet).isEqualTo(timeOfUpdate)
-        assertThat(afterUpdate?.status).isEqualTo(true)
+        assertThat(afterUpdate?.sent).isEqualTo(true)
+    }
+
+    @Test
+    internal fun `kan oppdatere lest status`() {
+        repo.updateReadStatus(dbVarsling.uuid, true)
+
+        val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
+
+        assertThat(afterUpdate?.read).isEqualTo(true)
     }
 
     @AfterEach

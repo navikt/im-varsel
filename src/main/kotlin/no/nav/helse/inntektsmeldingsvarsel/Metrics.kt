@@ -1,7 +1,6 @@
 package no.nav.helse.inntektsmeldingsvarsel
 
 import io.prometheus.client.Counter
-import io.prometheus.client.Summary
 
 const val METRICS_NS = "helsearbeidsgiverimvarsel"
 
@@ -27,4 +26,10 @@ val ANTALL_PERSONER_I_SENDTE_VARSLER: Counter = Counter.build()
         .namespace(METRICS_NS)
         .name("perosner_i_sendte_varsler")
         .help("Teller personer som det har blitt sendt varsel for")
+        .register()
+
+val ANTALL_LESTE_MELDINGEN: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name("antall_leste_meldinger")
+        .help("Teller antall meldinger i Altinn som er lest")
         .register()

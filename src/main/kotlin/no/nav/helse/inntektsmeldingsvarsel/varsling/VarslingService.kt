@@ -23,12 +23,16 @@ class VarslingService(
     val logger = LoggerFactory.getLogger(VarslingService::class.java)
 
     fun finnNesteUbehandlet(max: Int, aggregatPeriode: String): List<Varsling> {
-        return repository.findByStatus(false, max, aggregatPeriode).map { mapper.mapDomain(it) }
+        return repository.findBySentStatus(false, max, aggregatPeriode).map { mapper.mapDomain(it) }
     }
 
-    fun oppdaterStatus(varsling: Varsling, velykket: Boolean) {
-        logger.info("Oppdaterer status på ${varsling.uuid} til $velykket")
-        repository.updateStatus(varsling.uuid, LocalDateTime.now(), velykket)
+    fun finnUleste(max: Int): List<Varsling> {
+        return repository.findSentButUnread(max).map { mapper.mapDomain(it) }
+    }
+
+    fun oppdaterSendtStatus(varsling: Varsling, sendtStatus: Boolean) {
+        logger.info("Oppdaterer sendt status på ${varsling.uuid} til $sendtStatus")
+        repository.updateSentStatus(varsling.uuid, LocalDateTime.now(), sendtStatus)
     }
 
     fun lagre(varsling: Varsling) {
@@ -86,4 +90,9 @@ class VarslingService(
      * Finner strategien som skal brukes for å aggregere varsler for denne meldingen. Kan i fremtiden baseres på org-nr etc
      */
     private fun resolveAggregationStrategy(kafkaMessage: ManglendeInntektsMeldingMelding) = DailyVarslingStrategy()
+
+    fun oppdaterLestStatus(varsling: Varsling, lestStatus: Boolean) {
+        logger.info("Oppdaterer lest status på ${varsling.uuid} til $lestStatus")
+        repository.updateReadStatus(varsling.uuid, lestStatus)
+    }
 }

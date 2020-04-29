@@ -158,6 +158,16 @@ fun preprodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
+    single {
+        AltinnReadReceiptClient(
+                get(),
+                config.getString("altinn_melding.username"),
+                config.getString("altinn_melding.password"),
+                config.getString("altinn_melding.service_id"),
+                get()
+        )
+    }
+
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
     single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url")) }
@@ -166,6 +176,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { VarslingService(get(), get(), get(), get(), get()) }
 
     single { SendVarslingJob(get(), get()) }
+    single { UpdateReadStatusJob(get(), get())}
 }
 
 @KtorExperimentalAPI
@@ -195,9 +206,13 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { PdlClient(config.getString("pdl_url"), get(), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get()) }
-    single { DummyVarslingSender(get()) as VarslingSender }
+    single { DummyVarslingSender(get()) }
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
+
+
+    single { DummyReadReceiptProvider() }
+    single { UpdateReadStatusJob(get(), get()) }
 }
 
 // utils

@@ -12,7 +12,8 @@ psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
 
     CREATE TABLE varsling (
         uuid varchar(64) NOT NULL primary key,
-        status bool NOT NULL,
+        sent bool NOT NULL,
+        read bool NOT NULL DEFAULT false,
         opprettet timestamp NOT NULL,
         behandlet timestamp,
         aggregatPeriode varchar(64) NOT NULL,

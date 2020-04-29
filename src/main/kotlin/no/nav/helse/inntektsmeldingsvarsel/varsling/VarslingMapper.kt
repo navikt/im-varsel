@@ -11,10 +11,11 @@ class VarslingMapper (private val mapper: ObjectMapper) {
         return VarslingDbEntity(
                 uuid = varsling.uuid,
                 data = mapper.writeValueAsString(varsling.liste),
-                status = varsling.varslingSendt,
+                sent = varsling.varslingSendt,
                 opprettet = varsling.opprettet,
                 aggregatperiode = varsling.aggregatperiode,
-                virksomhetsNr = varsling.virksomhetsNr
+                virksomhetsNr = varsling.virksomhetsNr,
+                read = varsling.varslingLest
         )
     }
 
@@ -24,7 +25,8 @@ class VarslingMapper (private val mapper: ObjectMapper) {
                 virksomhetsNr = dbEntity.virksomhetsNr,
                 uuid = dbEntity.uuid,
                 opprettet = dbEntity.opprettet,
-                varslingSendt = dbEntity.status,
+                varslingSendt = dbEntity.sent,
+                varslingLest = dbEntity.read,
                 liste = mapper.readValue(dbEntity.data)
         )
     }
