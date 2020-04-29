@@ -148,6 +148,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
         altinnMeldingWsClient
     }
+    single { VarslingMapper(get()) }
 
     single {
         AltinnVarselSender(
