@@ -165,7 +165,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
                 config.getString("altinn_melding.password"),
                 config.getString("altinn_melding.service_id"),
                 get()
-        )
+        ) as ReadReceiptProvider
     }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
@@ -206,12 +206,12 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { PdlClient(config.getString("pdl_url"), get(), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get()) }
-    single { DummyVarslingSender(get()) }
+    single { DummyVarslingSender(get()) as VarslingSender}
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
 
 
-    single { DummyReadReceiptProvider() }
+    single { DummyReadReceiptProvider() as ReadReceiptProvider }
     single { UpdateReadStatusJob(get(), get()) }
 }
 
