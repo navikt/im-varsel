@@ -66,6 +66,7 @@ dependencies {
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
+    implementation("com.sun.activation:javax.activation:1.2.0")
 
 
     implementation("org.koin:koin-core:$koinVersion")
