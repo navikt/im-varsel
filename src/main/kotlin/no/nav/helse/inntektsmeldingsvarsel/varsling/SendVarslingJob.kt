@@ -17,7 +17,7 @@ class SendVarslingJob(
 
     override fun doJob() {
         val now = LocalDateTime.now()
-        if (now.hour < 7 || now.hour > 16) {
+        if (now.hour < 7 || now.hour > 17) {
             return
         }
 
