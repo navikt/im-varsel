@@ -37,6 +37,7 @@ import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import java.time.Duration
 import javax.sql.DataSource
 
 
@@ -178,7 +179,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
-    single { UpdateReadStatusJob(get(), get())}
+    single { UpdateReadStatusJob(get(), get(), waitTimeWhenEmptyQueue = Duration.ofMinutes(10))}
 }
 
 @KtorExperimentalAPI
