@@ -40,7 +40,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                    <div class="melding">
                        <h2>Varsel om manglende inntektsmelding ifm. søknad om sykepenger</h2>
                        <p>
-                        NAV mangler inntektsmelding for følgende ansatte ved virksomheten (${altinnVarsel.virksomhetsNr}). 
+                        NAV mangler inntektsmelding for følgende ansatte ved virksomheten ${'$'}reporteeName${'$'} (${altinnVarsel.virksomhetsNr}). 
                         For at vi skal kunne utbetale sykepengene det søkes om må disse sendes oss så snart som mulig. 
                         Dersom dere har sendt inn disse i løpet av de siste 24 timene kan dere se bort fra dette varselet.
                         </p>
