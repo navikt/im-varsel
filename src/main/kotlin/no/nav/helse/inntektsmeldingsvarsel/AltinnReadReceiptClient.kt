@@ -34,7 +34,7 @@ class AltinnReadReceiptClient(private val iCorrespondenceAgencyExternalBasic: IC
 
             log.info(om.writeValueAsString(receiptExternal))
 
-            val status = receiptExternal.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2.firstOrNull()?.statusChanges?.statusChangeV2?.firstOrNull()?.statusType
+            val status = receiptExternal.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2.firstOrNull()?.statusChanges?.statusChangeV2?.lastOrNull()?.statusType
 
             log.info("Found altinn read status $status")
 
