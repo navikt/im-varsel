@@ -25,8 +25,10 @@ import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
 import no.nav.helse.inntektsmeldingsvarsel.domene.Person
 import org.apache.commons.lang.exception.ExceptionUtils
+import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.serialization.StringSerializer
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.getKoin
@@ -81,7 +83,11 @@ fun Application.nais() {
             val topicName = cfg.getString("altinn_melding.kafka_topic")
             log.info("Sender melding på topic $topicName")
             val producer = KafkaProducer<String, String>(mutableMapOf<String, Any>(
-                        "bootstrap.servers" to cfg.getString("kafka.endpoint")
+                    "bootstrap.servers" to cfg.getString("kafka.endpoint"),
+                    CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL",
+                    SaslConfigs.SASL_MECHANISM to "PLAIN",
+                    SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+                            "username=\"${cfg.getString("kafka.username")}\" password=\"${cfg.getString("kafka.password")}\";"
             ), StringSerializer(), StringSerializer())
 
             val om = this@routing.get<ObjectMapper>()
