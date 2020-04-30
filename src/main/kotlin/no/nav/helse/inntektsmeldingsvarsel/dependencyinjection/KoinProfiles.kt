@@ -176,6 +176,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { VarslingService(get(), get(), get(), get(), get()) }
 
+    single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get())}
 }
