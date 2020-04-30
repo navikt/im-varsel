@@ -76,30 +76,30 @@ fun Application.nais() {
                 return@get
             }
 
-            try {
-                val cfg = this@routing.application.environment.config
+            val cfg = this@routing.application.environment.config
 
-                val topicName = cfg.getString("altinn_melding.kafka_topic")
-                val producer = KafkaProducer<String, String>(mutableMapOf<String, Any>(
-                            "bootstrap.servers" to cfg.getString("kafka.endpoint")
-                ), StringSerializer(), StringSerializer())
+            val topicName = cfg.getString("altinn_melding.kafka_topic")
+            log.info("Sender melding på topic $topicName")
+            val producer = KafkaProducer<String, String>(mutableMapOf<String, Any>(
+                        "bootstrap.servers" to cfg.getString("kafka.endpoint")
+            ), StringSerializer(), StringSerializer())
 
-                val om = this@routing.get<ObjectMapper>()
-                val person = Person("Test", "Testesen", "1234567890")
+            val om = this@routing.get<ObjectMapper>()
+            val person = Person("Test", "Testesen", "1234567890")
 
-                val messageString = om.writeValueAsString(ManglendeInntektsMeldingMelding(
-                        "810007842", //  -> Anstendig Piggsvin Barnehage
-                        LocalDate.now().minusDays(1),
-                        LocalDate.now().plusDays(7),
-                        LocalDateTime.now().minusWeeks(2),
-                        person.identitetsnummer
-                ))
-                producer.send(ProducerRecord(topicName, messageString)).get(10, TimeUnit.SECONDS)
+            val messageString = om.writeValueAsString(ManglendeInntektsMeldingMelding(
+                    "810007842", //  -> Anstendig Piggsvin Barnehage
+                    LocalDate.now().minusDays(1),
+                    LocalDate.now().plusDays(7),
+                    LocalDateTime.now().minusWeeks(2),
+                    person.identitetsnummer
+            ))
 
-                call.respond(HttpStatusCode.OK, "Melding sendt til Kø: \n$messageString")
-            } catch (t: Throwable) {
-                call.respond(HttpStatusCode.InternalServerError, t.message + "\n\n" + ExceptionUtils.getStackTrace(t))
-            }
+            log.info("Sender melding $messageString")
+
+            producer.send(ProducerRecord(topicName, messageString))
+
+            call.respond(HttpStatusCode.OK, "Melding sendt til Kø: \n$messageString")
         }
     }
 }
