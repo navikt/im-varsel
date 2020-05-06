@@ -62,3 +62,5 @@ spec:
     value: https://security-token-service.nais.preprod.local/rest/v1/sts/token
   - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
     value: helse-spam-mottak-test
+  - name: DOKARKIV_URL
+    value: https://dokarkiv-q1.nais.preprod.local

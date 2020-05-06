@@ -23,6 +23,9 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.Meldingsfi
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresMeldingsfilterRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
+import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlient
+import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlientImpl
+import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.MockDokarkivKlient
 import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
@@ -153,6 +156,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single {
         AltinnVarselSender(
+                get(),
                 AltinnVarselMapper(config.getString("altinn_melding.service_id")),
                 get(),
                 config.getString("altinn_melding.username"),
@@ -160,6 +164,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
+    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
     single {
         AltinnReadReceiptClient(
                 get(),
@@ -209,6 +214,8 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { PdlClient(config.getString("pdl_url"), get(), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get()) }
+    single { MockDokarkivKlient() as DokarkivKlient }
+
     single { DummyVarslingSender(get()) as VarslingSender}
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
