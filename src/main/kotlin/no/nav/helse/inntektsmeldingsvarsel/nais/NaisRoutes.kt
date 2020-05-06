@@ -23,8 +23,6 @@ import no.nav.helse.inntektsmeldingsvarsel.selfcheck.runHealthChecks
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsMeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
-import no.nav.helse.inntektsmeldingsvarsel.domene.Person
-import org.apache.commons.lang.exception.ExceptionUtils
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
 
@@ -91,14 +88,13 @@ fun Application.nais() {
             ), StringSerializer(), StringSerializer())
 
             val om = this@routing.get<ObjectMapper>()
-            val person = Person("Test", "Testesen", "1234567890")
 
             val messageString = om.writeValueAsString(ManglendeInntektsMeldingMelding(
                     "810007842", //  -> Anstendig Piggsvin Barnehage
                     LocalDate.now().minusDays(1),
                     LocalDate.now().plusDays(7),
                     LocalDateTime.now().minusWeeks(2),
-                    person.identitetsnummer
+                    "09088723349"
             ))
 
             log.info("Sender melding $messageString")

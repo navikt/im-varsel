@@ -14,11 +14,6 @@ internal object NotificationAltinnGenerator {
     }
 
     @JvmStatic
-    fun smsLenkeAltinnPortal(): String {
-        return urlEncode(lenkeAltinnPortal())
-    }
-
-    @JvmStatic
     fun lenkeAltinnPortal(): String {
         return "https://www.altinn.no/ui/MessageBox?O=\$reporteeNumber$"
     }

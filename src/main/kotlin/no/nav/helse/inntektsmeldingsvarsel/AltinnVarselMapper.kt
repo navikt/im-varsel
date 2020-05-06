@@ -6,7 +6,6 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.Notificat
 import no.nav.helse.inntektsmeldingsvarsel.NotificationAltinnGenerator.lenkeAltinnPortal
 import no.nav.helse.inntektsmeldingsvarsel.NotificationAltinnGenerator.opprettEpostNotification
 import no.nav.helse.inntektsmeldingsvarsel.NotificationAltinnGenerator.opprettSMSNotification
-import no.nav.helse.inntektsmeldingsvarsel.NotificationAltinnGenerator.smsLenkeAltinnPortal
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import java.time.format.DateTimeFormatter
 
@@ -20,7 +19,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
 
         val sms = opprettSMSNotification(
                 "NAV mangler inntektsmelding for en, eller flere av deres ansatte på virksomheten \$reporteeName\$ for å kunne utbetale stønader det nylig er søkt om. ",
-                "Gå til meldingsboksen i " + smsLenkeAltinnPortal() + " for å se hvem det gjelder og hvilken periode søknaden gjelder for. \n\nVennlig hilsen NAV"
+                "Gå til meldingsboksen i Altinn for å se hvem det gjelder og hvilken periode søknaden gjelder for. \n\nVennlig hilsen NAV"
         )
 
         return NotificationBEList()

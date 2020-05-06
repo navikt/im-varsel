@@ -26,11 +26,14 @@ class PDFGenerator {
         doc.addPage(page)
         val contentStream = PDPageContentStream(doc, page)
         contentStream.beginText()
-        contentStream.setFont(font, FONT_SIZE)
         val mediaBox = page.mediaBox
         val startX = mediaBox.lowerLeftX + MARGIN_X
         val startY = mediaBox.upperRightY - MARGIN_Y
         contentStream.newLineAtOffset(startX, startY)
+        contentStream.setFont(font, FONT_SIZE + 4)
+        contentStream.showText("Melding om manglende inntektsmelding")
+        contentStream.setFont(font, FONT_SIZE)
+        contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 4)
         contentStream.showText("Virksomhetsnummer: ${varsling.virksomhetsNr}")
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 2)
         contentStream.showText("Personer:")
