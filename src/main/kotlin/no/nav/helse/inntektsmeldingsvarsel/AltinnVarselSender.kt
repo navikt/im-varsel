@@ -26,6 +26,8 @@ class AltinnVarselSender(
 
     override fun send(varsling: Varsling) {
         try {
+            journalfør(varsling)
+
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
                     username, password,
                     SYSTEM_USER_CODE, varsling.uuid,
@@ -35,10 +37,11 @@ class AltinnVarselSender(
                 log.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.receiptStatusCode)
                 throw RuntimeException("Feil ved sending varsel om manglende innsending av sykepengesøknad til Altinn")
             }
+
+
             ANTALL_SENDTE_VARSLER.inc()
             ANTALL_PERSONER_I_SENDTE_VARSLER.inc(varsling.liste.size.toDouble())
 
-            journalfør(varsling)
         } catch (e: ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage) {
             log.error("Feil ved sending varsel om manglende innsending av inntektsmelding til Altinn", e)
             throw RuntimeException("Feil ved sending varsel om manglende innsending av inntektsmelding til Altinn", e)
