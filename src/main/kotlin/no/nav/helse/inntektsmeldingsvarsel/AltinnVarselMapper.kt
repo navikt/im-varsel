@@ -14,12 +14,12 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
 
     private fun opprettManglendeInnsendingNotifications(): NotificationBEList {
         val epost = opprettEpostNotification("Varsel om manglende inntektsmelding",
-                "<p>NAV mangler inntektsmelding for en, eller flere av deres ansatte for å kunne utbetale stønader det nylig er søkt om.</p>" +
+                "<p>NAV mangler inntektsmelding for en, eller flere av deres ansatte på virksomheten \$reporteeName\$ for å kunne utbetale stønader det nylig er søkt om.</p>" +
                         "<p>Logg inn på <a href=\"" + lenkeAltinnPortal() + "\">Altinn</a> for å se hvem det gjelder og hvilken periode søknaden gjelder for.</p>" +
                         "<p>Vennlig hilsen NAV</p>")
 
         val sms = opprettSMSNotification(
-                "NAV mangler inntektsmelding for en, eller flere av deres ansatte for å kunne utbetale stønader det nylig er søkt om. ",
+                "NAV mangler inntektsmelding for en, eller flere av deres ansatte på virksomheten \$reporteeName\$ for å kunne utbetale stønader det nylig er søkt om. ",
                 "Gå til meldingsboksen i " + smsLenkeAltinnPortal() + " for å se hvem det gjelder og hvilken periode søknaden gjelder for. \n\nVennlig hilsen NAV"
         )
 
@@ -40,7 +40,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                    <div class="melding">
                        <h2>Varsel om manglende inntektsmelding ifm. søknad om sykepenger</h2>
                        <p>
-                        NAV mangler inntektsmelding for følgende ansatte ved virksomheten ${'$'}reporteeName${'$'} (${altinnVarsel.virksomhetsNr}). 
+                        NAV mangler inntektsmelding for følgende ansatte ved virksomheten (${altinnVarsel.virksomhetsNr}). 
                         For at vi skal kunne utbetale sykepengene det søkes om må disse sendes oss så snart som mulig. 
                         Dersom dere har sendt inn disse i løpet av de siste 24 timene kan dere se bort fra dette varselet.
                         </p>
