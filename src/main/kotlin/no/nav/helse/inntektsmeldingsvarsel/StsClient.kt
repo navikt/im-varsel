@@ -5,7 +5,6 @@ import org.apache.cxf.BusFactory
 import org.apache.cxf.binding.soap.Soap12
 import org.apache.cxf.binding.soap.SoapMessage
 import org.apache.cxf.endpoint.Client
-import org.apache.cxf.ext.logging.LoggingFeature
 import org.apache.cxf.frontend.ClientProxy
 import org.apache.cxf.ws.policy.PolicyBuilder
 import org.apache.cxf.ws.policy.PolicyEngine
@@ -24,7 +23,7 @@ fun wsStsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
         isEnableAppliesTo = false
         isAllowRenewing = false
         location = stsUrl
-        features = listOf(LoggingFeature())
+        // features = listOf(LoggingFeature())
         properties = mapOf(
                 SecurityConstants.USERNAME to credentials.first,
                 SecurityConstants.PASSWORD to credentials.second

@@ -184,7 +184,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
-    single { UpdateReadStatusJob(get(), get(), waitTimeWhenEmptyQueue = Duration.ofMinutes(10))}
+    single { UpdateReadStatusJob(get(), get())}
 }
 
 @KtorExperimentalAPI
