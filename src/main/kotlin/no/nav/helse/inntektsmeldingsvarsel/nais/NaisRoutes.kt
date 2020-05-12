@@ -178,7 +178,7 @@ fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorr
                         </p>
                         <p>
                         Det nye er at dere i slike tilfeller kan kreve refusjon fra dag 4 i ettertid. <br>
-                        Kravskjemaet finner du på Min side - arbeidsgiver på nav.no.
+                        Kravskjemaet finner du på Min side - arbeidsgiver på <a href="nav.no">nav.no</a>.
                         </p>
                    </div>
                </body>
@@ -189,7 +189,7 @@ fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorr
             .withLanguageCode("1044")
             .withMessageTitle(tittel)
             .withMessageBody(innhold)
-            .withMessageSummary("NAV mangler inntektsmelding for en, eller flere av deres ansatte for å kunne utbetale stønaderdet nylig er søkt om.")
+            .withMessageSummary("Ang utbetaling av sykepenger ifbm Covid19-tilfeller")
 
     return InsertCorrespondenceV2()
             .withAllowForwarding(false)
