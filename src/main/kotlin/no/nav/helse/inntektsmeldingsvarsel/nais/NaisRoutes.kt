@@ -16,6 +16,11 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
+import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
+import no.nav.helse.inntektsmeldingsvarsel.AltinnVarselSender
 import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheck
 import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheckState
 import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheckType
@@ -31,6 +36,7 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
+import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -64,6 +70,41 @@ fun Application.nais() {
             val httpResult = if (checkResults.any { it.state == HealthCheckState.ERROR }) HttpStatusCode.InternalServerError else HttpStatusCode.OK
 
             call.respond(httpResult, checkResults)
+        }
+
+        get("/send-meldinger-til-virksomheter-med-feil-innsendinger") {
+            val log = LoggerFactory.getLogger("/send-meldinger-til-virksomheter-med-feil-innsendinger")
+            val altinnClient = this@routing.get<ICorrespondenceAgencyExternalBasic>()
+
+            val virksomheter = when {
+                environment.config.property("koin.profile").getString() == "PROD" -> this::class.java.getResource("virksomheter").readText().split("\n")
+                else -> this::class.java.getResource("virksomheter_test").readText().split("\n")
+            }
+
+            val serviceCode = environment.config.getString("altinn_melding.service_id")
+            val username = environment.config.getString("altinn_melding.username")
+            val password = environment.config.getString("altinn_melding.password")
+
+            virksomheter.map { it.trim() }.filter { it.isNotBlank() }.forEach {
+                log.info("Sender for $it")
+
+                try {
+                    val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
+                            username, password,
+                            AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
+                            createMelding(serviceCode, it)
+                    )
+                    if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
+                        throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                    }
+                    log.info("Sendt OK $it")
+
+                } catch (ex: Exception) {
+                    log.error("$it feilet", ex)
+                }
+            }
+
+            call.respond(HttpStatusCode.OK, "OK")
         }
 
         get("/send-altinn-melding") {
@@ -120,3 +161,41 @@ private suspend fun returnResultOfChecks(routing: Routing, type: HealthCheckType
 }
 
 
+fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorrespondenceV2 {
+    val tittel = "Ang utbetaling av sykepenger ifbm Covid19-tilfeller"
+
+    val innhold = """
+            <html>
+               <head>
+                   <meta charset="UTF-8">
+               </head>
+               <body>
+                   <div class="melding">
+                       <h2>Angående utbetaling av sykepenger ifbm Covid19-tilfeller</h2>
+                       <p>
+                        Du får denne meldingen fordi du har oppgitt i en inntektsmelding at du ikke betaler sykepenger i arbeidsgiverperioden etter 12. mars 2020. <br>
+                        Vi minner om at arbeidsgivere fortsatt må utbetale sykepenger i 16 dager, også ved Covid19-tilfeller. 
+                        </p>
+                        <p>
+                        Det nye er at dere i slike tilfeller kan kreve refusjon fra dag 4 i ettertid. <br>
+                        Kravskjemaet finner du på Min side - arbeidsgiver på nav.no.
+                        </p>
+                   </div>
+               </body>
+            </html>
+        """.trimIndent()
+
+    val meldingsInnhold = ExternalContentV2()
+            .withLanguageCode("1044")
+            .withMessageTitle(tittel)
+            .withMessageBody(innhold)
+            .withMessageSummary("NAV mangler inntektsmelding for en, eller flere av deres ansatte for å kunne utbetale stønaderdet nylig er søkt om.")
+
+    return InsertCorrespondenceV2()
+            .withAllowForwarding(false)
+            .withReportee(virksomhetsNr)
+            .withMessageSender("NAV (Arbeids- og velferdsetaten)")
+            .withServiceCode(altinnTjenesteKode)
+            .withServiceEdition("1")
+            .withContent(meldingsInnhold)
+}
