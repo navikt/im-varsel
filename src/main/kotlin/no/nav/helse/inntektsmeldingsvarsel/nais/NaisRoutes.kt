@@ -189,7 +189,7 @@ fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorr
             .withLanguageCode("1044")
             .withMessageTitle(tittel)
             .withMessageBody(innhold)
-            .withMessageSummary("Ang utbetaling av sykepenger ifbm Covid19-tilfeller")
+            .withMessageSummary("Om utbetaling av sykepenger ifbm Covid19-tilfeller")
 
     return InsertCorrespondenceV2()
             .withAllowForwarding(false)
