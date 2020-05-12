@@ -162,7 +162,7 @@ private suspend fun returnResultOfChecks(routing: Routing, type: HealthCheckType
 
 
 fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorrespondenceV2 {
-    val tittel = "Ang utbetaling av sykepenger ifbm Covid19-tilfeller"
+    val tittel = "Om utbetaling av sykepenger i Covid-19-tilfeller"
 
     val innhold = """
             <html>
@@ -171,7 +171,7 @@ fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorr
                </head>
                <body>
                    <div class="melding">
-                       <h2>Angående utbetaling av sykepenger ifbm Covid19-tilfeller</h2>
+                       <h2>Om utbetaling av sykepenger i Covid-19-tilfeller</h2>
                        <p>
                         Du får denne meldingen fordi du har oppgitt i en inntektsmelding at du ikke betaler sykepenger i arbeidsgiverperioden etter 12. mars 2020. <br>
                         Vi minner om at arbeidsgivere fortsatt må utbetale sykepenger i 16 dager, også ved Covid19-tilfeller. 
