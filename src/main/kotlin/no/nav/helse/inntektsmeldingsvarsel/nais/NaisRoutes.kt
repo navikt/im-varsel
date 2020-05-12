@@ -77,8 +77,8 @@ fun Application.nais() {
             val altinnClient = this@routing.get<ICorrespondenceAgencyExternalBasic>()
 
             val virksomheter = when {
-                environment.config.property("koin.profile").getString() == "PROD" -> this::class.java.getResource("virksomheter").readText().split("\n")
-                else -> this::class.java.getResource("virksomheter_test").readText().split("\n")
+                environment.config.property("koin.profile").getString() == "PROD" -> AltinnVarselSender::class.java.getResource("virksomheter").readText().split("\n")
+                else -> AltinnVarselSender::class.java.getResource("virksomheter_test").readText().split("\n")
             }
 
             val serviceCode = environment.config.getString("altinn_melding.service_id")
