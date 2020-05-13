@@ -173,7 +173,7 @@ fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorr
                    <div class="melding">
                        <h2>Om utbetaling av sykepenger i Covid19-tilfeller</h2>
                        <p>
-                        Du får denne meldingen fordi du har oppgitt i en inntektsmelding at du ikke betaler sykepenger i arbeidsgiverperioden etter 12. mars 2020. <br>
+                        Du får denne meldingen fordi du har oppgitt i en inntektsmelding at du ikke utbetaler sykepenger i arbeidsgiverperioden etter 12. mars 2020. <br>
                         Vi minner om at arbeidsgivere fortsatt må utbetale sykepenger i 16 dager, også ved Covid19-tilfeller. 
                         </p>
                         <p>
