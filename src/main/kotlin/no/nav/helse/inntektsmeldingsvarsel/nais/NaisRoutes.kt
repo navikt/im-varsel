@@ -16,6 +16,7 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import kotlinx.coroutines.launch
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
@@ -85,22 +86,24 @@ fun Application.nais() {
             val username = environment.config.getString("altinn_melding.username")
             val password = environment.config.getString("altinn_melding.password")
 
-            virksomheter.map { it.trim() }.filter { it.isNotBlank() }.forEach {
-                log.info("Sender for $it")
+            launch {
+                virksomheter.map { it.trim() }.filter { it.isNotBlank() }.forEach {
+                    log.info("Sender for $it")
 
-                try {
-                    val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
-                            username, password,
-                            AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
-                            createMelding(serviceCode, it)
-                    )
-                    if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                        throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                    try {
+                        val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
+                                username, password,
+                                AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
+                                createMelding(serviceCode, it)
+                        )
+                        if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
+                            throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                        }
+                        log.info("Sendt OK $it")
+
+                    } catch (ex: Exception) {
+                        log.error("$it feilet", ex)
                     }
-                    log.info("Sendt OK $it")
-
-                } catch (ex: Exception) {
-                    log.error("$it feilet", ex)
                 }
             }
 
