@@ -152,6 +152,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
         altinnMeldingWsClient
     }
+
     single { VarslingMapper(get()) }
 
     single {
@@ -203,6 +204,21 @@ fun prodConfig(config: ApplicationConfig) = module {
                 SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required " +
                         "username=\"${config.getString("kafka.username")}\" password=\"${config.getString("kafka.password")}\";"
         ), config.getString("altinn_melding.kafka_topic")) as ManglendeInntektsmeldingMeldingProvider
+    }
+
+    single {
+        val altinnMeldingWsClient = Clients.iCorrespondenceExternalBasic(
+                config.getString("altinn_melding.pep_gw_endpoint")
+        )
+
+        val sts = wsStsClient(
+                config.getString("sts_url"),
+                config.getString("service_user.username") to config.getString("service_user.password")
+        )
+
+        sts.configureFor(altinnMeldingWsClient)
+
+        altinnMeldingWsClient
     }
 
     single { VarslingMapper(get()) }
