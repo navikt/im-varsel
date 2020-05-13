@@ -87,7 +87,9 @@ fun Application.nais() {
             val password = environment.config.getString("altinn_melding.password")
 
             launch {
-                virksomheter.map { it.trim() }.filter { it.isNotBlank() }.forEach {
+                val filtrert = virksomheter.map { it.trim() }.filter { it.isNotBlank() }
+                log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
+                filtrert.forEach {
                     log.info("Sender for $it")
 
                     try {
@@ -96,6 +98,9 @@ fun Application.nais() {
                                 AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
                                 createMelding(serviceCode, it)
                         )
+
+                        log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
+
                         if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                             throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
                         }
