@@ -89,32 +89,25 @@ fun Application.nais() {
             val username = environment.config.getString("altinn_melding.username")
             val password = environment.config.getString("altinn_melding.password")
 
-            thread(start = true) {
                 val filtrert = virksomheter.map { it.trim() }.filter { it.isNotBlank() }
                 log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
                 filtrert.forEach {
-                    sleep(2000)
+                    delay(2000)
                     log.info("Sender for $it")
 
-                    try {
-                        val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
-                                username, password,
-                                AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
-                                createMelding(serviceCode, it)
-                        )
+                    val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
+                            username, password,
+                            AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
+                            createMelding(serviceCode, it)
+                    )
 
-                        log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
+                    log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
 
-                        if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                            throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
-                        }
-                        log.info("Sendt OK $it")
-
-                    } catch (ex: Exception) {
-                        log.error("$it feilet", ex)
+                    if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
+                        throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
                     }
+                    log.info("Sendt OK $it")
                 }
-            }
 
             call.respond(HttpStatusCode.OK, "OK")
         }

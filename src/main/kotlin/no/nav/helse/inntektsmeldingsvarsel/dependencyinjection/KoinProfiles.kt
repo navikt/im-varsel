@@ -211,6 +211,10 @@ fun prodConfig(config: ApplicationConfig) = module {
                 config.getString("altinn_melding.pep_gw_endpoint")
         )
 
+        val client = ClientProxy.getClient(altinnMeldingWsClient)
+        client.inInterceptors.add(LoggingInInterceptor())
+        client.outInterceptors.add(LoggingOutInterceptor())
+
         val sts = wsStsClient(
                 config.getString("sts_url"),
                 config.getString("service_user.username") to config.getString("service_user.password")
