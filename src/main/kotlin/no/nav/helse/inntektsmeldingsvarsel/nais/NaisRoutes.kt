@@ -16,6 +16,8 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
@@ -89,10 +91,14 @@ fun Application.nais() {
             val username = environment.config.getString("altinn_melding.username")
             val password = environment.config.getString("altinn_melding.password")
 
-                val filtrert = virksomheter.map { it.trim() }.filter { it.isNotBlank() }
-                log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
-                filtrert.forEach {
-                    delay(2000)
+            val filtrert = virksomheter.map { it.trim() }.filter { it.isNotBlank() }
+            log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
+            val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+            filtrert.forEach {
+                    coroutineScope.launch {
+
+                    delay(Random().nextInt(60000).toLong())
                     log.info("Sender for $it")
 
                     val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
@@ -104,10 +110,12 @@ fun Application.nais() {
                     log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
 
                     if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                        throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                        log.error("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                    } else {
+                        log.info("Sendt OK $it")
                     }
-                    log.info("Sendt OK $it")
                 }
+            }
 
             call.respond(HttpStatusCode.OK, "OK")
         }
