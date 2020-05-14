@@ -16,10 +16,7 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
@@ -46,8 +43,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.system.measureTimeMillis
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
+val computePool = newFixedThreadPoolContext(4, "compute")
 
 @KtorExperimentalAPI
 fun Application.nais() {
@@ -95,28 +94,36 @@ fun Application.nais() {
             log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
             val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-            filtrert.forEach {
-                delay(2000)
-                coroutineScope.launch {
-                        log.info("Sender for $it")
+            val computeTime = measureTimeMillis {
+                withContext(computePool) {
+                    filtrert.forEach {
+                        delay(1000)
+                        coroutineScope.launch {
+                            log.info("Sender for $it")
 
-                    val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
-                            username, password,
-                            AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
-                            createMelding(serviceCode, it)
-                    )
+                            val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
+                                    username, password,
+                                    AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
+                                    createMelding(serviceCode, it)
+                            )
 
-                    log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
+                            log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
 
-                    if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                        log.error("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
-                    } else {
-                        log.info("Sendt OK $it")
+                            if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
+                                log.error("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                            } else {
+                                log.info("Sendt OK $it")
+                            }
+                        }
                     }
+
+
+
                 }
             }
 
-            call.respond(HttpStatusCode.OK, "OK")
+
+            call.respond(HttpStatusCode.OK, "OK $computeTime")
         }
 
         get("/send-altinn-melding") {
