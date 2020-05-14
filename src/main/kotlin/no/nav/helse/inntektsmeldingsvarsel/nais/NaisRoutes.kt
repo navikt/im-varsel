@@ -96,10 +96,9 @@ fun Application.nais() {
             val coroutineScope = CoroutineScope(Dispatchers.IO)
 
             filtrert.forEach {
-                    coroutineScope.launch {
-
-                    delay(Random().nextInt(60000).toLong())
-                    log.info("Sender for $it")
+                delay(2000)
+                coroutineScope.launch {
+                        log.info("Sender for $it")
 
                     val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
                             username, password,
