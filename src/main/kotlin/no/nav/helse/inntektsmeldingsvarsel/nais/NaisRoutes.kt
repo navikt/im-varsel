@@ -16,6 +16,7 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
@@ -38,9 +39,11 @@ import org.koin.ktor.ext.get
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
 import java.lang.RuntimeException
+import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.concurrent.thread
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
 
@@ -86,10 +89,11 @@ fun Application.nais() {
             val username = environment.config.getString("altinn_melding.username")
             val password = environment.config.getString("altinn_melding.password")
 
-            launch {
+            thread(start = true) {
                 val filtrert = virksomheter.map { it.trim() }.filter { it.isNotBlank() }
                 log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
                 filtrert.forEach {
+                    sleep(2000)
                     log.info("Sender for $it")
 
                     try {
