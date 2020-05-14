@@ -53,7 +53,7 @@ fun main() {
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
 
-        sendMessages(app)
+        //sendMessages(app)
 
         Runtime.getRuntime().addShutdownHook(Thread {
             varslingSenderJob.stop()
