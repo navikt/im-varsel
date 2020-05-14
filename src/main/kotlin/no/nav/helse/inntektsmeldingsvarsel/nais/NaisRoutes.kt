@@ -16,7 +16,8 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.ExternalContentV2
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
@@ -43,10 +44,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.thread
-import kotlin.system.measureTimeMillis
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
-val computePool = newFixedThreadPoolContext(4, "compute")
 
 @KtorExperimentalAPI
 fun Application.nais() {
@@ -75,55 +74,6 @@ fun Application.nais() {
             val httpResult = if (checkResults.any { it.state == HealthCheckState.ERROR }) HttpStatusCode.InternalServerError else HttpStatusCode.OK
 
             call.respond(httpResult, checkResults)
-        }
-
-        get("/send-meldinger-til-virksomheter-med-feil-innsendinger") {
-            val log = LoggerFactory.getLogger("/send-meldinger-til-virksomheter-med-feil-innsendinger")
-            val altinnClient = this@routing.get<ICorrespondenceAgencyExternalBasic>()
-
-            val virksomheter = when {
-                environment.config.property("koin.profile").getString() == "PROD" -> AltinnVarselSender::class.java.getResource("/virksomheter").readText().split("\n")
-                else -> AltinnVarselSender::class.java.getResource("/virksomheter_test").readText().split("\n")
-            }
-
-            val serviceCode = environment.config.getString("altinn_melding.service_id")
-            val username = environment.config.getString("altinn_melding.username")
-            val password = environment.config.getString("altinn_melding.password")
-
-            val filtrert = virksomheter.map { it.trim() }.filter { it.isNotBlank() }
-            log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
-            val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-            val computeTime = measureTimeMillis {
-                withContext(computePool) {
-                    filtrert.forEach {
-                        delay(1000)
-                        coroutineScope.launch {
-                            log.info("Sender for $it")
-
-                            val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
-                                    username, password,
-                                    AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
-                                    createMelding(serviceCode, it)
-                            )
-
-                            log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
-
-                            if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
-                                log.error("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
-                            } else {
-                                log.info("Sendt OK $it")
-                            }
-                        }
-                    }
-
-
-
-                }
-            }
-
-
-            call.respond(HttpStatusCode.OK, "OK $computeTime")
         }
 
         get("/send-altinn-melding") {
@@ -177,44 +127,4 @@ private suspend fun returnResultOfChecks(routing: Routing, type: HealthCheckType
         r.error?.let { pipelineContext.call.application.environment.log.error(r.toString()) }
     }
     pipelineContext.call.respond(httpResult, checkResults)
-}
-
-
-fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorrespondenceV2 {
-    val tittel = "Om utbetaling av sykepenger i Covid19-tilfeller"
-
-    val innhold = """
-            <html>
-               <head>
-                   <meta charset="UTF-8">
-               </head>
-               <body>
-                   <div class="melding">
-                       <h2>Om utbetaling av sykepenger i Covid19-tilfeller</h2>
-                       <p>
-                        Du får denne meldingen fordi du har oppgitt i en inntektsmelding at du ikke utbetaler sykepenger i arbeidsgiverperioden etter 12. mars 2020. <br>
-                        Vi minner om at arbeidsgivere fortsatt må utbetale sykepenger i 16 dager, også ved Covid19-tilfeller. 
-                        </p>
-                        <p>
-                        Det nye er at dere i slike tilfeller kan kreve refusjon fra dag 4 i ettertid. <br>
-                        Kravskjemaet finner du på Min side - arbeidsgiver på <a href="https://nav.no">nav.no</a>.
-                        </p>
-                   </div>
-               </body>
-            </html>
-        """.trimIndent()
-
-    val meldingsInnhold = ExternalContentV2()
-            .withLanguageCode("1044")
-            .withMessageTitle(tittel)
-            .withMessageBody(innhold)
-            .withMessageSummary("Om utbetaling av sykepenger i Covid19-tilfeller")
-
-    return InsertCorrespondenceV2()
-            .withAllowForwarding(false)
-            .withReportee(virksomhetsNr)
-            .withMessageSender("NAV (Arbeids- og velferdsetaten)")
-            .withServiceCode(altinnTjenesteKode)
-            .withServiceEdition("1")
-            .withContent(meldingsInnhold)
 }
