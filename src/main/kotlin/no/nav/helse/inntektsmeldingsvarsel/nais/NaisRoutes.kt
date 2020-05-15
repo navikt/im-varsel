@@ -76,6 +76,49 @@ fun Application.nais() {
             call.respond(httpResult, checkResults)
         }
 
+        get("/send-meldinger-til-virksomheter-med-feil-innsendinger") {
+            val log = LoggerFactory.getLogger("/send-meldinger-til-virksomheter-med-feil-innsendinger")
+            val altinnClient = this@routing.get<ICorrespondenceAgencyExternalBasic>()
+
+            val virksomheter = when {
+                environment.config.property("koin.profile").getString() == "PROD" -> AltinnVarselSender::class.java.getResource("/virksomheter").readText().split("\n")
+                else -> AltinnVarselSender::class.java.getResource("/virksomheter_test").readText().split("\n")
+            }
+
+            val serviceCode = environment.config.getString("altinn_melding.service_id")
+            val username = environment.config.getString("altinn_melding.username")
+            val password = environment.config.getString("altinn_melding.password")
+
+            thread(start = true) {
+                val filtrert = virksomheter.map { it.trim() }.filter { it.isNotBlank() }
+                log.info("Filtrert virksomhetsliste: ${filtrert.joinToString()}")
+                filtrert.forEach {
+                    sleep(2000)
+                    log.info("Sender for $it")
+
+                    try {
+                        val receiptExternal = altinnClient.insertCorrespondenceBasicV2(
+                                username, password,
+                                AltinnVarselSender.SYSTEM_USER_CODE, "nav-im-melding-korona-$it",
+                                createMelding(serviceCode, it)
+                        )
+
+                        log.info("Respons fra Altinn: ${receiptExternal.receiptStatusCode}")
+
+                        if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
+                            throw RuntimeException("Fikk uventet statuskode fra Altinn: ${receiptExternal.receiptStatusCode}")
+                        }
+                        log.info("Sendt OK $it")
+
+                    } catch (ex: Exception) {
+                        log.error("$it feilet", ex)
+                    }
+                }
+            }
+
+            call.respond(HttpStatusCode.OK, "OK")
+        }
+
         get("/send-altinn-melding") {
 
             val log = LoggerFactory.getLogger("/send-altinn-melding")
@@ -127,4 +170,44 @@ private suspend fun returnResultOfChecks(routing: Routing, type: HealthCheckType
         r.error?.let { pipelineContext.call.application.environment.log.error(r.toString()) }
     }
     pipelineContext.call.respond(httpResult, checkResults)
+}
+
+
+fun createMelding(altinnTjenesteKode: String, virksomhetsNr: String): InsertCorrespondenceV2 {
+    val tittel = "Om utbetaling av sykepenger i Covid19-tilfeller"
+
+    val innhold = """
+            <html>
+               <head>
+                   <meta charset="UTF-8">
+               </head>
+               <body>
+                   <div class="melding">
+                       <h2>Om utbetaling av sykepenger i Covid19-tilfeller</h2>
+                       <p>
+                        Du får denne meldingen fordi du har oppgitt i en inntektsmelding at du ikke utbetaler sykepenger i arbeidsgiverperioden etter 12. mars 2020. <br>
+                        Vi minner om at arbeidsgivere fortsatt må utbetale sykepenger i 16 dager, også ved Covid19-tilfeller. 
+                        </p>
+                        <p>
+                        Det nye er at dere i slike tilfeller kan kreve refusjon fra dag 4 i ettertid. <br>
+                        Kravskjemaet finner du på Min side - arbeidsgiver på <a href="https://nav.no">nav.no</a>.
+                        </p>
+                   </div>
+               </body>
+            </html>
+        """.trimIndent()
+
+    val meldingsInnhold = ExternalContentV2()
+            .withLanguageCode("1044")
+            .withMessageTitle(tittel)
+            .withMessageBody(innhold)
+            .withMessageSummary("Om utbetaling av sykepenger i Covid19-tilfeller")
+
+    return InsertCorrespondenceV2()
+            .withAllowForwarding(false)
+            .withReportee(virksomhetsNr)
+            .withMessageSender("NAV (Arbeids- og velferdsetaten)")
+            .withServiceCode(altinnTjenesteKode)
+            .withServiceEdition("1")
+            .withContent(meldingsInnhold)
 }
