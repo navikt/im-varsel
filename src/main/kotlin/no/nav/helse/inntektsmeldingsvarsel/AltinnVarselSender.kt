@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 
 class AltinnVarselSender(
+        private val allowList: AllowList,
         private val joarkClient: DokarkivKlient,
         private val altinnVarselMapper: AltinnVarselMapper,
         private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
@@ -25,6 +26,11 @@ class AltinnVarselSender(
     }
 
     override fun send(varsling: Varsling) {
+
+        if (!allowList.shouldSend(varsling.virksomhetsNr)) {
+            return
+        }
+
         try {
             journalfør(varsling)
 
@@ -33,18 +39,15 @@ class AltinnVarselSender(
                     SYSTEM_USER_CODE, varsling.uuid,
                     altinnVarselMapper.mapVarslingTilInsertCorrespondence(varsling)
             )
+
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
                 log.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.receiptStatusCode)
-                throw RuntimeException("Feil ved sending varsel om manglende innsending av sykepengesøknad til Altinn")
+                throw IllegalStateException("Feil ved sending av varsel om manglende innsending av inntektsmelding til Altinn")
             }
-
 
             ANTALL_SENDTE_VARSLER.inc()
             ANTALL_PERSONER_I_SENDTE_VARSLER.inc(varsling.liste.size.toDouble())
 
-        } catch (e: ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage) {
-            log.error("Feil ved sending varsel om manglende innsending av inntektsmelding til Altinn", e)
-            throw RuntimeException("Feil ved sending varsel om manglende innsending av inntektsmelding til Altinn", e)
         } catch (e: Exception) {
             log.error("Feil ved sending varsel om manglende innsending av inntektsmelding til Altinn", e)
             throw e

@@ -40,7 +40,6 @@ import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import java.time.Duration
 import javax.sql.DataSource
 
 
@@ -157,6 +156,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single {
         AltinnVarselSender(
+                ApproveAllAllowList(),
                 get(),
                 AltinnVarselMapper(config.getString("altinn_melding.service_id")),
                 get(),
