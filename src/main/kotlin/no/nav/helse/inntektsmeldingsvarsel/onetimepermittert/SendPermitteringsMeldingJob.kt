@@ -21,6 +21,8 @@ class SendPermitteringsMeldingJob(
         do {
             val varslinger = repo.getNextBatch()
             isEmpty = varslinger.isEmpty()
+            logger.info("Sender ${varslinger.size} varsler")
+
             varslinger.forEach {
                 sender.send(it)
                 repo.updateSentStatus(it.id, LocalDateTime.now(), true)
