@@ -6,9 +6,7 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.Notificat
 import no.nav.helse.inntektsmeldingsvarsel.NotificationAltinnGenerator.lenkeAltinnPortal
 import no.nav.helse.inntektsmeldingsvarsel.NotificationAltinnGenerator.opprettEpostNotification
 import no.nav.helse.inntektsmeldingsvarsel.NotificationAltinnGenerator.opprettSMSNotification
-import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.permisjonsvarsel.repository.PermisjonsVarselDbEntity
-import java.time.format.DateTimeFormatter
 
 class AltinnPermisjonsVarselMapper(val altinnTjenesteKode: String) {
 
@@ -78,8 +76,8 @@ class AltinnPermisjonsVarselMapper(val altinnTjenesteKode: String) {
                         </p>
                        
                         <p>
-                            Har du spørsmål om løsningen for lønnskompensasjon og refusjon kan du lese om løsningen <a href="https://arbeidsgiver.nav.no/permittering-refusjon/informasjon">her</a>. 
-                            Finner du ikke svar her kan du kontakte oss på <a href="https://www.nav.no/kontakt">nav.no/kontakt</a>.                         
+                            Har du spørsmål om løsningen for lønnskompensasjon og refusjon kan du <a href="https://arbeidsgiver.nav.no/permittering-refusjon/informasjon">lese om løsningen her</a>. 
+                            Finner du ikke svar på spørsmålet ditt her kan du <a href="https://www.nav.no/kontakt">kontakte oss her</a>
                         </p>
                             
                    </div>
@@ -91,7 +89,7 @@ class AltinnPermisjonsVarselMapper(val altinnTjenesteKode: String) {
                 .withLanguageCode("1044")
                 .withMessageTitle(tittel)
                 .withMessageBody(innhold)
-                .withMessageSummary("NAV mangler inntektsmelding for en, eller flere av deres ansatte for å kunne utbetale stønaderdet nylig er søkt om.")
+                .withMessageSummary("For at vi skal kunne utbetale lønnskompensasjon til deres ansatte må dere melde inn opplysninger i NAVs løsning for lønnskompensasjon og refusjon.")
 
         return InsertCorrespondenceV2()
                 .withAllowForwarding(false)
