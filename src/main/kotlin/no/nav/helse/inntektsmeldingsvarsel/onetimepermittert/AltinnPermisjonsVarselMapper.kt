@@ -72,7 +72,7 @@ class AltinnPermisjonsVarselMapper(val altinnTjenesteKode: String) {
                         </p>
                        
                         <p>
-                            Har du spørsmål om løsningen for lønnskompensasjon og refusjon kan du lese om løsningen her. 
+                            Har du spørsmål om løsningen for lønnskompensasjon og refusjon kan du lese om løsningen <a href="https://arbeidsgiver.nav.no/permittering-refusjon/informasjon">her</a>. 
                             Finner du ikke svar her kan du kontakte oss på <a href="https://www.nav.no/kontakt">nav.no/kontakt</a>.                         
                         </p>
                             
