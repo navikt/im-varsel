@@ -68,18 +68,12 @@ class PDFGenerator {
         contentStream.showText("Melding om manglende opplysninger")
         contentStream.setFont(font, FONT_SIZE)
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 4)
-        contentStream.showText("NAV trenger hjelp fra deg som arbeidsgiver for å utbetale lønnskompensasjon til dine ansatte som er eller har vært permitterte.  \n" +
-                "\n" +
-                "Ca. 3939 000 arbeidsgivere har nå meldt inn opplysninger til NAV, slik at deres ansatte har fått utbetalt lønnskompensasjon. Vi mangler fremdeles innmelding fra noen arbeidsgivere.  \n" +
-                "\n" +
-                "For at vi skal kunne utbetale lønnskompensasjon til deres ansatte må dere melde inn opplysninger i NAVs løsning for lønnskompensasjon og refusjon. Denne innmeldingen utløser også refusjonen til arbeidsgivere som har forskuttert lønn til sine ansatte.  \n" +
-                "\n" +
-                "Så snart dere har gjort dette, utbetaler vi pengene i løpet av 2-3 virkedager.  \n" +
-                "\n" +
-                "Hvis dere allerede har meldt inn opplysninger til NAV kan dere se bort fra dette brevet.  \n" +
-                "\n" +
-                "Har du spørsmål? \n" +
-                "\n" +
+        contentStream.showText("NAV trenger hjelp fra deg som arbeidsgiver for å utbetale lønnskompensasjon til dine ansatte som er eller har vært permitterte." +
+                "Ca. 3939 000 arbeidsgivere har nå meldt inn opplysninger til NAV, slik at deres ansatte har fått utbetalt lønnskompensasjon. Vi mangler fremdeles innmelding fra noen arbeidsgivere." +
+                "For at vi skal kunne utbetale lønnskompensasjon til deres ansatte må dere melde inn opplysninger i NAVs løsning for lønnskompensasjon og refusjon. Denne innmeldingen utløser også refusjonen til arbeidsgivere som har forskuttert lønn til sine ansatte. "+
+                "Så snart dere har gjort dette, utbetaler vi pengene i løpet av 2-3 virkedager." +
+                "Hvis dere allerede har meldt inn opplysninger til NAV kan dere se bort fra dette brevet." +
+                "Har du spørsmål?" +
                 "Har du spørsmål om løsningen for lønnskompensasjon og refusjon kan du lese om løsningen her. Finner du ikke svar her kan du kontakte oss på www.nav.no/kontakt. ")
         contentStream.endText()
         contentStream.close()
