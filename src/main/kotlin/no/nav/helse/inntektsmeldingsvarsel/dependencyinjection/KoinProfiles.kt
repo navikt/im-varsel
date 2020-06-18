@@ -258,6 +258,16 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
 
+    single { PostgresPermisjonsvarselRepository(get()) as PermisjonsvarselRepository }
+    single { AltinnPermisjonsVarselSender(
+            DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()),
+            AltinnPermisjonsVarselMapper("4255"),
+            get(),
+            config.getString("altinn_melding.username"),
+            config.getString("altinn_melding.password")
+    ) }
+    single { SendPermitteringsMeldingJob(get(), get()) }
+
 
     single { DummyReadReceiptProvider() as ReadReceiptProvider }
     single { UpdateReadStatusJob(get(), get()) }
