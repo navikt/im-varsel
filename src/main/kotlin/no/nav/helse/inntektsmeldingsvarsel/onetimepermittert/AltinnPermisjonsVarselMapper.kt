@@ -56,7 +56,8 @@ class AltinnPermisjonsVarselMapper(val altinnTjenesteKode: String) {
                         
                         <p>
                         <strong>
-                        For at vi skal kunne utbetale lønnskompensasjon til deres ansatte må dere melde inn opplysninger i NAVs løsning for lønnskompensasjon og refusjon. 
+                        For at vi skal kunne utbetale lønnskompensasjon til deres ansatte må dere melde inn opplysninger i NAVs 
+                        <a href="https://arbeidsgiver.nav.no/permittering-refusjon/">løsning for lønnskompensasjon og refusjon.</a> 
                         </strong>
                         Denne innmeldingen utløser også refusjonen til arbeidsgivere som har forskuttert lønn til sine ansatte.  
                         </p>
