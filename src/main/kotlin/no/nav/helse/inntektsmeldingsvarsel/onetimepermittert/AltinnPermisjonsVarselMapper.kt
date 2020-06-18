@@ -36,6 +36,11 @@ class AltinnPermisjonsVarselMapper(val altinnTjenesteKode: String) {
                </head>
                <body>
                    <div class="melding">
+                   
+                        <p style="text-align: right; font-size: 0.6em">
+                        <a href="https://www.nav.no/en/home/employers/nav-needs-information-from-you">Read this in english</a>
+                        </p>
+                   
                        <h2>NAV mangler opplysninger fra dere</h2>
                        <p>
                        <strong>
