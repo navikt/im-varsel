@@ -26,6 +26,11 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRe
 import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlient
 import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.MockDokarkivKlient
+import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.AltinnPermisjonsVarselMapper
+import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.AltinnPermisjonsVarselSender
+import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.SendPermitteringsMeldingJob
+import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.permisjonsvarsel.repository.PermisjonsvarselRepository
+import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.permisjonsvarsel.repository.PostgresPermisjonsvarselRepository
 import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
@@ -182,6 +187,19 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PdlClient(config.getString("pdl_url"), get(), get(), get()) }
 
     single { VarslingService(get(), get(), get(), get(), get()) }
+
+
+    single { PostgresPermisjonsvarselRepository(get()) as PermisjonsvarselRepository }
+    single { AltinnPermisjonsVarselSender(
+            DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()),
+            AltinnPermisjonsVarselMapper("4255"),
+            get(),
+            config.getString("altinn_melding.username"),
+            config.getString("altinn_melding.password")
+    ) }
+    single { SendPermitteringsMeldingJob(get(), get()) }
+
+
 
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }

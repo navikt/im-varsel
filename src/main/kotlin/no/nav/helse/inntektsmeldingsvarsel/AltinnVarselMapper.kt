@@ -52,7 +52,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                         """
                             <p>
                             <strong>${it.navn}</strong><br>
-                            Personnummer: ${it.personnumer}<br>
+                            Fødselsnummer: ${it.personnumer}<br>
                             Periode: ${it.periode.fom.format(formatter)} - ${it.periode.tom.format(formatter)}
                             </p>
                         """.trimIndent()

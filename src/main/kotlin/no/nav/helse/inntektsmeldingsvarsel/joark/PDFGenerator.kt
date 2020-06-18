@@ -1,6 +1,7 @@
 package no.nav.helse.inntektsmeldingsvarsel.joark
 
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
+import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.permisjonsvarsel.repository.PermisjonsVarselDbEntity
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -43,6 +44,43 @@ class PDFGenerator {
         }
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 2)
         contentStream.showText("Opprettet: ${TIMESTAMP_FORMAT.format(LocalDateTime.now())}")
+        contentStream.endText()
+        contentStream.close()
+        val out = ByteArrayOutputStream()
+        doc.save(out)
+        val ba = out.toByteArray()
+        doc.close()
+        return ba
+    }
+
+    fun lagPDF(varsling: PermisjonsVarselDbEntity): ByteArray {
+        val doc = PDDocument()
+        val page = PDPage()
+        val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
+        doc.addPage(page)
+        val contentStream = PDPageContentStream(doc, page)
+        contentStream.beginText()
+        val mediaBox = page.mediaBox
+        val startX = mediaBox.lowerLeftX + MARGIN_X
+        val startY = mediaBox.upperRightY - MARGIN_Y
+        contentStream.newLineAtOffset(startX, startY)
+        contentStream.setFont(font, FONT_SIZE + 4)
+        contentStream.showText("Melding om manglende opplysninger")
+        contentStream.setFont(font, FONT_SIZE)
+        contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 4)
+        contentStream.showText("NAV trenger hjelp fra deg som arbeidsgiver for å utbetale lønnskompensasjon til dine ansatte som er eller har vært permitterte.  \n" +
+                "\n" +
+                "Ca. 3939 000 arbeidsgivere har nå meldt inn opplysninger til NAV, slik at deres ansatte har fått utbetalt lønnskompensasjon. Vi mangler fremdeles innmelding fra noen arbeidsgivere.  \n" +
+                "\n" +
+                "For at vi skal kunne utbetale lønnskompensasjon til deres ansatte må dere melde inn opplysninger i NAVs løsning for lønnskompensasjon og refusjon. Denne innmeldingen utløser også refusjonen til arbeidsgivere som har forskuttert lønn til sine ansatte.  \n" +
+                "\n" +
+                "Så snart dere har gjort dette, utbetaler vi pengene i løpet av 2-3 virkedager.  \n" +
+                "\n" +
+                "Hvis dere allerede har meldt inn opplysninger til NAV kan dere se bort fra dette brevet.  \n" +
+                "\n" +
+                "Har du spørsmål? \n" +
+                "\n" +
+                "Har du spørsmål om løsningen for lønnskompensasjon og refusjon kan du lese om løsningen her. Finner du ikke svar her kan du kontakte oss på www.nav.no/kontakt. ")
         contentStream.endText()
         contentStream.close()
         val out = ByteArrayOutputStream()

@@ -12,8 +12,10 @@ import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
 import no.nav.helse.inntektsmeldingsvarsel.nais.nais
+import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.SendPermitteringsMeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.UpdateReadStatusJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingProcessor
@@ -43,6 +45,12 @@ fun main() {
 
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
+
+        if(app.environment.config.getString("KOIN_PROFILE") == "PREPROD") {
+            val job = koin.get<SendPermitteringsMeldingJob>()
+            job.startAsync(retryOnFail = true)
+
+        }
 
         Runtime.getRuntime().addShutdownHook(Thread {
             varslingSenderJob.stop()

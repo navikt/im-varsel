@@ -25,4 +25,12 @@ psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
         hash varchar(64) NOT NULL UNIQUE
     );
 
+    CREATE TABLE permisjonsvarsel (
+        id serial primary key,
+        sent bool NOT NULL DEFAULT false,
+        read bool NOT NULL DEFAULT false,
+        behandlet timestamp,
+        virksomhetsNr varchar(9) NOT NULL
+    );
+
 EOSQL
