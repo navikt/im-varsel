@@ -37,8 +37,8 @@ fun main() {
 
         val koin = app.application.getKoin()
 
-        val manglendeInntektsmeldingMottak = koin.get<VarslingsmeldingProcessor>()
-        manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
+        //val manglendeInntektsmeldingMottak = koin.get<VarslingsmeldingProcessor>()
+        //manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
 
         val varslingSenderJob = koin.get<SendVarslingJob>()
         varslingSenderJob.startAsync(retryOnFail = true)
@@ -46,15 +46,12 @@ fun main() {
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
 
-        if(app.environment.config.getString("koin.profile") == "PREPROD") {
-            val job = koin.get<SendPermitteringsMeldingJob>()
-            job.startAsync(retryOnFail = true)
-
-        }
+        val job = koin.get<SendPermitteringsMeldingJob>()
+        job.startAsync(retryOnFail = true)
 
         Runtime.getRuntime().addShutdownHook(Thread {
             varslingSenderJob.stop()
-            manglendeInntektsmeldingMottak.stop()
+            //manglendeInntektsmeldingMottak.stop()
             updateReadStatusJob.stop()
             app.stop(1000, 1000)
         })
