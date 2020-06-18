@@ -21,7 +21,7 @@ class PostgresPermisjonsvarselRepository(private val ds: DataSource) : Permisjon
             val resultList = ArrayList<PermisjonsVarselDbEntity>()
             val res = it.prepareStatement(getBySentState).apply {
                 setBoolean(1, true)
-                setInt(3, 500)
+                setInt(2, 500)
             }.executeQuery()
             while (res.next()) {
                 resultList.add(mapToDto(res))
