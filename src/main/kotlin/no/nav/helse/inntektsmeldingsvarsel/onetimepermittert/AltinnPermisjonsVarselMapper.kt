@@ -19,7 +19,8 @@ class AltinnPermisjonsVarselMapper(val altinnTjenesteKode: String) {
                         "<p>Vennlig hilsen NAV</p>")
 
         val sms = opprettSMSNotification(
-                "NAV mangler opplysninger fra virksomheten \$reporteeName\$ for å kunne utbetale ytelser til deres ansatte. Logg inn på Altinn for å lese mer om hva du må gjøre. \n\nVennlig hilsen NAV"
+                "NAV mangler opplysninger fra virksomheten \$reporteeName\$ for å kunne utbetale ytelser til deres ansatte. ",
+                "Logg inn på Altinn for å lese mer om hva du må gjøre. \n\nVennlig hilsen NAV"
         )
 
         return NotificationBEList()
