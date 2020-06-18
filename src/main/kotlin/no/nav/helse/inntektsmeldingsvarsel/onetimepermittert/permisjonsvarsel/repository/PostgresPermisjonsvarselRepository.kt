@@ -20,7 +20,7 @@ class PostgresPermisjonsvarselRepository(private val ds: DataSource) : Permisjon
         ds.connection.use {
             val resultList = ArrayList<PermisjonsVarselDbEntity>()
             val res = it.prepareStatement(getBySentState).apply {
-                setBoolean(1, true)
+                setBoolean(1, false)
                 setInt(2, 500)
             }.executeQuery()
             while (res.next()) {
