@@ -46,7 +46,7 @@ fun main() {
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
 
-        if(app.environment.config.getString("KOIN_PROFILE") == "PREPROD") {
+        if(app.environment.config.getString("koin.profile") == "PREPROD") {
             val job = koin.get<SendPermitteringsMeldingJob>()
             job.startAsync(retryOnFail = true)
 
