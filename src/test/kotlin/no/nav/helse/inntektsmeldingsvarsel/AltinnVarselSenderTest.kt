@@ -50,21 +50,23 @@ class AltinnVarselSenderTest {
     @Test
     fun `Sjekker allowlist, journalfører og sender`() {
         every { allowMock.shouldSend(varsling.virksomhetsNr) } returns true
-        every { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") } returns "joark-ref"
+        every { joarkMock.journalførDokument(any(), varsling, any(), any(), any()) } returns "joark-ref"
         every { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) } returns mappedSoapMessage
-        every {soapClientMock.insertCorrespondenceBasicV2(any(), any(), any(), any(), any())} returns ReceiptExternal().withReceiptStatusCode(ReceiptStatusEnum.OK)
+        every { soapClientMock.insertCorrespondenceBasicV2(any(), any(), any(), any(), any()) } returns ReceiptExternal().withReceiptStatusCode(ReceiptStatusEnum.OK)
 
         altinnSender.send(varsling)
 
         verify(exactly = 1) { allowMock.shouldSend(varsling.virksomhetsNr) }
-        verify(exactly = 2) { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") }
+        verify(exactly = 1) { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") }
+        verify(exactly = 1) { joarkMock.journalførDokument(any(), varsling, any(), "123", "FNR") }
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
-        verify(exactly = 1) { soapClientMock.insertCorrespondenceBasicV2(
-                username,
-                password,
-                AltinnVarselSender.SYSTEM_USER_CODE,
-                varsling.uuid,
-                mappedSoapMessage)
+        verify(exactly = 1) {
+            soapClientMock.insertCorrespondenceBasicV2(
+                    username,
+                    password,
+                    AltinnVarselSender.SYSTEM_USER_CODE,
+                    varsling.uuid,
+                    mappedSoapMessage)
         }
     }
 
@@ -89,21 +91,23 @@ class AltinnVarselSenderTest {
     @Test
     fun `Feiler ved ikke-ok status fra Altinn`() {
         every { allowMock.shouldSend(varsling.virksomhetsNr) } returns true
-        every { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") } returns "joark-ref"
+        every { joarkMock.journalførDokument(any(), varsling, any(), any(), any()) } returns "joark-ref"
         every { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) } returns mappedSoapMessage
-        every {soapClientMock.insertCorrespondenceBasicV2(any(), any(), any(), any(), any())} returns ReceiptExternal().withReceiptStatusCode(ReceiptStatusEnum.UN_EXPECTED_ERROR)
+        every { soapClientMock.insertCorrespondenceBasicV2(any(), any(), any(), any(), any()) } returns ReceiptExternal().withReceiptStatusCode(ReceiptStatusEnum.UN_EXPECTED_ERROR)
 
         assertThrows<IllegalStateException> { altinnSender.send(varsling) }
 
         verify(exactly = 1) { allowMock.shouldSend(varsling.virksomhetsNr) }
-        verify(exactly = 2) { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") }
+        verify(exactly = 1) { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") }
+        verify(exactly = 1) { joarkMock.journalførDokument(any(), varsling, any(), "123", "FNR") }
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
-        verify(exactly = 1) { soapClientMock.insertCorrespondenceBasicV2(
-                username,
-                password,
-                AltinnVarselSender.SYSTEM_USER_CODE,
-                varsling.uuid,
-                mappedSoapMessage)
+        verify(exactly = 1) {
+            soapClientMock.insertCorrespondenceBasicV2(
+                    username,
+                    password,
+                    AltinnVarselSender.SYSTEM_USER_CODE,
+                    varsling.uuid,
+                    mappedSoapMessage)
         }
     }
 }
