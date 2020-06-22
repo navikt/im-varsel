@@ -24,7 +24,7 @@ class SendVarslingJob(
         var isEmpty = false
         val prevPeriod = periodeStrategy.previousPeriodeId(LocalDate.now())
         do {
-            val varslinger = service.finnNesteUbehandlet(100, prevPeriod)
+            val varslinger = service.finnNesteUbehandlede(100, prevPeriod)
             isEmpty = varslinger.isEmpty()
             varslinger.forEach {
                 sender.send(it)

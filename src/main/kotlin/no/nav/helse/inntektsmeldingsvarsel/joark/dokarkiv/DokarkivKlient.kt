@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
 interface DokarkivKlient {
-    fun journalførDokument(dokument: String, varsel: Varsling, callId: String): String
+    fun journalførDokument(dokument: String, varsel: Varsling, callId: String, brukerId: String, idType: String): String
 }
 
 class MockDokarkivKlient : DokarkivKlient {
-    override fun journalførDokument(dokument: String, varsel: Varsling, callId: String): String {
+    override fun journalførDokument(dokument: String, varsel: Varsling, callId: String, brukerId: String, idType: String): String {
         return "id"
     }
 }
@@ -32,7 +32,7 @@ class DokarkivKlientImpl(
     private val logger: org.slf4j.Logger = LoggerFactory.getLogger("DokarkivClient")
 
 
-    override fun journalførDokument(dokument: String, varsel: Varsling, callId: String): String {
+    override fun journalførDokument(dokument: String, varsel: Varsling, callId: String, brukerId: String, idType: String): String {
         try {
             logger.debug("Journalfører dokument");
             val url = "$dokarkivBaseUrl/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"
@@ -43,7 +43,7 @@ class DokarkivKlientImpl(
                     headers.append("Nav-Call-Id", callId)
                     contentType(io.ktor.http.ContentType.Application.Json)
                     body = JournalpostRequest(
-                            bruker = Bruker(varsel.virksomhetsNr),
+                            bruker = Bruker(brukerId, idType),
                             eksternReferanseId = varsel.uuid,
                             avsenderMottaker = AvsenderMottaker(
                                     id = varsel.virksomhetsNr

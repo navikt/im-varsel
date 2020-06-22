@@ -22,7 +22,7 @@ class VarslingService(
 
     val logger = LoggerFactory.getLogger(VarslingService::class.java)
 
-    fun finnNesteUbehandlet(max: Int, aggregatPeriode: String): List<Varsling> {
+    fun finnNesteUbehandlede(max: Int, aggregatPeriode: String): List<Varsling> {
         return repository.findBySentStatus(false, max, aggregatPeriode).map { mapper.mapDomain(it) }
     }
 
@@ -37,6 +37,10 @@ class VarslingService(
 
     fun lagre(varsling: Varsling) {
         repository.insert(mapper.mapDto(varsling))
+    }
+
+    fun oppdaterData(varsling: Varsling) {
+        repository.updateData(varsling.uuid, mapper.mapDto(varsling).data)
     }
 
     fun slett(uuid: String) {

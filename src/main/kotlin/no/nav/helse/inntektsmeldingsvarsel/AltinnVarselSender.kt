@@ -2,11 +2,12 @@ package no.nav.helse.inntektsmeldingsvarsel
 
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
-import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.joark.PDFGenerator
 import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingSender
+import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingService
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -14,6 +15,7 @@ class AltinnVarselSender(
         private val allowList: AllowList,
         private val joarkClient: DokarkivKlient,
         private val altinnVarselMapper: AltinnVarselMapper,
+        private val varslingService: VarslingService,
         private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
         private val username: String,
         private val password: String) : VarslingSender {
@@ -32,6 +34,15 @@ class AltinnVarselSender(
         }
 
         try {
+
+            varsling.liste.forEach {
+                if (!it.journalført) {
+                    journalførEnkeltVarsel(varsling, it)
+                    it.journalført = true
+                    varslingService.oppdaterData(varsling)
+                }
+            }
+
             journalfør(varsling)
 
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
@@ -54,11 +65,17 @@ class AltinnVarselSender(
         }
     }
 
-
     fun journalfør(varsel: Varsling): String {
-        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel))
-        val joarkRef = joarkClient.journalførDokument(base64EnkodetPdf, varsel, UUID.randomUUID().toString())
+        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel, varsel.liste))
+        val joarkRef = joarkClient.journalførDokument(base64EnkodetPdf, varsel, UUID.randomUUID().toString(), varsel.virksomhetsNr, "ORGNR")
         log.info("Journalført ${varsel.uuid} med ref $joarkRef")
+        return joarkRef
+    }
+
+    fun journalførEnkeltVarsel(varsel: Varsling, personVarsel: PersonVarsling): String {
+        val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel, setOf(personVarsel)))
+        val joarkRef = joarkClient.journalførDokument(base64EnkodetPdf, varsel, UUID.randomUUID().toString(), personVarsel.personnumer, "FNR")
+        log.info("Journalført varsel for enkeltperson på: ${varsel.uuid}  med ref $joarkRef")
         return joarkRef
     }
 }

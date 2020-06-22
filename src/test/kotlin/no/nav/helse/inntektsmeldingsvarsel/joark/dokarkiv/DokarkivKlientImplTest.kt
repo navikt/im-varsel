@@ -73,7 +73,7 @@ class DokarkivKlientTest {
         val dokarkivKlient = DokarkivKlientImpl("http://juice", client, stsMock)
         val personVarlsing = PersonVarsling("navn", identitetsnummer, Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now())
         val refusjonskrav = Varsling("testperiode", "123", mutableSetOf(personVarlsing))
-        val response = dokarkivKlient.journalførDokument("PDFDOKUMENT", refusjonskrav, "test")
+        val response = dokarkivKlient.journalførDokument("PDFDOKUMENT", refusjonskrav, "test", refusjonskrav.virksomhetsNr, "ORGNR")
         assertThat(response).isNotNull()
     }
 

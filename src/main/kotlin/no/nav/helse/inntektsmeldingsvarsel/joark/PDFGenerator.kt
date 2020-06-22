@@ -1,5 +1,6 @@
 package no.nav.helse.inntektsmeldingsvarsel.joark
 
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.permisjonsvarsel.repository.PermisjonsVarselDbEntity
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -20,7 +21,7 @@ class PDFGenerator {
     val TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
     val DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
-    fun lagPDF(varsling: Varsling): ByteArray {
+    fun lagPDF(varsling: Varsling, personvarslinger: Set<PersonVarsling>): ByteArray {
         val doc = PDDocument()
         val page = PDPage()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
@@ -38,7 +39,7 @@ class PDFGenerator {
         contentStream.showText("Virksomhetsnummer: ${varsling.virksomhetsNr}")
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 2)
         contentStream.showText("Personer:")
-        varsling.liste.forEach {
+        personvarslinger.forEach {
             contentStream.newLineAtOffset(0F, -LINE_HEIGHT)
             contentStream.showText("${it.navn} (${it.personnumer}) for perioden ${DATE_FORMAT.format(it.periode.fom)} - ${DATE_FORMAT.format(it.periode.fom)}")
         }

@@ -8,7 +8,8 @@ data class PersonVarsling(
         val navn: String,
         val personnumer: String,
         val periode: Periode,
-        val varselOpprettet: LocalDateTime
+        val varselOpprettet: LocalDateTime,
+        var journalført: Boolean = false
 )
 
 data class Varsling(
@@ -18,5 +19,5 @@ data class Varsling(
         val uuid: String = UUID.randomUUID().toString(), // Uuid sendes også til Altinn som referanse
         val opprettet: LocalDateTime = LocalDateTime.now(),
         val varslingSendt: Boolean = false,
-        val varslingLest: Boolean= false
+        val varslingLest: Boolean = false
 )

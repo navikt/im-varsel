@@ -11,9 +11,9 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlient
+import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingService
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -21,6 +21,7 @@ import java.time.LocalDateTime
 class AltinnVarselSenderTest {
     val allowMock = mockk<AllowList>()
     val joarkMock = mockk<DokarkivKlient>()
+    val serviceMock = mockk<VarslingService>(relaxed = true)
     val altinnVarselMapperMock = mockk<AltinnVarselMapper>()
     val soapClientMock = mockk<ICorrespondenceAgencyExternalBasic>()
 
@@ -31,6 +32,7 @@ class AltinnVarselSenderTest {
             allowMock,
             joarkMock,
             altinnVarselMapperMock,
+            serviceMock,
             soapClientMock,
             username,
             password
@@ -48,14 +50,14 @@ class AltinnVarselSenderTest {
     @Test
     fun `Sjekker allowlist, journalfører og sender`() {
         every { allowMock.shouldSend(varsling.virksomhetsNr) } returns true
-        every { joarkMock.journalførDokument(any(), varsling, any()) } returns "joark-ref"
+        every { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") } returns "joark-ref"
         every { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) } returns mappedSoapMessage
         every {soapClientMock.insertCorrespondenceBasicV2(any(), any(), any(), any(), any())} returns ReceiptExternal().withReceiptStatusCode(ReceiptStatusEnum.OK)
 
         altinnSender.send(varsling)
 
         verify(exactly = 1) { allowMock.shouldSend(varsling.virksomhetsNr) }
-        verify(exactly = 1) { joarkMock.journalførDokument(any(), varsling, any()) }
+        verify(exactly = 2) { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") }
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
         verify(exactly = 1) { soapClientMock.insertCorrespondenceBasicV2(
                 username,
@@ -73,7 +75,7 @@ class AltinnVarselSenderTest {
         altinnSender.send(varsling)
 
         verify(exactly = 1) { allowMock.shouldSend(varsling.virksomhetsNr) }
-        verify(exactly = 0) { joarkMock.journalførDokument(any(), varsling, any()) }
+        verify(exactly = 0) { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") }
         verify(exactly = 0) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
         verify(exactly = 0) { soapClientMock.insertCorrespondenceBasicV2(
                 username,
@@ -87,14 +89,14 @@ class AltinnVarselSenderTest {
     @Test
     fun `Feiler ved ikke-ok status fra Altinn`() {
         every { allowMock.shouldSend(varsling.virksomhetsNr) } returns true
-        every { joarkMock.journalførDokument(any(), varsling, any()) } returns "joark-ref"
+        every { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") } returns "joark-ref"
         every { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) } returns mappedSoapMessage
         every {soapClientMock.insertCorrespondenceBasicV2(any(), any(), any(), any(), any())} returns ReceiptExternal().withReceiptStatusCode(ReceiptStatusEnum.UN_EXPECTED_ERROR)
 
         assertThrows<IllegalStateException> { altinnSender.send(varsling) }
 
         verify(exactly = 1) { allowMock.shouldSend(varsling.virksomhetsNr) }
-        verify(exactly = 1) { joarkMock.journalførDokument(any(), varsling, any()) }
+        verify(exactly = 2) { joarkMock.journalførDokument(any(), varsling, any(), varsling.virksomhetsNr, "ORGNR") }
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
         verify(exactly = 1) { soapClientMock.insertCorrespondenceBasicV2(
                 username,
