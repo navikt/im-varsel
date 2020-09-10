@@ -17,7 +17,7 @@ jobs:
           java-version: '11.x'
 
       - name: build og test app
-        run: bash ./gradlew --console=plain build test
+        run: bash ./gradlew --console=plain build test jacocoTestReport
 
       - name: Build and publish Docker image
         env:
