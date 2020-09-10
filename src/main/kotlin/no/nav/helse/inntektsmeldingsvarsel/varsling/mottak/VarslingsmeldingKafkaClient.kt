@@ -1,0 +1,76 @@
+package no.nav.helse.inntektsmeldingsvarsel.varsling.mottak
+
+import no.nav.helse.inntektsmeldingsvarsel.ANTALL_INNKOMMENDE_MELDINGER
+import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheck
+import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheckType
+import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.TopicPartition
+import org.apache.kafka.common.serialization.StringDeserializer
+import org.slf4j.LoggerFactory
+import java.time.Duration
+import java.util.*
+
+interface ManglendeInntektsmeldingMeldingProvider {
+    fun getMessagesToProcess(): List<String>
+    fun confirmProcessingDone()
+}
+
+class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: String) : ManglendeInntektsmeldingMeldingProvider, HealthCheck {
+    private var currentBatch: List<String> = emptyList()
+    private var lastThrown: Exception? = null
+    private val consumer: KafkaConsumer<String, String>
+    override val healthCheckType = HealthCheckType.ALIVENESS
+    private val  topicPartition = TopicPartition(topicName, 0)
+
+    private val log = LoggerFactory.getLogger(VarslingsmeldingKafkaClient::class.java)
+
+    init {
+        props.apply {
+            put("enable.auto.commit", false)
+            put("group.id", "helsearbeidsgiver-im-varsel-dag-aggr")
+            put("max.poll.interval.ms", Duration.ofMinutes(60).toMillis().toInt())
+            put("auto.offset.reset", "earliest")
+        }
+
+        consumer = KafkaConsumer<String, String>(props, StringDeserializer(), StringDeserializer())
+        consumer.assign(Collections.singletonList(topicPartition))
+
+        Runtime.getRuntime().addShutdownHook(Thread {
+            log.debug("Got shutdown message, closing Kafka connection...")
+            consumer.close()
+            log.debug("Kafka connection closed")
+        })
+    }
+
+    fun stop() = consumer.close()
+
+    override fun getMessagesToProcess(): List<String> {
+        if (currentBatch.isNotEmpty()) {
+            return currentBatch
+        }
+
+        try {
+            val kafkaMessages = consumer.poll(Duration.ofSeconds(10))
+            val payloads = kafkaMessages.map {it.value() }
+            lastThrown = null
+            currentBatch = payloads
+
+            log.debug("Fikk ${kafkaMessages.count()} meldinger med offsets ${kafkaMessages.map { it.offset() }.joinToString(", ")}")
+            return payloads
+        } catch (e: Exception) {
+            lastThrown = e
+            throw e
+        }
+    }
+
+    override fun confirmProcessingDone() {
+        consumer.commitSync()
+        ANTALL_INNKOMMENDE_MELDINGER.inc(currentBatch.size.toDouble())
+        currentBatch = emptyList()
+    }
+
+    override suspend fun doHealthCheck() {
+        lastThrown?.let { throw lastThrown as Exception }
+    }
+}
+
