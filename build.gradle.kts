@@ -17,14 +17,12 @@ val cxfVersion = "3.3.1"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
 
-
 plugins {
     kotlin("jvm") version "1.3.50"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("org.sonarqube") version "2.8"
     jacoco
 }
-
 
 sonarqube {
     properties {
