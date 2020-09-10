@@ -31,7 +31,7 @@ sonarqube {
         property("sonar.projectKey", "navikt_im-varsel")
         property("sonar.organization", "navit")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.login", System.getenv("SONAR_TOKEN"))
+        property("sonar.login", System.getenv("SONARTOKEN"))
         property("sonar.exclusions", "**/Koin*,**Mock**,**/App**")
     }
 }
