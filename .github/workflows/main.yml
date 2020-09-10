@@ -16,8 +16,11 @@ jobs:
         with:
           java-version: '11.x'
 
+      - name: compose up
+        run: cd docker/local && docker-compose up -d && sleep 15
+
       - name: build og test app
-        run: bash ./gradlew --console=plain build test jacocoTestReport
+        run: bash ./gradlew --console=plain build test slowTests jacocoTestReport
 
       - name: Build and publish Docker image
         env:
