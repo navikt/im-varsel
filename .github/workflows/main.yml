@@ -20,7 +20,7 @@ jobs:
         run: cd docker/local && docker-compose up -d && sleep 15
 
       - name: build og test app
-        run: bash ./gradlew --console=plain build test slowTests jacocoTestReport
+        run: bash ./gradlew --console=plain build test slowTests jacocoTestReport sonarqube
 
       - name: Build and publish Docker image
         env:
