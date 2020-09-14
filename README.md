@@ -1,6 +1,6 @@
 IM-Varsel 
 ================
-
+TEST
 Varsler arbeidsgivere om manglende inntektsmeldinger som hindrer saksgang.
 
 Applikasjonen lytter på en kafkatopic der saksbehandlingssystemet for sykepengesaker

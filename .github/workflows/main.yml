@@ -16,9 +16,14 @@ jobs:
         with:
           java-version: '11.x'
 
-      - name: build og test app
-        run: bash ./gradlew --console=plain build test
+      - name: compose up
+        run: cd docker/local && docker-compose up -d && sleep 15
 
+      - name: build og test app
+        run: bash ./gradlew --console=plain build test slowTests jacocoTestReport sonarqube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARTOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and publish Docker image
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
