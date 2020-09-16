@@ -16,6 +16,7 @@ import java.util.*
 
 
 class RestStsClient(username: String, password: String, stsEndpoint: String) {
+    private val feilmelding = "Feilet ved kall til STS"
 
     private val httpClient: HttpClient
     private val endpointURI: URI
@@ -40,6 +41,7 @@ class RestStsClient(username: String, password: String, stsEndpoint: String) {
         return currentToken.tokenAsString
     }
 
+
     private fun requestToken(): JwtToken {
         log.info("sts endpoint uri: $endpointURI")
         val request = HttpRequest.newBuilder()
@@ -54,13 +56,13 @@ class RestStsClient(username: String, password: String, stsEndpoint: String) {
             check(response.statusCode() == HttpURLConnection.HTTP_OK) { String.format("Feil oppsto under henting av token fra STS - %s", response.body()) }
 
             val accessToken = ObjectMapper().readValue(response.body(), STSOidcResponse::class.java).access_token
-                    ?: throw IllegalStateException("Feilet ved kall til STS")
+                    ?: throw IllegalStateException(feilmelding)
 
             return JwtToken(accessToken)
         } catch (e: InterruptedException) {
-            throw IllegalStateException("Feilet ved kall til STS", e)
+            throw IllegalStateException(feilmelding, e)
         } catch (e: IOException) {
-            throw IllegalStateException("Feilet ved kall til STS", e)
+            throw IllegalStateException(feilmelding, e)
         }
     }
 

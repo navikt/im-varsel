@@ -25,11 +25,6 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVa
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlient
 import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlientImpl
-import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.AltinnPermisjonsVarselMapper
-import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.AltinnPermisjonsVarselSender
-import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.SendPermitteringsMeldingJob
-import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.permisjonsvarsel.repository.PermisjonsvarselRepository
-import no.nav.helse.inntektsmeldingsvarsel.onetimepermittert.permisjonsvarsel.repository.PostgresPermisjonsvarselRepository
 import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
@@ -182,19 +177,6 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
 
-
-    single { PostgresPermisjonsvarselRepository(get()) as PermisjonsvarselRepository }
-    single { AltinnPermisjonsVarselSender(
-            DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()),
-            AltinnPermisjonsVarselMapper("4255"),
-            get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password")
-    ) }
-    single { SendPermitteringsMeldingJob(get(), get()) }
-
-
-
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get())}
@@ -267,20 +249,6 @@ fun prodConfig(config: ApplicationConfig) = module {
                 get()
         ) as ReadReceiptProvider
     }
-
-    single { PostgresPermisjonsvarselRepository(get()) as PermisjonsvarselRepository }
-    single { AltinnPermisjonsVarselSender(
-            DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()),
-            AltinnPermisjonsVarselMapper("4255"),
-            get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password")
-    ) }
-    single { SendPermitteringsMeldingJob(get(), get()) }
-
-
-
-
 
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
