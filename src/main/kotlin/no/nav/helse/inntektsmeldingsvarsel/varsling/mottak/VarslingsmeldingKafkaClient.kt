@@ -1,8 +1,7 @@
 package no.nav.helse.inntektsmeldingsvarsel.varsling.mottak
 
+import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.inntektsmeldingsvarsel.ANTALL_INNKOMMENDE_MELDINGER
-import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheck
-import no.nav.helse.inntektsmeldingsvarsel.selfcheck.HealthCheckType
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -15,11 +14,12 @@ interface ManglendeInntektsmeldingMeldingProvider {
     fun confirmProcessingDone()
 }
 
-class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: String) : ManglendeInntektsmeldingMeldingProvider, HealthCheck {
+class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: String) :
+        ManglendeInntektsmeldingMeldingProvider,
+        LivenessComponent {
     private var currentBatch: List<String> = emptyList()
     private var lastThrown: Exception? = null
     private val consumer: KafkaConsumer<String, String>
-    override val healthCheckType = HealthCheckType.ALIVENESS
     private val  topicPartition = TopicPartition(topicName, 0)
 
     private val log = LoggerFactory.getLogger(VarslingsmeldingKafkaClient::class.java)
@@ -69,7 +69,7 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
         currentBatch = emptyList()
     }
 
-    override suspend fun doHealthCheck() {
+    override suspend fun runLivenessCheck() {
         lastThrown?.let { throw lastThrown as Exception }
     }
 }

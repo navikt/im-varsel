@@ -15,6 +15,7 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
@@ -85,6 +86,8 @@ val common = module {
     }
 
     single { httpClient }
+
+    single { KubernetesProbeManager() }
 }
 
 fun buildAndTestConfig() = module {

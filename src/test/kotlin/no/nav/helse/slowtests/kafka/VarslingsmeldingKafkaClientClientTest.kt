@@ -64,7 +64,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinComponent {
     internal fun testHealthCheck() {
         val client = VarslingsmeldingKafkaClient(testProps, topicName)
 
-        runBlocking { client.doHealthCheck() }
+        runBlocking { client.runLivenessCheck() }
 
         client.stop()
 
@@ -73,7 +73,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinComponent {
         }
 
         assertThatExceptionOfType(Exception::class.java).isThrownBy {
-            runBlocking { client.doHealthCheck() }
+            runBlocking { client.runLivenessCheck() }
         }
     }
 

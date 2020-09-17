@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+val githubPassword: String by project
 
 val ktorVersion = "1.3.1"
 val logback_version = "1.2.1"
@@ -78,7 +79,6 @@ dependencies {
     }
     implementation("com.sun.activation:javax.activation:1.2.0")
 
-
     implementation("org.koin:koin-core:$koinVersion")
     implementation("org.koin:koin-ktor:$koinVersion")
 
@@ -101,6 +101,8 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.09.17-12-55-a5b08")
+
     implementation("com.github.tomakehurst:wiremock-standalone:2.25.1")
     implementation("org.postgresql:postgresql:42.2.9")
 
@@ -139,6 +141,14 @@ repositories {
     jcenter()
     mavenCentral()
     maven("https://kotlin.bintray.com/ktor")
+    maven {
+        credentials {
+            username = "x-access-token"
+            password = githubPassword
+        }
+        setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
+    }
+
 }
 
 tasks.named<Jar>("jar") {

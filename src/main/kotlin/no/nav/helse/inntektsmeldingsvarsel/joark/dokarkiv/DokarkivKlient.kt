@@ -1,17 +1,15 @@
 package no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv
 
-import io.ktor.client.HttpClient
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.request.post
-import io.ktor.client.request.url
-import io.ktor.client.statement.readText
+import io.ktor.client.*
+import io.ktor.client.features.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.inntektsmeldingsvarsel.RestStsClient
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.sporenstreks.integrasjon.rest.dokarkiv.JournalpostResponse
 import org.slf4j.LoggerFactory
-import java.time.LocalDate
 
 interface DokarkivKlient {
     fun journalførDokument(dokument: String, varsel: Varsling, callId: String, brukerId: String, idType: String): String
