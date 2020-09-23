@@ -18,6 +18,6 @@ object Clients {
     ): PORT_TYPE = JaxWsProxyFactoryBean().apply {
         address = serviceUrl
         serviceClass = serviceClazz
-        features = listOf(LoggingFeature())
+        features = listOf()
     }.create(serviceClazz)
 }
