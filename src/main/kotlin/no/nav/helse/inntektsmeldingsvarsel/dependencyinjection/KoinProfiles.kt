@@ -181,7 +181,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
-    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
+    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
     single { PdlClient(config.getString("pdl_url"), get(), get(), get()) }
 
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
@@ -245,7 +245,7 @@ fun prodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
-    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
+    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
     single { PdlClient(config.getString("pdl_url"), get(), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
