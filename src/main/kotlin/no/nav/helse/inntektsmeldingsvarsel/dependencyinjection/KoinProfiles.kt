@@ -16,6 +16,7 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
+import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
@@ -108,6 +109,10 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
+
+    single { object : RestStsClient { override fun getOidcToken(): String { return "fake token"} } as RestStsClient }
+    single { PdlClient("", get(), get(), get()) }
+
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
@@ -176,7 +181,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
-    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
+    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
     single { PdlClient(config.getString("pdl_url"), get(), get(), get()) }
 
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
@@ -240,7 +245,7 @@ fun prodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
-    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
+    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
     single { PdlClient(config.getString("pdl_url"), get(), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }

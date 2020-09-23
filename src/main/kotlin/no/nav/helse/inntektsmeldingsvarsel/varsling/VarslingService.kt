@@ -9,6 +9,7 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.MeldingsfilterRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
+import no.nav.helse.inntektsmeldingsvarsel.pdl.fullName
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsMeldingMelding
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
@@ -70,7 +71,7 @@ class VarslingService(
         val existingAggregate =
                 repository.findByVirksomhetsnummerAndPeriode(kafkaMessage.organisasjonsnummer, aggregatPeriode)
 
-        val navn = pdlClient.personName(kafkaMessage.fødselsnummer) ?: ""
+        val navn = pdlClient.person(kafkaMessage.fødselsnummer)?.fullName() ?: ""
 
         val person = PersonVarsling(
                 navn,

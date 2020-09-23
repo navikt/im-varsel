@@ -9,6 +9,9 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
 import org.slf4j.LoggerFactory
 
+
+
+
 class PdlClient(
         private val pdlUrl: String,
         private val stsClient: RestStsClient,
@@ -21,7 +24,7 @@ class PdlClient(
         LOG.debug("Query: $query")
     }
 
-    fun person(ident: String): PdlHentPerson? {
+    fun person(ident: String): PdlPerson? {
         val stsToken = stsClient.getOidcToken()
         val entity = PdlRequest(query, Variables(ident))
         try {
@@ -41,20 +44,12 @@ class PdlClient(
                 }
                 null
             } else {
-                pdlPersonReponse.data
+                pdlPersonReponse.data?.hentPerson
             }
         } catch (exception: Exception) {
             LOG.error("Error from PDL with request-url: $pdlUrl", exception)
             throw exception
         }
-    }
-
-    fun personName(ident: String): String? {
-        return person(ident)?.fullName()
-    }
-
-    fun isKode6Or7(ident: String): Boolean {
-        return person(ident)?.isKode6Or7() ?: true
     }
 
     companion object {

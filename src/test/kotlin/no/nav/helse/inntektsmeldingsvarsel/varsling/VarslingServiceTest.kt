@@ -12,6 +12,9 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.Meldingsfi
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingDbEntity
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
+import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlHentPerson
+import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlPerson
+import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlPersonNavn
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsMeldingMelding
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -23,6 +26,8 @@ internal class VarslingServiceTest {
             "123456785",
             mutableSetOf()
     )
+
+    val pdlPerson = PdlPerson(listOf(PdlPersonNavn("Navn", null, "Navnesen")), null)
 
     val mappingResultDto = VarslingDbEntity(data = "[]", uuid = "test", read = false,
             sent = false, opprettet = LocalDateTime.now(), behandlet = LocalDateTime.now(), aggregatperiode = "D-2020", virksomhetsNr = "12345")
@@ -80,14 +85,14 @@ internal class VarslingServiceTest {
         every { allowMock.isAllowed(varsling.organisasjonsnummer) } returns true
         every { hashRepo.exists(any()) } returns false
         every { varselRepo.findByVirksomhetsnummerAndPeriode(any(), any()) } returns null
-        every { pdlClientMock.personName(any()) } returns "Navn Navnesen"
+        every { pdlClientMock.person(any()) } returns pdlPerson
         every { altinnVarselMapperMock.mapDto(any())} returns mappingResultDto
 
         serviceUnderTest.aggregate(objectMapper.writeValueAsString(varsling))
 
         verify(exactly = 1) { allowMock.isAllowed(varsling.organisasjonsnummer) }
         verify(exactly = 1) { hashRepo.exists(varsling.periodeHash()) }
-        verify(exactly = 1) { pdlClientMock.personName(any()) }
+        verify(exactly = 1) { pdlClientMock.person(any()) }
         verify(exactly = 1) { varselRepo.insert(any()) }
         verify(exactly = 1) { hashRepo.insert(varsling.periodeHash()) }
         verify(exactly = 0) { varselRepo.updateData(any(), any()) }
@@ -98,7 +103,7 @@ internal class VarslingServiceTest {
         every { allowMock.isAllowed(varsling.organisasjonsnummer) } returns true
         every { hashRepo.exists(any()) } returns false
         every { varselRepo.findByVirksomhetsnummerAndPeriode(any(), any()) } returns mappingResultDto
-        every { pdlClientMock.personName(any()) } returns "Navn Navnesen"
+        every { pdlClientMock.person(any()) } returns pdlPerson
         every { altinnVarselMapperMock.mapDomain(any())} returns existingVarselAggregat
         every { altinnVarselMapperMock.mapDto(any())} returns mappingResultDto
 
@@ -106,7 +111,7 @@ internal class VarslingServiceTest {
 
         verify(exactly = 1) { allowMock.isAllowed(varsling.organisasjonsnummer) }
         verify(exactly = 1) { hashRepo.exists(varsling.periodeHash()) }
-        verify(exactly = 1) { pdlClientMock.personName(any()) }
+        verify(exactly = 1) { pdlClientMock.person(any()) }
         verify(exactly = 0) { varselRepo.insert(any()) }
         verify(exactly = 1) { hashRepo.insert(varsling.periodeHash()) }
         verify(exactly = 1) { varselRepo.updateData(existingVarselAggregat.uuid, mappingResultDto.data) }

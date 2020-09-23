@@ -81,8 +81,8 @@ fun PdlHentPerson.isKode6Or7(): Boolean {
     }
 }
 
-fun PdlHentPerson.fullName(): String? {
-    val nameList = this.hentPerson?.navn
+fun PdlPerson.fullName(): String? {
+    val nameList = this?.navn
     if (nameList.isNullOrEmpty()) {
         return null
     }
