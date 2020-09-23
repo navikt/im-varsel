@@ -48,7 +48,7 @@ fun main() {
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
 
-        autoDetectProbableComponents(koin)
+        //autoDetectProbableComponents(koin)
 
         Runtime.getRuntime().addShutdownHook(Thread {
             varslingSenderJob.stop()
