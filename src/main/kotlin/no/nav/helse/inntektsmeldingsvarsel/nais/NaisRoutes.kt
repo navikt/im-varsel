@@ -15,6 +15,7 @@ import no.nav.helse.arbeidsgiver.kubernetes.ProbeState
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.getKoin
+import org.slf4j.LoggerFactory
 import java.util.*
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
@@ -22,18 +23,24 @@ private val collectorRegistry = CollectorRegistry.defaultRegistry
 @KtorExperimentalAPI
 fun Application.nais() {
 
+    val log = LoggerFactory.getLogger("Metrics Routes")
+
     DefaultExports.initialize()
 
     routing {
         get("/isalive") {
+            log.info("Called /isalive")
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runLivenessProbe()
+            log.info(checkResults.toString())
             returnResultOfChecks(checkResults)
         }
 
         get("/isready") {
+            log.info("Called /isready")
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runReadynessProbe()
+            log.info(checkResults.toString())
             returnResultOfChecks( checkResults)
         }
 
