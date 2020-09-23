@@ -14,7 +14,7 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.http.ContentType
 import io.ktor.http.headersOf
 import io.mockk.mockk
-import no.nav.helse.inntektsmeldingsvarsel.RestStsClient
+import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling

@@ -6,7 +6,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.inntektsmeldingsvarsel.RestStsClient
+import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.sporenstreks.integrasjon.rest.dokarkiv.JournalpostResponse
 import org.slf4j.LoggerFactory

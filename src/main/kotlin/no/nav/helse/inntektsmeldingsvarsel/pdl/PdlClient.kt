@@ -1,16 +1,12 @@
 package no.nav.helse.inntektsmeldingsvarsel.pdl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.ktor.client.HttpClient
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.content.TextContent
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.http.content.*
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.inntektsmeldingsvarsel.RestStsClient
-import org.apache.cxf.ws.security.tokenstore.SecurityToken
+import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
 import org.slf4j.LoggerFactory
 
 class PdlClient(

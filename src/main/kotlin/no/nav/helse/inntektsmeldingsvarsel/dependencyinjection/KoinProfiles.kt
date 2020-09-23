@@ -15,6 +15,7 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
@@ -175,7 +176,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
-    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url")) }
+    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
     single { PdlClient(config.getString("pdl_url"), get(), get(), get()) }
 
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
@@ -239,7 +240,7 @@ fun prodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
-    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url")) }
+    single { RestStsClient(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) }
     single { PdlClient(config.getString("pdl_url"), get(), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
