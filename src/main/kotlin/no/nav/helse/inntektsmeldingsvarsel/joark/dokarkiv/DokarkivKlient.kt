@@ -67,7 +67,7 @@ class DokarkivKlientImpl(
             }
             return response.journalpostId
         } catch (e: ClientRequestException) {
-            runBlocking { logger.error("Feilet i journalføring med tilbakemelding: " + e.response.readText()) }
+            runBlocking { logger.error("Feilet i journalføring med tilbakemelding: " + (e.response?.readText() ?: "ukjent")) }
             throw e
         }
     }

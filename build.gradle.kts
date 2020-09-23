@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val githubPassword: String by project
 
-val ktorVersion = "1.3.1"
+val ktorVersion = "1.4.0"
 val logback_version = "1.2.1"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
@@ -19,7 +19,7 @@ val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
 
 plugins {
-    kotlin("jvm") version "1.3.50"
+    kotlin("jvm") version "1.4.0"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("org.sonarqube") version "2.8"
     jacoco

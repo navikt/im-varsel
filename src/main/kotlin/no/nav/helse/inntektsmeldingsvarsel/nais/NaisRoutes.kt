@@ -37,11 +37,7 @@ fun Application.nais() {
         }
 
         get("/isready") {
-            log.info("Called /isready")
-            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
-            val checkResults = kubernetesProbeManager.runReadynessProbe()
-            log.info(checkResults.toString())
-            returnResultOfChecks( checkResults)
+            call.respond(HttpStatusCode.OK)
         }
 
         get("/metrics") {

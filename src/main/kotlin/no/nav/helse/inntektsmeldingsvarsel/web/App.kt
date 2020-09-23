@@ -82,7 +82,8 @@ private suspend fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
 
     mainLogger.info("La til readyness")
 
-    mainLogger.info("Helsesjekk: ${kubernetesProbeManager.runReadynessProbe()}")
+    mainLogger.info("Readyness: ${kubernetesProbeManager.runReadynessProbe()}")
+    mainLogger.info("Aliveness: ${kubernetesProbeManager.runReadynessProbe()}")
 }
 
 @KtorExperimentalAPI
