@@ -29,7 +29,6 @@ fun Application.nais() {
 
     routing {
         get("/isalive") {
-            log.info("Called /isalive")
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runLivenessProbe()
             log.info(checkResults.toString())
@@ -37,7 +36,10 @@ fun Application.nais() {
         }
 
         get("/isready") {
-            call.respond(HttpStatusCode.OK)
+            val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
+            val checkResults = kubernetesProbeManager.runReadynessProbe()
+            log.info(checkResults.toString())
+            returnResultOfChecks( checkResults)
         }
 
         get("/metrics") {

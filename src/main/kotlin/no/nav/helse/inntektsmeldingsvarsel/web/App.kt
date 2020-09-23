@@ -17,6 +17,9 @@ import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
 import no.nav.helse.inntektsmeldingsvarsel.nais.nais
+import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
+import no.nav.helse.inntektsmeldingsvarsel.varsling.UpdateReadStatusJob
+import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingProcessor
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.getKoin
@@ -40,7 +43,6 @@ fun main() {
         val koin = httpServer.application.getKoin()
         mainLogger.info("Koin Startet")
 
-        /*
         val manglendeInntektsmeldingMottak = koin.get<VarslingsmeldingProcessor>()
         manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
 
@@ -49,7 +51,7 @@ fun main() {
 
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
-*/
+
         runBlocking { autoDetectProbableComponents(koin) }
 
         mainLogger.info("La til probable komponentner")
@@ -57,13 +59,10 @@ fun main() {
         Runtime.getRuntime().addShutdownHook(Thread {
             LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
 
-            /*
             varslingSenderJob.stop()
             manglendeInntektsmeldingMottak.stop()
             updateReadStatusJob.stop()
 
-
-             */
             httpServer.stop(1000, 1000)
         })
     }
@@ -75,15 +74,8 @@ private suspend fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
     koin.getAllOfType<LivenessComponent>()
             .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
 
-    mainLogger.info("La til liveness")
-
     koin.getAllOfType<ReadynessComponent>()
             .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
-
-    mainLogger.info("La til readyness")
-
-    mainLogger.info("Readyness: ${kubernetesProbeManager.runReadynessProbe()}")
-    mainLogger.info("Aliveness: ${kubernetesProbeManager.runReadynessProbe()}")
 }
 
 @KtorExperimentalAPI
@@ -95,10 +87,6 @@ fun createApplicationEnvironment() = applicationEngineEnvironment {
     }
 
     module {
-        install(CallLogging) {
-            level = org.slf4j.event.Level.INFO
-        }
-
         install(Koin) {
             modules(selectModuleBasedOnProfile(config))
         }
