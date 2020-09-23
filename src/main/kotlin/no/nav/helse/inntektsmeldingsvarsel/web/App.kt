@@ -10,31 +10,37 @@ import io.ktor.jackson.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
 import no.nav.helse.inntektsmeldingsvarsel.nais.nais
-import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
-import no.nav.helse.inntektsmeldingsvarsel.varsling.UpdateReadStatusJob
-import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingProcessor
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
 
+val mainLogger = LoggerFactory.getLogger("main()")
 
 @KtorExperimentalAPI
 fun main() {
+
+
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
-        LoggerFactory.getLogger("main")
-                .error("uncaught exception in thread ${thread.name}: ${err.message}", err)
+        mainLogger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
     embeddedServer(Netty, createApplicationEnvironment()).let { httpServer ->
-        val koin = httpServer.application.getKoin()
+        mainLogger.info("Starter opp KTOR")
+        httpServer.start(wait = false)
+        mainLogger.info("KTOR Startet")
 
+        val koin = httpServer.application.getKoin()
+        mainLogger.info("Koin Startet")
+
+        /*
         val manglendeInntektsmeldingMottak = koin.get<VarslingsmeldingProcessor>()
         manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
 
@@ -43,30 +49,40 @@ fun main() {
 
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
+*/
+        runBlocking { autoDetectProbableComponents(koin) }
 
-        autoDetectProbableComponents(koin)
-
-        httpServer.start(wait = false)
+        mainLogger.info("La til probable komponentner")
 
         Runtime.getRuntime().addShutdownHook(Thread {
             LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
 
+            /*
             varslingSenderJob.stop()
             manglendeInntektsmeldingMottak.stop()
             updateReadStatusJob.stop()
+
+
+             */
             httpServer.stop(1000, 1000)
         })
     }
 }
 
-private fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
+private suspend fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
     val kubernetesProbeManager = koin.get<KubernetesProbeManager>()
 
     koin.getAllOfType<LivenessComponent>()
             .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
 
+    mainLogger.info("La til liveness")
+
     koin.getAllOfType<ReadynessComponent>()
             .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
+
+    mainLogger.info("La til readyness")
+
+    mainLogger.info("Helsesjekk: ${kubernetesProbeManager.runReadynessProbe()}")
 }
 
 @KtorExperimentalAPI

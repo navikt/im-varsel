@@ -11,14 +11,14 @@ spec:
   liveness:
     path: isalive
     initialDelay: 30
-    timeout: 1
-    periodSeconds: 3
+    timeout: 10
+    periodSeconds: 5
     failureThreshold: 10
   readiness:
     path: isready
     initialDelay: 30
-    timeout: 1
-    periodSeconds: 3
+    timeout: 10
+    periodSeconds: 5
     failureThreshold: 10
   ingresses:
     - https://im-varsel.nais.preprod.local
