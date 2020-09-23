@@ -32,10 +32,8 @@ fun main() {
                 .error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
-    embeddedServer(Netty, createApplicationEnvironment()).let { app ->
-        app.start(wait = false)
-
-        val koin = app.application.getKoin()
+    embeddedServer(Netty, createApplicationEnvironment()).let { httpServer ->
+        val koin = httpServer.application.getKoin()
 
         val manglendeInntektsmeldingMottak = koin.get<VarslingsmeldingProcessor>()
         manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
@@ -46,13 +44,17 @@ fun main() {
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
 
-        //autoDetectProbableComponents(koin)
+        autoDetectProbableComponents(koin)
+
+        httpServer.start(wait = false)
 
         Runtime.getRuntime().addShutdownHook(Thread {
+            LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
+
             varslingSenderJob.stop()
             manglendeInntektsmeldingMottak.stop()
             updateReadStatusJob.stop()
-            app.stop(1000, 1000)
+            httpServer.stop(1000, 1000)
         })
     }
 }
