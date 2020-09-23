@@ -2,16 +2,14 @@ package no.nav.helse.inntektsmeldingsvarsel.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.config.ConfigFactory
-import io.ktor.application.install
-import io.ktor.config.HoconApplicationConfig
-import io.ktor.features.ContentNegotiation
-import io.ktor.http.ContentType
-import io.ktor.jackson.JacksonConverter
-import io.ktor.server.engine.applicationEngineEnvironment
-import io.ktor.server.engine.connector
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.application.*
+import io.ktor.config.*
+import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.jackson.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.util.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
@@ -78,6 +76,10 @@ fun createApplicationEnvironment() = applicationEngineEnvironment {
     }
 
     module {
+        install(CallLogging) {
+            level = org.slf4j.event.Level.INFO
+        }
+
         install(Koin) {
             modules(selectModuleBasedOnProfile(config))
         }
