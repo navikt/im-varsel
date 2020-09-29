@@ -19,6 +19,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
 import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
@@ -28,7 +30,6 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.Meldingsfi
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresMeldingsfilterRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
-import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
@@ -109,7 +110,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
 
     single { object : RestStsClient { override fun getOidcToken(): String { return "fake token"} } as RestStsClient }
-    single { PdlClient("", get(), get(), get()) }
+    single { PdlClientImpl("", get(), get(), get()) as PdlClient }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
@@ -180,7 +181,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
     single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
-    single { PdlClient(config.getString("pdl_url"), get(), get(), get()) }
+    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) as PdlClient }
 
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
 
@@ -244,7 +245,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     }
 
     single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
-    single { PdlClient(config.getString("pdl_url"), get(), get(), get() ) }
+    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) }
 
     single { VarslingService(get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
     single {

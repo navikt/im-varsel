@@ -1,6 +1,7 @@
 package no.nav.helse.inntektsmeldingsvarsel.varsling
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.ANTALL_DUPLIKATMELDINGER
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
@@ -8,8 +9,6 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.MeldingsfilterRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
-import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
-import no.nav.helse.inntektsmeldingsvarsel.pdl.fullName
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsMeldingMelding
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
@@ -71,7 +70,8 @@ class VarslingService(
         val existingAggregate =
                 repository.findByVirksomhetsnummerAndPeriode(kafkaMessage.organisasjonsnummer, aggregatPeriode)
 
-        val navn = pdlClient.person(kafkaMessage.fødselsnummer)?.fullName() ?: ""
+        val pdlResponse = pdlClient.person(kafkaMessage.fødselsnummer)?.navn?.firstOrNull()
+        val navn = if (pdlResponse != null) pdlResponse.fornavn + pdlResponse.etternavn else ""
 
         val person = PersonVarsling(
                 navn,
