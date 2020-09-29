@@ -2,17 +2,17 @@ package no.nav.helse.inntektsmeldingsvarsel
 
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.joark.PDFGenerator
-import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingSender
 import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingService
 import org.slf4j.LoggerFactory
 import java.util.*
 
 class AltinnVarselSender(
-        private val joarkClient: DokarkivKlient,
+        private val dokarkivKlient: DokarkivKlient,
         private val altinnVarselMapper: AltinnVarselMapper,
         private val varslingService: VarslingService,
         private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
@@ -62,15 +62,65 @@ class AltinnVarselSender(
 
     fun journalfør(varsel: Varsling): String {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel, varsel.liste))
-        val joarkRef = joarkClient.journalførDokument(base64EnkodetPdf, varsel, UUID.randomUUID().toString(), varsel.virksomhetsNr, "ORGNR")
-        log.info("Journalført ${varsel.uuid} med ref $joarkRef")
-        return joarkRef
+
+        val response = dokarkivKlient.journalførDokument(
+                JournalpostRequest(
+                        tittel = "Varsel om manglende inntektsmelding",
+                        journalposttype = Journalposttype.UTGAAENDE,
+                        kanal = "ALTINN",
+                        bruker = Bruker(varsel.virksomhetsNr, IdType.ORGNR),
+                        eksternReferanseId = varsel.uuid,
+                        avsenderMottaker = AvsenderMottaker(
+                                id = varsel.virksomhetsNr,
+                                idType = IdType.ORGNR,
+                                navn = "Arbeidsgiver"
+                        ),
+                        dokumenter = listOf(Dokument(
+                                dokumentVarianter = listOf(DokumentVariant(
+                                        fysiskDokument = base64EnkodetPdf
+                                )),
+                                brevkode = "varsel_om_manglende_inntektsmelding",
+                                tittel = "Varsel om manglende inntektsmelding",
+                        )),
+                        datoMottatt = varsel.opprettet.toLocalDate()
+                ), true, UUID.randomUUID().toString()
+
+        )
+
+        log.info("Journalført ${varsel.uuid} med ref ${response.journalpostId}")
+        return response.journalpostId
     }
 
     fun journalførEnkeltVarsel(varsel: Varsling, personVarsel: PersonVarsling): String {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel, setOf(personVarsel)))
-        val joarkRef = joarkClient.journalførDokument(base64EnkodetPdf, varsel, UUID.randomUUID().toString(), personVarsel.personnumer, "FNR")
-        log.info("Journalført varsel for enkeltperson på: ${varsel.uuid}  med ref $joarkRef")
-        return joarkRef
+        val eksternrefId = varsel.uuid +  "-" + varsel.liste.indexOfFirst { it.personnumer == personVarsel.personnumer }
+
+        val response = dokarkivKlient.journalførDokument(
+                JournalpostRequest(
+                        tittel = "Varsel om manglende inntektsmelding",
+                        journalposttype = Journalposttype.UTGAAENDE,
+                        kanal = "ALTINN",
+                        bruker = Bruker(personVarsel.personnumer, IdType.FNR),
+                        eksternReferanseId = eksternrefId,
+                        avsenderMottaker = AvsenderMottaker(
+                                id = varsel.virksomhetsNr,
+                                idType = IdType.ORGNR,
+                                navn = "Arbeidsgiver"
+                        ),
+                        dokumenter = listOf(Dokument(
+                                dokumentVarianter = listOf(DokumentVariant(
+                                        fysiskDokument = base64EnkodetPdf
+                                )),
+                                brevkode = "varsel_om_manglende_inntektsmelding",
+                                tittel = "Varsel om manglende inntektsmelding",
+                        )),
+                        datoMottatt = varsel.opprettet.toLocalDate()
+                ), true, UUID.randomUUID().toString()
+
+        )
+
+        log.info("Journalført varsel for enkeltperson på ${eksternrefId} med ref ${response.journalpostId}")
+
+        return response.journalpostId
     }
 }

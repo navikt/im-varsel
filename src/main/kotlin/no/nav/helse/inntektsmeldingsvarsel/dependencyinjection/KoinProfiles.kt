@@ -17,6 +17,8 @@ import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
 import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
+import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
@@ -26,8 +28,6 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.Meldingsfi
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresMeldingsfilterRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
-import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlient
-import no.nav.helse.inntektsmeldingsvarsel.joark.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.inntektsmeldingsvarsel.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
