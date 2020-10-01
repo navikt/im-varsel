@@ -49,22 +49,25 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
     }
 
     @Test
-    internal fun `kan oppdatere data`() {
-        val timeOfUpdate = LocalDateTime.now()
-        repo.updateSentStatus(dbVarsling.uuid, timeOfUpdate, true)
+    internal fun `kan oppdatere jsonData`() {
+        val jsonData = "[]"
+        repo.updateData(dbVarsling.uuid, jsonData)
         val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
 
-        assertThat(afterUpdate?.behandlet).isEqualTo(timeOfUpdate)
-        assertThat(afterUpdate?.sent).isEqualTo(true)
+        assertThat(afterUpdate?.data).isEqualTo(jsonData)
     }
 
     @Test
-    internal fun `kan oppdatere sendt status`() {
+    internal fun `kan oppdatere sendt status og finne fra status`() {
         val timeOfUpdate = LocalDateTime.now()
 
         repo.updateSentStatus(dbVarsling.uuid, timeOfUpdate, true)
 
-        val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
+        val allSentInPeriod = repo.findBySentStatus(true, 1, dbVarsling.aggregatperiode)
+
+        assertThat(allSentInPeriod).hasSize(1)
+
+        val afterUpdate = allSentInPeriod.first()
 
         assertThat(afterUpdate?.behandlet).isEqualTo(timeOfUpdate)
         assertThat(afterUpdate?.sent).isEqualTo(true)
@@ -77,6 +80,15 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
         val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
 
         assertThat(afterUpdate?.read).isEqualTo(true)
+    }
+
+    @Test
+    internal fun `Kan hente sendte men uleste`() {
+        repo.updateSentStatus(dbVarsling.uuid, LocalDateTime.now(), true)
+
+        val unread = repo.findSentButUnread(100)
+
+        assertThat(unread).hasSize(1)
     }
 
     @AfterEach

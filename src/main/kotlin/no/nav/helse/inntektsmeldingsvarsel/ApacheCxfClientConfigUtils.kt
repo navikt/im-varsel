@@ -1,11 +1,13 @@
 package no.nav.helse.inntektsmeldingsvarsel
 
+import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import org.apache.cxf.Bus
 import org.apache.cxf.BusFactory
 import org.apache.cxf.binding.soap.Soap12
 import org.apache.cxf.binding.soap.SoapMessage
 import org.apache.cxf.endpoint.Client
 import org.apache.cxf.frontend.ClientProxy
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
 import org.apache.cxf.ws.policy.PolicyBuilder
 import org.apache.cxf.ws.policy.PolicyEngine
 import org.apache.cxf.ws.policy.attachment.reference.RemoteReferenceResolver
@@ -16,6 +18,26 @@ import org.apache.neethi.Policy
 val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:sts-policies/untPolicy.xml"
 val STS_SAML_POLICY = "classpath:sts-policies/requestSamlPolicy.xml"
 val STS_SAML_POLICY_NO_TRANSPORT_BINDING = "classpath:sts-policies/requestSamlPolicyNoTransportBinding.xml"
+
+
+object Clients {
+
+    fun iCorrespondenceExternalBasic(serviceUrl: String): ICorrespondenceAgencyExternalBasic =
+            createServicePort(
+                    serviceUrl = serviceUrl,
+                    serviceClazz = ICorrespondenceAgencyExternalBasic::class.java
+            )
+
+    private fun <PORT_TYPE> createServicePort(
+            serviceUrl: String,
+            serviceClazz: Class<PORT_TYPE>
+    ): PORT_TYPE = JaxWsProxyFactoryBean().apply {
+        address = serviceUrl
+        serviceClass = serviceClazz
+        features = listOf()
+    }.create(serviceClazz)
+}
+
 
 fun wsStsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
     val bus = BusFactory.getDefaultBus()

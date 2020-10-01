@@ -116,7 +116,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
 
-    single { DummyVarslingSender(get()) as VarslingSender }
+    single { MockVarslingSender(get()) as VarslingSender }
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
 }
