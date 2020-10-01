@@ -28,7 +28,7 @@ class VarslingService(
         return repository.findBySentStatus(false, max, aggregatPeriode).map { mapper.mapDomain(it) }
     }
 
-    fun finnUleste(max: Int): List<Varsling> {
+    fun finnSisteUleste(max: Int): List<Varsling> {
         return repository.findSentButUnread(max).map { mapper.mapDomain(it) }
     }
 

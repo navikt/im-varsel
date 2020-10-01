@@ -14,19 +14,12 @@ class UpdateReadStatusJob(
 ) : RecurringJob(coroutineScope, waitTimeWhenEmptyQueue) {
 
     override fun doJob() {
-        var isEmpty = false
-        do {
-            val varsler = service.finnUleste(5000)
-            isEmpty = varsler.isEmpty()
-
-            varsler.forEach {
-                val isRead = receiptReader.isRead(it)
-                if (isRead) {
-                    service.oppdaterLestStatus(it, true)
-                    ANTALL_LESTE_MELDINGER.inc()
-                }
+        service.finnSisteUleste(5000).forEach {
+            val isRead = receiptReader.isRead(it)
+            if (isRead) {
+                service.oppdaterLestStatus(it, true)
+                ANTALL_LESTE_MELDINGER.inc()
             }
-        } while (!isEmpty)
+        }
     }
-
 }

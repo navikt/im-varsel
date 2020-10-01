@@ -21,7 +21,7 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
 
     private val deleteStatement = "DELETE FROM $tableName WHERE uuid = ?"
     private val waitingAggregatesStatement = "SELECT * FROM $tableName WHERE sent=? AND aggregatPeriode=? LIMIT ?"
-    private val selectUneadStatusStatement = "SELECT * FROM $tableName WHERE read=false and sent = true LIMIT ?"
+    private val selectUneadStatusStatement = "SELECT * FROM $tableName WHERE read=false and sent = true order by behandlet desc LIMIT ?"
 
     private val getByVirksomhetsnummerAndAggperiode = "SELECT * FROM $tableName WHERE virksomhetsNr=? AND aggregatPeriode=?"
 
