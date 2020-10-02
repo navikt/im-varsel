@@ -245,7 +245,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     }
 
     single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
-    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) }
+    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) as PdlClient}
 
     single { VarslingService(get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
     single {
