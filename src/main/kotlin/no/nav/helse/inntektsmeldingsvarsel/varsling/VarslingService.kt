@@ -51,7 +51,7 @@ class VarslingService(
 
     fun aggregate(jsonMessageString: String) {
         val kafkaMessage = om.readValue(jsonMessageString, ManglendeInntektsMeldingMelding::class.java)
-        logger.info("Fikk en melding fra kafka på virksomhetsnummer ${kafkaMessage.organisasjonsnummer} fra ${kafkaMessage.opprettet}")
+        logger.debug("Fikk en melding fra kafka på virksomhetsnummer ${kafkaMessage.organisasjonsnummer} fra ${kafkaMessage.opprettet}")
         val periodeHash = kafkaMessage.periodeHash()
 
         if (!allowList.isAllowed(kafkaMessage.organisasjonsnummer)) {
@@ -60,7 +60,7 @@ class VarslingService(
         }
 
         if (hashRepo.exists(periodeHash)) {
-            logger.info("Denne periode er allerede sett")
+            logger.debug("Denne periode er allerede sett")
             ANTALL_DUPLIKATMELDINGER.inc()
             return
         }
@@ -81,7 +81,7 @@ class VarslingService(
         )
 
         if (existingAggregate == null) {
-            logger.info("Det finnes ikke et aggregat på ${kafkaMessage.organisasjonsnummer} for periode $aggregatPeriode, lager en ny")
+            logger.debug("Det finnes ikke et aggregat på ${kafkaMessage.organisasjonsnummer} for periode $aggregatPeriode, lager en ny")
             val newEntry = Varsling(
                     aggregatPeriode,
                     kafkaMessage.organisasjonsnummer,
@@ -90,7 +90,7 @@ class VarslingService(
             repository.insert(mapper.mapDto(newEntry))
         } else {
             val  domainVarsling = mapper.mapDomain(existingAggregate)
-            logger.info("Fant et aggregat på ${kafkaMessage.organisasjonsnummer} for $aggregatPeriode med ${domainVarsling.liste.size} personer")
+            logger.debug("Fant et aggregat på ${kafkaMessage.organisasjonsnummer} for $aggregatPeriode med ${domainVarsling.liste.size} personer")
             domainVarsling.liste.add(person)
             repository.updateData(domainVarsling.uuid, mapper.mapDto(domainVarsling).data)
         }
