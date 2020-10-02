@@ -63,4 +63,4 @@ spec:
   - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
     value: helse-spam-mottak-test
   - name: DOKARKIV_URL
-    value: https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost
+    value: https://dokarkiv-q1.nais.preprod.local
