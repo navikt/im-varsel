@@ -32,11 +32,11 @@ class AltinnReadReceiptClient(private val iCorrespondenceAgencyExternalBasic: IC
             val receiptExternal = iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
                     username, password, query)
 
-            log.info(om.writeValueAsString(receiptExternal))
+            log.trace(om.writeValueAsString(receiptExternal))
 
             val status = receiptExternal.correspondenceStatusInformation.correspondenceStatusDetailsList.statusV2.firstOrNull()?.statusChanges?.statusChangeV2?.lastOrNull()?.statusType
 
-            log.info("Found altinn read status $status")
+            log.debug("Found altinn read status $status")
 
             return altinnReadStates.contains(status)
         } catch (e: ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage) {
