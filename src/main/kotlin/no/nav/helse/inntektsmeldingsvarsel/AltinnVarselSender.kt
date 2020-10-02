@@ -87,7 +87,7 @@ class AltinnVarselSender(
 
         )
 
-        log.info("Journalført ${varsel.uuid} med ref ${response.journalpostId}")
+        log.debug("Journalført ${varsel.uuid} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -119,7 +119,7 @@ class AltinnVarselSender(
 
         )
 
-        log.info("Journalført varsel for enkeltperson på ${eksternrefId} med ref ${response.journalpostId}")
+        log.debug("Journalført varsel for enkeltperson på ${eksternrefId} med ref ${response.journalpostId}")
 
         return response.journalpostId
     }

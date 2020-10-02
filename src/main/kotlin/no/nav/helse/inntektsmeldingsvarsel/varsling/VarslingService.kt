@@ -33,7 +33,7 @@ class VarslingService(
     }
 
     fun oppdaterSendtStatus(varsling: Varsling, sendtStatus: Boolean) {
-        logger.info("Oppdaterer sendt status på ${varsling.uuid} til $sendtStatus")
+        logger.debug("Oppdaterer sendt status på ${varsling.uuid} til $sendtStatus")
         repository.updateSentStatus(varsling.uuid, LocalDateTime.now(), sendtStatus)
     }
 
@@ -104,7 +104,7 @@ class VarslingService(
     private fun resolveAggregationStrategy(kafkaMessage: ManglendeInntektsMeldingMelding) = DailyVarslingStrategy()
 
     fun oppdaterLestStatus(varsling: Varsling, lestStatus: Boolean) {
-        logger.info("Oppdaterer lest status på ${varsling.uuid} til $lestStatus")
+        logger.debug("Oppdaterer lest status på ${varsling.uuid} til $lestStatus")
         repository.updateReadStatus(varsling.uuid, lestStatus)
     }
 }
