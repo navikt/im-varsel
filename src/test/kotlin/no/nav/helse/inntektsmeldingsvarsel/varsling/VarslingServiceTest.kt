@@ -26,7 +26,7 @@ internal class VarslingServiceTest {
             mutableSetOf()
     )
 
-    val pdlPerson = PdlPerson(listOf(PdlPersonNavn("Navn", null, "Navnesen")), null)
+    val pdlPerson = PdlPerson(listOf(PdlPersonNavn("Navn", null, "Navnesen")))
 
     val mappingResultDto = VarslingDbEntity(data = "[]", uuid = "test", read = false,
             sent = false, opprettet = LocalDateTime.now(), behandlet = LocalDateTime.now(), aggregatperiode = "D-2020", virksomhetsNr = "12345")
