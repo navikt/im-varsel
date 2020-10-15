@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Altinn Brevutsendelse</title>
+</head>
+<body>
+
+<h1>
+    Send brev i Altinn
+</h1>
+
+<h4>Meny</h4>
+
+<ul>
+    <li><a href="/ui/mal.html">Opprett brevmal</a></li>
+    <li><a href="/ui/opprett-utsending.html">Opprett utsendelse</a></li>
+</ul>
+
+<h5>Eksisterende brevmaler</h5>
+
+<ul id="brevmaler">
+<ul>Laster...</ul>
+</ul>
+
+<script>
+    let brevmalList = document.getElementById("brevmaler");
+    fetch("/brevmal").then(res => {
+        res.json().then(brevmalarray => {
+            brevmalList.innerHTML = '';
+            brevmalarray.forEach( mal => {
+                var li = document.createElement("li");
+                li.innerHTML = mal.header +
+                    ' (<a href="/brevmal/' + mal.id + '.pdf">PDF</a>' +
+                    ' | <a href="/ui/mal.html?malId=' + mal.id + '">Rediger)</a>'
+                brevmalList.appendChild(li)
+            })
+        })
+    })
+</script>
+
+</body>
+</html>

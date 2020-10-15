@@ -5,7 +5,7 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
-import no.nav.helse.inntektsmeldingsvarsel.joark.PDFGenerator
+import no.nav.helse.inntektsmeldingsvarsel.pdf.PDFGenerator
 import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingSender
 import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingService
 import org.slf4j.LoggerFactory

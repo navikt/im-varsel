@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Altinn Brevutsendelse</title>
+</head>
+<body>
+
+<h1>
+    Opprett utsendelse
+</h1>
+
+<form id="create-form">
+    <fieldset>
+        <label>
+            Brevmal
+            <select name="malId">
+
+            </select>
+        </label>
+
+        <br>
+        <label>
+            Virksomhetrsnummere, en på hver linje<br>
+            <textarea rows="30" cols="50" name="virksomhetsnummere"></textarea>
+        </label>
+    </fieldset>
+
+    <h4>NB: Utsendelsen starter når du trykker opprett, da er det ingen vei tilbake!</h4>
+
+    <button type="button" onclick="send()">Opprett</button>
+</form>
+
+
+<script>
+    let brevmalSelect = document.getElementsByName("malId")[0];
+    fetch("/brevmal").then(res => {
+        res.json().then(brevmalarray => {
+            brevmalarray.forEach( mal => {
+                var opt = document.createElement("option");
+                opt.value= mal.id;
+                opt.innerHTML = mal.header;
+                brevmalSelect.appendChild(opt);
+            })
+        })
+    })
+
+    function send() {
+        function extractValueFrom(name) { return document.getElementsByName(name)[0].value }
+        var headers = new Headers()
+        headers.append("content-type", "application/json")
+        fetch('/opprett-utsendelse', {
+            method: 'post',
+            headers: headers,
+            body: JSON.stringify(
+                {
+                    malId: extractValueFrom("malId"),
+                    virksomhetsnummere: extractValueFrom("virksomhetsnummere").split("\n")
+                }
+            )
+        }).then(response => {
+            alert("OK")
+        }).catch(err => {
+            alert(err)
+        })
+    }
+</script>
+
+
+</body>
+</html>

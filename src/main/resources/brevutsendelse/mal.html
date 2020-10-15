@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Altinn Brevutsendelse</title>
+</head>
+<body>
+
+<h1>
+    Opprett brevmal
+</h1>
+
+<form id="create-form">
+    <fieldset>
+        <label>
+            Tittel
+            <input type="text" name="header">
+        </label>
+
+        <label>
+            Sammendrag (vises i listevisningen av brevet)
+            <input type="text" name="summary">
+        </label>
+
+        <br>
+        <label>
+            Innhold (HTML)<br>
+            <textarea rows="25" cols="120" name="bodyHtml">
+                 <html>
+               <head>
+                   <meta charset="UTF-8">
+               </head>
+               <body>
+                   <div class="melding">
+
+                       <h2>Feilutsendt melding om manglende inntektsmelding</h2>
+                       <p>
+                            Du har fått en beskjed i Altinn fra NAV der vi etterlyser inntektsmelding. Dersom du allerede har sendt inn inntektsmeldingen, kan du se bort fra beskjeden fordi det har skjedd en feil hos oss. Vi tester for tiden en tjeneste for å gi arbeidsgivere beskjed om at inntektsmelding mangler. Ved en feil ble det sendt beskjed til for mange arbeidsgivere.
+                        <p>
+<p></p>
+                        <p>
+                        Vi beklager ulempen dette medfører.
+                        </p>
+
+                        <p>
+                        Hilsen NAV
+                        </p>
+                   </div>
+               </body>
+            </html>
+            </textarea>
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <label>
+            Altinn-tjenestekode
+            <input type="text" name="altinnTjenestekode">
+        </label>
+
+        <label>
+            Altinn-tjenesteversjon
+            <input type="text" name="altinnTjenesteVersjon" value="1">
+        </label>
+    </fieldset>
+
+    <fieldset>
+        <label>
+            Joark Tema (SYK, PER, etc) for arkivering
+            <input type="text" name="joarkTema" value="SYK">
+        </label>
+        <label>
+            Joark-tittel (tittel som vises i gosys)
+            <input type="text" name="joarkTittel">
+        </label>
+        <label>
+            Joark-brevkode (feks altinn_brev_kostjustering_2020)
+            <input type="text" name="joarkBrevkode">
+        </label>
+    </fieldset>
+
+    <button id="sendButton" type="button" onclick="send()">Opprett</button>
+
+</form>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    window.malIdParam = urlParams.get('malId');
+    console.log(malIdParam)
+    if (window.malIdParam) {
+        document.getElementById("sendButton").innerHTML = "Oppdater"
+        fetch("/brevmal/" + window.malIdParam).then(res => {
+            res.json().then( mal => {
+                console.log(mal)
+                setValueOf("header", mal.header);
+                setValueOf("summary", mal.summary);
+                setValueOf("bodyHtml", mal.bodyHtml);
+                setValueOf("altinnTjenestekode", mal.altinnTjenestekode);
+                setValueOf("altinnTjenesteVersjon", mal.altinnTjenesteVersjon);
+                setValueOf("joarkTema", mal.joarkTema);
+                setValueOf("joarkTittel", mal.joarkTittel);
+                setValueOf("joarkBrevkode", mal.joarkBrevkode);
+            })
+        })
+    } else {
+        console.log("Ingen MalID satt")
+    }
+
+    function send() {
+        function extractValueFrom(name) { return document.getElementsByName(name)[0].value }
+        var headers = new Headers()
+        headers.append("content-type", "application/json")
+        fetch('/brevmal', {
+            method: window.malIdParam ? 'put' : 'post',
+            headers: headers,
+            body: JSON.stringify(
+                {
+                    id: malIdParam,
+                    header: extractValueFrom("header"),
+                    summary: extractValueFrom("summary"),
+                    bodyHtml: extractValueFrom("bodyHtml"),
+                    altinnTjenestekode: extractValueFrom("altinnTjenestekode"),
+                    altinnTjenesteVersjon: extractValueFrom("altinnTjenesteVersjon"),
+                    joarkTema: extractValueFrom("joarkTema"),
+                    joarkTittel: extractValueFrom("joarkTittel"),
+                    joarkBrevkode: extractValueFrom("joarkBrevkode")
+                }
+            )
+        }).then(response => {
+            alert("Lagret OK");
+            window.location = "/ui"
+        }).catch(err => {
+            alert(err);
+        })
+    }
+
+    function setValueOf(name, value) {
+        document.getElementsByName(name)[0].value = value;
+    }
+</script>
+
+</body>
+</html>
