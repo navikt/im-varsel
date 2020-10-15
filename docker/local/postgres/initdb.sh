@@ -24,4 +24,16 @@ psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
     CREATE TABLE meldingsfilter (
         hash varchar(64) NOT NULL UNIQUE
     );
+
+    CREATE TABLE altinn_brev_mal (
+        data jsonb NOT NULL
+    );
+
+    CREATE TABLE altinn_brev_utsendelse (
+        id serial primary key,
+        sent bool NOT NULL DEFAULT false,
+        altinnBrevMalId varchar(64) NOT NULL,
+        behandlet timestamp,
+        virksomhetsNr varchar(9) NOT NULL
+    );
 EOSQL

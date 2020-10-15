@@ -23,6 +23,11 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.SendAltinnBrevUtsendelseJob
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMalRepository
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtsendelseRepository
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevUtsendelseRepository
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevmalRepository
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.getDataSource
@@ -108,17 +113,22 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
-
     single { object : RestStsClient { override fun getOidcToken(): String { return "fake token"} } as RestStsClient }
+    single {MockReadReceiptProvider() as ReadReceiptProvider}
+
     single { PdlClientImpl("", get(), get(), get()) as PdlClient }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
+    single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
+    single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
 
     single { MockVarslingSender(get()) as VarslingSender }
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
+    single { UpdateReadStatusJob(get(), get()) }
+    single { SendAltinnBrevUtsendelseJob(get(), get()) }
 }
 
 @KtorExperimentalAPI

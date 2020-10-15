@@ -1,7 +1,8 @@
-package no.nav.helse.inntektsmeldingsvarsel.joark
+package no.nav.helse.inntektsmeldingsvarsel.pdf
 
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMal
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -53,4 +54,36 @@ class PDFGenerator {
         return ba
     }
 
+    fun lagPDF(mal: AltinnBrevMal): ByteArray {
+        val doc = PDDocument()
+        val page = PDPage()
+        val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())
+        doc.addPage(page)
+        val contentStream = PDPageContentStream(doc, page)
+        contentStream.beginText()
+        val mediaBox = page.mediaBox
+        val startX = mediaBox.lowerLeftX + MARGIN_X
+        val startY = mediaBox.upperRightY - MARGIN_Y
+        contentStream.newLineAtOffset(startX, startY)
+        contentStream.setFont(font, FONT_SIZE + 4)
+        contentStream.showText(mal.header)
+        contentStream.setFont(font, FONT_SIZE)
+        contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 4)
+
+        mal.bodyHtml
+                .replace(Regex("<[^>]*>"), "")
+                .split('\n')
+                .forEach {
+                    contentStream.newLineAtOffset(0F, -LINE_HEIGHT)
+                    contentStream.showText(it.trim())
+                }
+
+        contentStream.endText()
+        contentStream.close()
+        val out = ByteArrayOutputStream()
+        doc.save(out)
+        val ba = out.toByteArray()
+        doc.close()
+        return ba
+    }
 }

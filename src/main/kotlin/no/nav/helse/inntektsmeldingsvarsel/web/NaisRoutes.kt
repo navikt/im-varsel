@@ -1,4 +1,4 @@
-package no.nav.helse.inntektsmeldingsvarsel.nais
+package no.nav.helse.inntektsmeldingsvarsel.web
 
 import io.ktor.application.*
 import io.ktor.http.*
@@ -12,9 +12,7 @@ import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeResult
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeState
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import org.koin.ktor.ext.get
-import org.koin.ktor.ext.getKoin
 import org.slf4j.LoggerFactory
 import java.util.*
 
