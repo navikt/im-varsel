@@ -22,6 +22,12 @@ val ANTALL_SENDTE_VARSLER: Counter = Counter.build()
         .help("Teller antall meldinger om manglende IM sendt til virksomheter via Altinn")
         .register()
 
+val ANTALL_SENDTE_BREV: Counter = Counter.build()
+        .namespace(METRICS_NS)
+        .name("sendte_brev")
+        .help("Teller antall brev sendt via Altinn")
+        .register()
+
 val ANTALL_PERSONER_I_SENDTE_VARSLER: Counter = Counter.build()
         .namespace(METRICS_NS)
         .name("personer_i_sendte_varsler")
