@@ -20,7 +20,9 @@ class SendAltinnBrevUtsendelseJob(
         do {
             val varslinger = repo.getNextBatch()
             isEmpty = varslinger.isEmpty()
-            logger.info("Sender ${varslinger.size} brev")
+            if (!isEmpty) {
+                logger.info("Sender ${varslinger.size} brev")
+            }
 
             varslinger.forEach {
                 sender.send(it)
