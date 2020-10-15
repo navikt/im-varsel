@@ -21,7 +21,7 @@ interface AltinnBrevutsendelseSender {
 }
 
 class AltinnBrevutsendelseSenderImpl(
-        private val joarkClient: DokarkivKlientImpl,
+        private val joarkClient: DokarkivKlient,
         private val malRepo: AltinnBrevMalRepository,
         private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
         private val username: String,

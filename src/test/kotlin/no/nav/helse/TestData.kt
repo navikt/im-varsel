@@ -1,5 +1,6 @@
 package no.nav.helse
 
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtesendelse
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
@@ -25,6 +26,14 @@ object TestData {
         "SYK",
         "Tittelen på dokumentet i joark",
         "brevkode_i_joark"
+    )
+
+
+    val AltinnBrevutsendelse_Ubehandlet = AltinnBrevUtesendelse(
+        1,
+            AltinnBrevmal.id,
+            false,
+            "123456785",
     )
 }
 
