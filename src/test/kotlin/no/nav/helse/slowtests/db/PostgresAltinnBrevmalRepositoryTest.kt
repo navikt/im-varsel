@@ -1,6 +1,7 @@
 package no.nav.helse.slowtests.db
 
 import com.zaxxer.hikari.HikariDataSource
+import no.nav.helse.TestData
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevmalRepository
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
@@ -21,17 +22,7 @@ internal class PostgresAltinnBrevmalRepositoryTest : KoinComponent {
     lateinit var repo: PostgresAltinnBrevmalRepository
     lateinit var dataSource: HikariDataSource
 
-    private val brevmal = AltinnBrevmal(
-            UUID.randomUUID(),
-            "Dette er en tittel",
-            "Dette er et sammendrag",
-            "<body>Dette er brevet</body>",
-            "2290",
-            "1",
-            "SYK",
-            "Tittelen på dokumentet i joark",
-            "brevkode_i_joark"
-    )
+    private val brevmal = TestData.AltinnBrevmal
 
     @BeforeEach
     internal fun setUp() {
