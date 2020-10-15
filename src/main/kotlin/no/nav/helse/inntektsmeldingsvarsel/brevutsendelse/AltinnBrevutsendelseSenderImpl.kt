@@ -8,7 +8,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
 import no.nav.helse.arbeidsgiver.utils.SimpleHashMapCache
 import no.nav.helse.inntektsmeldingsvarsel.ANTALL_SENDTE_BREV
 import no.nav.helse.inntektsmeldingsvarsel.pdf.PDFGenerator
-import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMal
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMalRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtesendelse
 import org.slf4j.LoggerFactory
@@ -28,7 +28,7 @@ class AltinnBrevutsendelseSenderImpl(
         private val password: String) : AltinnBrevutsendelseSender {
 
     private val log = LoggerFactory.getLogger("AltinnBrevutsendelseSender")
-    private val brevMalCache = SimpleHashMapCache<AltinnBrevMal>(
+    private val brevMalCache = SimpleHashMapCache<AltinnBrevmal>(
             cacheDuration = Duration.ofHours(1),
             maxCachedItems = 2
     )
@@ -65,7 +65,7 @@ class AltinnBrevutsendelseSenderImpl(
     }
 
 
-    fun journalfør(brevutsendelse: AltinnBrevUtesendelse, brevmal: AltinnBrevMal): String {
+    fun journalfør(brevutsendelse: AltinnBrevUtesendelse, brevmal: AltinnBrevmal): String {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(brevmal))
 
         val request = JournalpostRequest(
@@ -96,7 +96,7 @@ class AltinnBrevutsendelseSenderImpl(
         return joarkRef.journalpostId
     }
 
-    fun mapToAltinnMessageFormat(utsendelse: AltinnBrevUtesendelse, mal: AltinnBrevMal): InsertCorrespondenceV2 {
+    fun mapToAltinnMessageFormat(utsendelse: AltinnBrevUtesendelse, mal: AltinnBrevmal): InsertCorrespondenceV2 {
         val meldingsInnhold = ExternalContentV2()
                 .withLanguageCode("1044")
                 .withMessageTitle(mal.header)

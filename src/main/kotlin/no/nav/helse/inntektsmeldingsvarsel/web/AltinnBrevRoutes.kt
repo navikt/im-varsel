@@ -6,13 +6,19 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMal
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMalRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtsendelseRepository
 import no.nav.helse.inntektsmeldingsvarsel.pdf.PDFGenerator
 import org.koin.ktor.ext.get
 import java.util.*
 
+
+/**
+ * Enkel UI og API ment for internt bruk.
+ *
+ * GUIet og APIet må skrus på via miljøvariabelen ALTINN_BREVUTSENDELSE_UI_ENABLED=true
+ */
 @KtorExperimentalAPI
 fun Application.altinnBrevRoutes() {
 
@@ -46,13 +52,13 @@ fun Application.altinnBrevRoutes() {
         }
 
         put("/brevmal") {
-            val mal = call.receive<AltinnBrevMal>()
+            val mal = call.receive<AltinnBrevmal>()
             brevMalRepository.update(mal)
             call.respond(mal)
         }
 
         post("/brevmal") {
-            val mal = call.receive<AltinnBrevMal>()
+            val mal = call.receive<AltinnBrevmal>()
             brevMalRepository.insert(mal)
             call.respond(mal)
         }

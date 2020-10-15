@@ -14,7 +14,7 @@ class PostgresAltinnBrevUtsendelseRepository(private val ds: DataSource) : Altin
 
     private val insertStatement = "INSERT INTO $tableName(virksomhetsNr, altinnBrevMalId) VALUES "
 
-    private val updatesentStatement = "UPDATE $tableName SET sent = ?, behandlet = ? WHERE id = ?:uuid"
+    private val updatesentStatement = "UPDATE $tableName SET sent = ?, behandlet = ? WHERE id = ?"
 
     private val getBySentState = "SELECT * FROM $tableName WHERE sent=? LIMIT ?"
 

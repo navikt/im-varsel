@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 class SendAltinnBrevUtsendelseJob(
         private val repo: AltinnBrevUtsendelseRepository,
-        private val sender: AltinnBrevutsendelseSenderImpl,
+        private val sender: AltinnBrevutsendelseSender,
         coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
         waitTimeWhenEmptyQueue: Duration = Duration.ofMinutes(5)
 ) : RecurringJob(coroutineScope, waitTimeWhenEmptyQueue) {

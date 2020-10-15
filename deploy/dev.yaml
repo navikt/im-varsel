@@ -64,3 +64,5 @@ spec:
     value: helse-spam-mottak-test
   - name: DOKARKIV_URL
     value: https://dokarkiv-q1.nais.preprod.local
+  - name: ALTINN_BREVUTSENDELSE_UI_ENABLED
+    value: true
