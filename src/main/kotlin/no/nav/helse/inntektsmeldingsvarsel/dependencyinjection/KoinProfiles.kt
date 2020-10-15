@@ -122,8 +122,6 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { PdlClientImpl("", get(), get(), get()) as PdlClient }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
-    single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
     single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
     single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
 
@@ -132,6 +130,8 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get()) }
 
+    single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
+    single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
     single { MockAltinnBrevutsendelseSender() as AltinnBrevutsendelseSender }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
 }
@@ -203,6 +203,15 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { VarslingsmeldingProcessor(get(), get()) }
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get())}
+
+    single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
+    single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
+    single { AltinnBrevutsendelseSenderImpl(get(), get(), get(),
+                config.getString("altinn_melding.username"),
+                config.getString("altinn_melding.password")
+            ) as AltinnBrevutsendelseSender
+    }
+    single { SendAltinnBrevUtsendelseJob(get(), get()) }
 }
 
 @KtorExperimentalAPI
@@ -277,6 +286,18 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { SendVarslingJob(get(), get()) }
 
     single { UpdateReadStatusJob(get(), get()) }
+
+
+    single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
+    single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
+    single { AltinnBrevutsendelseSenderImpl(get(), get(), get(),
+            config.getString("altinn_melding.username"),
+            config.getString("altinn_melding.password")
+    ) as AltinnBrevutsendelseSender
+    }
+    single { SendAltinnBrevUtsendelseJob(get(), get()) }
+
+
 }
 
 // utils
