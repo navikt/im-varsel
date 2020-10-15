@@ -12,7 +12,7 @@ data class AltinnBrevUtesendelse(
         val joarkRef: String? = null
 )
 
-data class AltinnBrevMal(
+data class AltinnBrevmal(
         val id: UUID = UUID.randomUUID(),
         val header: String,
         val summary: String,

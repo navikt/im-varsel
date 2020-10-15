@@ -2,7 +2,7 @@ package no.nav.helse.inntektsmeldingsvarsel.pdf
 
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
-import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMal
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -54,7 +54,7 @@ class PDFGenerator {
         return ba
     }
 
-    fun lagPDF(mal: AltinnBrevMal): ByteArray {
+    fun lagPDF(mal: AltinnBrevmal): ByteArray {
         val doc = PDDocument()
         val page = PDPage()
         val font = PDType0Font.load(doc, this::class.java.classLoader.getResource(FONT_NAME).openStream())

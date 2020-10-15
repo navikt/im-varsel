@@ -16,6 +16,7 @@ import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.SendAltinnBrevUtsendelseJob
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
+import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
 import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.UpdateReadStatusJob
@@ -29,8 +30,6 @@ val mainLogger = LoggerFactory.getLogger("main()")
 
 @KtorExperimentalAPI
 fun main() {
-
-
     Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
         mainLogger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
@@ -72,7 +71,7 @@ fun main() {
     }
 }
 
-private suspend fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
+private fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
     val kubernetesProbeManager = koin.get<KubernetesProbeManager>()
 
     koin.getAllOfType<LivenessComponent>()
@@ -101,7 +100,9 @@ fun createApplicationEnvironment() = applicationEngineEnvironment {
         }
 
         nais()
-        altinnBrevRoutes()
+
+        if (config.getString("altinn_brevutsendelse.ui_enabled").equals("true")) {
+            altinnBrevRoutes()
+        }
     }
 }
-
