@@ -25,6 +25,8 @@
         <br>
         <label>
             Innhold (HTML)<br>
+            PDFen som arkiveres er denne teksten minus HTML-taggene.<br>
+            Bruk linjeskift for å lage ny linje i PDFen (du kan sjekke hvordan PDFen ser ut i listevisningen)
             <textarea rows="25" cols="120" name="bodyHtml">
                  <html>
                <head>
@@ -115,7 +117,7 @@
             headers: headers,
             body: JSON.stringify(
                 {
-                    id: malIdParam,
+                    id: malIdParam || undefined,
                     header: extractValueFrom("header"),
                     summary: extractValueFrom("summary"),
                     bodyHtml: extractValueFrom("bodyHtml"),
