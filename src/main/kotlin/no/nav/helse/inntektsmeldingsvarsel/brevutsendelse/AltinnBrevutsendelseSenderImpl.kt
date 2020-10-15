@@ -6,6 +6,7 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.*
 import no.nav.helse.arbeidsgiver.utils.SimpleHashMapCache
+import no.nav.helse.inntektsmeldingsvarsel.ANTALL_SENDTE_BREV
 import no.nav.helse.inntektsmeldingsvarsel.pdf.PDFGenerator
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMal
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMalRepository
@@ -15,12 +16,16 @@ import java.time.Duration
 import java.time.LocalDate
 import java.util.*
 
-class AltinnBrevutsendelseSender(
+interface AltinnBrevutsendelseSender {
+    fun send(utsendelse: AltinnBrevUtesendelse)
+}
+
+class AltinnBrevutsendelseSenderImpl(
         private val joarkClient: DokarkivKlientImpl,
         private val malRepo: AltinnBrevMalRepository,
         private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
         private val username: String,
-        private val password: String) {
+        private val password: String) : AltinnBrevutsendelseSender {
 
     private val log = LoggerFactory.getLogger("AltinnBrevutsendelseSender")
     private val brevMalCache = SimpleHashMapCache<AltinnBrevMal>(
@@ -33,7 +38,7 @@ class AltinnBrevutsendelseSender(
         const val SYSTEM_USER_CODE = "NAV_HELSEARBEIDSGIVER"
     }
 
-    fun send(utsendelse: AltinnBrevUtesendelse) {
+    override fun send(utsendelse: AltinnBrevUtesendelse) {
         val mal = if (brevMalCache.hasValidCacheEntry(utsendelse.altinnBrevMalId.toString()))
                         brevMalCache.get(utsendelse.altinnBrevMalId.toString())
                 else malRepo.get(utsendelse.altinnBrevMalId)
@@ -50,8 +55,8 @@ class AltinnBrevutsendelseSender(
                 log.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.receiptStatusCode)
                 throw IllegalStateException("Feil ved sending av brev til Altinn")
             }
-
             journalfør(utsendelse, mal)
+            ANTALL_SENDTE_BREV.inc()
 
         } catch (e: Exception) {
             log.error("Feil ved sending av brev til Altinn", e)
