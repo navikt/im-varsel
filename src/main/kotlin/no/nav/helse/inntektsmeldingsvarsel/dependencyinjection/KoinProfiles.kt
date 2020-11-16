@@ -21,6 +21,8 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPerson
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavn
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
@@ -34,14 +36,14 @@ import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAlt
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.getDataSource
-import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.MeldingsfilterRepository
-import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresMeldingsfilterRepository
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
-import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingProcessor
+import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import org.apache.cxf.frontend.ClientProxy
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.common.config.SaslConfigs
@@ -119,14 +121,17 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single { object : RestStsClient { override fun getOidcToken(): String { return "fake token"} } as RestStsClient }
     single {MockReadReceiptProvider() as ReadReceiptProvider}
 
-    single { PdlClientImpl("", get(), get(), get()) as PdlClient }
+    single { object: PdlClient {
+            override fun person(ident: String): PdlPerson? = PdlPerson(listOf(PdlPersonNavn("Test", null, "Testesen")))
+        } as PdlClient
+    }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
-    single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
+    single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
 
     single { MockVarslingSender(get()) as VarslingSender }
-    single { VarslingsmeldingProcessor(get(), get()) }
+    single { PollForVarslingsmeldingJob(get(), get()) }
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get()) }
 
@@ -196,13 +201,13 @@ fun preprodConfig(config: ApplicationConfig) = module {
     }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
+    single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
     single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) as PdlClient }
 
-    single { VarslingService(get(), get(), get(), get(), get(), AllowAll()) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
 
-    single { VarslingsmeldingProcessor(get(), get()) }
+    single { PollForVarslingsmeldingJob(get(), get()) }
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get())}
 
@@ -254,7 +259,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { PostgresMeldingsfilterRepository(get()) as MeldingsfilterRepository }
+    single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
 
     single { VarslingMapper(get()) }
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
@@ -273,7 +278,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) as PdlClient}
 
-    single { VarslingService(get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
     single {
         AltinnReadReceiptClient(
                 get(),
@@ -284,7 +289,7 @@ fun prodConfig(config: ApplicationConfig) = module {
         ) as ReadReceiptProvider
     }
 
-    single { VarslingsmeldingProcessor(get(), get()) }
+    single { PollForVarslingsmeldingJob(get(), get()) }
     single { SendVarslingJob(get(), get()) }
 
     single { UpdateReadStatusJob(get(), get()) }

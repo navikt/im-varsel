@@ -13,7 +13,6 @@ class VarslingMapper (private val mapper: ObjectMapper) {
                 data = mapper.writeValueAsString(varsling.liste),
                 sent = varsling.varslingSendt,
                 opprettet = varsling.opprettet,
-                aggregatperiode = varsling.aggregatperiode,
                 virksomhetsNr = varsling.virksomhetsNr,
                 read = varsling.varslingLest
         )
@@ -21,7 +20,6 @@ class VarslingMapper (private val mapper: ObjectMapper) {
 
     fun mapDomain(dbEntity: VarslingDbEntity): Varsling {
         return Varsling(
-                aggregatperiode = dbEntity.aggregatperiode,
                 virksomhetsNr = dbEntity.virksomhetsNr,
                 uuid = dbEntity.uuid,
                 opprettet = dbEntity.opprettet,
@@ -30,5 +28,4 @@ class VarslingMapper (private val mapper: ObjectMapper) {
                 liste = mapper.readValue(dbEntity.data)
         )
     }
-
 }

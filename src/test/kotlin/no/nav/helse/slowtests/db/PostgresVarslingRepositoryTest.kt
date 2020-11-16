@@ -27,7 +27,6 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
             sent = false,
             read = false,
             opprettet = LocalDateTime.now(),
-            aggregatperiode = "D-2020-01-01",
             virksomhetsNr = "123456789"
     )
 
@@ -38,12 +37,12 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
         }
         dataSource = HikariDataSource(createLocalHikariConfig())
         repo = PostgresVarslingRepository(dataSource)
-        repo.insert(dbVarsling)
+        repo.insert(dbVarsling, dataSource.connection)
     }
 
     @Test
     internal fun `kan inserte og hente`() {
-        val fradb = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
+        val fradb = repo.findBySentStatus(false,1)
 
         assertThat(fradb).isEqualTo(dbVarsling)
     }
@@ -52,7 +51,7 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
     internal fun `kan oppdatere jsonData`() {
         val jsonData = "[]"
         repo.updateData(dbVarsling.uuid, jsonData)
-        val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
+        val afterUpdate = repo.findBySentStatus(false, 1)[0]
 
         assertThat(afterUpdate?.data).isEqualTo(jsonData)
     }
@@ -63,11 +62,11 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
 
         repo.updateSentStatus(dbVarsling.uuid, timeOfUpdate, true)
 
-        val allSentInPeriod = repo.findBySentStatus(true, 1, dbVarsling.aggregatperiode)
+        val allSent = repo.findBySentStatus(true, 1)
 
-        assertThat(allSentInPeriod).hasSize(1)
+        assertThat(allSent).hasSize(1)
 
-        val afterUpdate = allSentInPeriod.first()
+        val afterUpdate = allSent.first()
 
         assertThat(afterUpdate?.behandlet).isEqualTo(timeOfUpdate)
         assertThat(afterUpdate?.sent).isEqualTo(true)
@@ -77,7 +76,7 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
     internal fun `kan oppdatere lest status`() {
         repo.updateReadStatus(dbVarsling.uuid, true)
 
-        val afterUpdate = repo.findByVirksomhetsnummerAndPeriode(dbVarsling.virksomhetsNr, dbVarsling.aggregatperiode)
+        val afterUpdate = repo.findBySentStatus(false, 1)[0]
 
         assertThat(afterUpdate?.read).isEqualTo(true)
     }

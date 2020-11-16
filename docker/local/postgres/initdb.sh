@@ -16,13 +16,17 @@ psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
         read bool NOT NULL DEFAULT false,
         opprettet timestamp NOT NULL,
         behandlet timestamp,
-        aggregatPeriode varchar(64) NOT NULL,
         virksomhetsNr varchar(9) NOT NULL,
         data jsonb NOT NULL
     );
 
-    CREATE TABLE meldingsfilter (
-        hash varchar(64) NOT NULL UNIQUE
+   CREATE TABLE ventende_behandlinger (
+        organisasjonsnummer varchar(9) NOT NULL,
+        fødselsnummer varchar(11) NOT NULL,
+        fom timestamp NOT NULL,
+        tom timestamp NOT NULL,
+        opprettet timestamp NOT NULL,
+        constraint unik_periode_constraint UNIQUE(fødselsnummer, organisasjonsnummer, fom)
     );
 
     CREATE TABLE altinn_brev_mal (

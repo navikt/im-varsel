@@ -20,7 +20,7 @@ import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
 import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.UpdateReadStatusJob
-import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingProcessor
+import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.getKoin
@@ -42,7 +42,7 @@ fun main() {
         val koin = httpServer.application.getKoin()
         mainLogger.info("Koin Startet")
 
-        val manglendeInntektsmeldingMottak = koin.get<VarslingsmeldingProcessor>()
+        val manglendeInntektsmeldingMottak = koin.get<PollForVarslingsmeldingJob>()
         manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
 
         val varslingSenderJob = koin.get<SendVarslingJob>()

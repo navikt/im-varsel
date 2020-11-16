@@ -7,7 +7,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingService
 import no.nav.helse.inntektsmeldingsvarsel.RecurringJob
 import java.time.Duration
 
-class VarslingsmeldingProcessor(
+class PollForVarslingsmeldingJob(
         private val kafkaProvider: ManglendeInntektsmeldingMeldingProvider,
         private val service: VarslingService,
         coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
@@ -18,7 +18,7 @@ class VarslingsmeldingProcessor(
         do {
             val wasEmpty = kafkaProvider
                     .getMessagesToProcess()
-                    .onEach(service::aggregate)
+                    .onEach(service::handleMessage)
                     .isEmpty()
 
             if (!wasEmpty) {
