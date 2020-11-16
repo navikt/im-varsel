@@ -2,109 +2,108 @@ package no.nav.helse.inntektsmeldingsvarsel.varsling
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.inntektsmeldingsvarsel.ANTALL_DUPLIKATMELDINGER
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
-import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.MeldingsfilterRepository
+import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
-import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsMeldingMelding
+import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
+import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_IKKE_INNTEKTSMELDING
+import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_INNTEKTSMELDING
 import org.slf4j.LoggerFactory
+import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.sql.DataSource
 
 class VarslingService(
-        private val repository: VarslingRepository,
+        private val datasource: DataSource,
+        private val varselRepository: VarslingRepository,
+        private val ventendeRepo: VentendeBehandlingerRepository,
         private val mapper: VarslingMapper,
         private val om: ObjectMapper,
-        private val hashRepo: MeldingsfilterRepository,
         private val pdlClient: PdlClient,
         private val allowList: AllowList
 ) {
 
     val logger = LoggerFactory.getLogger(VarslingService::class.java)
 
-    fun finnNesteUbehandlede(max: Int, aggregatPeriode: String): List<Varsling> {
-        return repository.findBySentStatus(false, max, aggregatPeriode).map { mapper.mapDomain(it) }
+    fun finnNesteUbehandlede(max: Int): List<Varsling> {
+        return varselRepository.findBySentStatus(false, max).map { mapper.mapDomain(it) }
     }
 
     fun finnSisteUleste(max: Int): List<Varsling> {
-        return repository.findSentButUnread(max).map { mapper.mapDomain(it) }
+        return varselRepository.findSentButUnread(max).map { mapper.mapDomain(it) }
     }
 
     fun oppdaterSendtStatus(varsling: Varsling, sendtStatus: Boolean) {
         logger.debug("Oppdaterer sendt status på ${varsling.uuid} til $sendtStatus")
-        repository.updateSentStatus(varsling.uuid, LocalDateTime.now(), sendtStatus)
+        varselRepository.updateSentStatus(varsling.uuid, LocalDateTime.now(), sendtStatus)
     }
 
     fun lagre(varsling: Varsling) {
-        repository.insert(mapper.mapDto(varsling))
+        datasource.connection.use {
+            varselRepository.insert(mapper.mapDto(varsling), it)
+        }
     }
 
     fun oppdaterData(varsling: Varsling) {
-        repository.updateData(varsling.uuid, mapper.mapDto(varsling).data)
+        varselRepository.updateData(varsling.uuid, mapper.mapDto(varsling).data)
     }
 
     fun slett(uuid: String) {
-        repository.remove(uuid)
+        varselRepository.remove(uuid)
     }
 
-    fun aggregate(jsonMessageString: String) {
-        val kafkaMessage = om.readValue(jsonMessageString, ManglendeInntektsMeldingMelding::class.java)
-        logger.debug("Fikk en melding fra kafka på virksomhetsnummer ${kafkaMessage.organisasjonsnummer} fra ${kafkaMessage.opprettet}")
-        val periodeHash = kafkaMessage.periodeHash()
+    fun handleMessage(jsonMessageString: String) {
+        val msg = om.readValue(jsonMessageString, SpleisInntektsmeldingMelding::class.java)
+        logger.debug("Fikk en melding fra kafka på virksomhetsnummer ${msg.organisasjonsnummer} fra ${msg.opprettet}")
 
-        if (!allowList.isAllowed(kafkaMessage.organisasjonsnummer)) {
+        if (!allowList.isAllowed(msg.organisasjonsnummer)) {
             logger.debug("Virksomheten er ikke tillatt")
             return
         }
 
-        if (hashRepo.exists(periodeHash)) {
-            logger.debug("Denne periode er allerede sett")
-            ANTALL_DUPLIKATMELDINGER.inc()
-            return
+        when(msg.meldingsType) {
+            TRENGER_INNTEKTSMELDING -> ventendeRepo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
+            TRENGER_IKKE_INNTEKTSMELDING -> datasource.connection.use {
+                ventendeRepo.remove(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, it)
+            }
         }
-
-        val aggregateStrategy = resolveAggregationStrategy(kafkaMessage)
-        val aggregatPeriode = aggregateStrategy.toPeriodeId(kafkaMessage.opprettet.toLocalDate())
-        val existingAggregate =
-                repository.findByVirksomhetsnummerAndPeriode(kafkaMessage.organisasjonsnummer, aggregatPeriode)
-
-        val pdlResponse = pdlClient.person(kafkaMessage.fødselsnummer)?.navn?.firstOrNull()
-        val navn = if (pdlResponse != null) pdlResponse.fornavn + pdlResponse.etternavn else ""
-
-        val person = PersonVarsling(
-                navn,
-                kafkaMessage.fødselsnummer,
-                Periode(kafkaMessage.fom, kafkaMessage.tom),
-                kafkaMessage.opprettet
-        )
-
-        if (existingAggregate == null) {
-            logger.debug("Det finnes ikke et aggregat på ${kafkaMessage.organisasjonsnummer} for periode $aggregatPeriode, lager en ny")
-            val newEntry = Varsling(
-                    aggregatPeriode,
-                    kafkaMessage.organisasjonsnummer,
-                    mutableSetOf(person)
-            )
-            repository.insert(mapper.mapDto(newEntry))
-        } else {
-            val  domainVarsling = mapper.mapDomain(existingAggregate)
-            logger.debug("Fant et aggregat på ${kafkaMessage.organisasjonsnummer} for $aggregatPeriode med ${domainVarsling.liste.size} personer")
-            domainVarsling.liste.add(person)
-            repository.updateData(domainVarsling.uuid, mapper.mapDto(domainVarsling).data)
-        }
-
-        hashRepo.insert(periodeHash)
     }
 
-    /**
-     * Finner strategien som skal brukes for å aggregere varsler for denne meldingen. Kan i fremtiden baseres på org-nr etc
-     */
-    private fun resolveAggregationStrategy(kafkaMessage: ManglendeInntektsMeldingMelding) = DailyVarslingStrategy()
+    fun opprettVarslingerFraVentendeMeldinger() {
+        ventendeRepo.findOlderThan(LocalDateTime.now().minusDays(Companion.VENTETID_I_DAGER))
+                .groupBy { it.organisasjonsnummer }
+                .map { gruppe ->
+                    Varsling(
+                        virksomhetsNr = gruppe.key,
+                        liste = gruppe.value.map {
+                            val pdlResponse = pdlClient.person(it.fødselsnummer)?.navn?.firstOrNull()
+                            val navn = if (pdlResponse != null) pdlResponse.fornavn + pdlResponse.etternavn else ""
+                            PersonVarsling(
+                                    navn,
+                                    it.fødselsnummer,
+                                    Periode(it.fom, it.tom),
+                                    it.opprettet
+                        ) }.toMutableSet())
+                }.forEach  { varsling ->
+
+                    datasource.connection.use { con ->
+                        varselRepository.insert(mapper.mapDto(varsling), con)
+                        varsling.liste
+                                .forEach { ventendeRepo.remove(it.personnumer, varsling.virksomhetsNr, it.periode.fom, con) }
+                    }
+
+                }
+    }
 
     fun oppdaterLestStatus(varsling: Varsling, lestStatus: Boolean) {
         logger.debug("Oppdaterer lest status på ${varsling.uuid} til $lestStatus")
-        repository.updateReadStatus(varsling.uuid, lestStatus)
+        varselRepository.updateReadStatus(varsling.uuid, lestStatus)
+    }
+
+    companion object {
+        val VENTETID_I_DAGER = 21L
     }
 }

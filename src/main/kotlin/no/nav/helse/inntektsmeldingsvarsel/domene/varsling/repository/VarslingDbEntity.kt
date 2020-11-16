@@ -9,6 +9,5 @@ data class VarslingDbEntity(
         val read: Boolean,
         val opprettet: LocalDateTime,
         val behandlet: LocalDateTime? = null,
-        val aggregatperiode: String,
         val virksomhetsNr: String
 )

@@ -1,19 +1,16 @@
 package no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository
 
+import java.sql.Connection
 import java.time.LocalDateTime
 
 interface VarslingRepository {
-
-    // For å hente ut aggregat og aggregere viderer på det
-    fun findByVirksomhetsnummerAndPeriode(virksomhetsnummer: String, aggregatperiode: String): VarslingDbEntity?
-
-    // for å hente ut alle aggregat i en gitt status i en gitt periode
-    fun findBySentStatus(status: Boolean, max: Int, aggregatPeriode: String) : List<VarslingDbEntity>
+    // for å hente ut alle aggregat i en gitt status
+    fun findBySentStatus(status: Boolean, max: Int) : List<VarslingDbEntity>
 
     fun findSentButUnread(max: Int): List<VarslingDbEntity>
 
-    // sette inn nytt aggregat
-    fun insert(varsling: VarslingDbEntity)
+    // sette inn nytt varsel
+    fun insert(varsling: VarslingDbEntity, connection: Connection)
 
     fun remove(uuid: String)
 

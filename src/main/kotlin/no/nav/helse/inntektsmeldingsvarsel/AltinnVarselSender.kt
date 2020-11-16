@@ -29,11 +29,9 @@ class AltinnVarselSender(
     override fun send(varsling: Varsling) {
 
         try {
-
             varsling.liste.forEach {
-                if (!it.journalført) {
-                    journalførEnkeltVarsel(varsling, it)
-                    it.journalført = true
+                if (it.joarkRef == null) {
+                    it.joarkRef = journalførEnkeltVarsel(varsling, it)
                     varslingService.oppdaterData(varsling)
                 }
             }

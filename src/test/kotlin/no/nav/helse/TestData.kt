@@ -11,7 +11,6 @@ import java.util.*
 
 object TestData {
     val Varsling = Varsling(
-            aggregatperiode = "P-W52",
             virksomhetsNr = "123456785",
             liste = mutableSetOf(PersonVarsling("Ole", "123", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()))
     )

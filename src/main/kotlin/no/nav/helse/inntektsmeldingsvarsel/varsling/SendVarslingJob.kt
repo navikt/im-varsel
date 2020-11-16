@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import no.nav.helse.inntektsmeldingsvarsel.RecurringJob
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class SendVarslingJob(
@@ -13,24 +12,20 @@ class SendVarslingJob(
         coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
         waitTimeWhenEmptyQueue: Duration = Duration.ofHours(1)
 ) : RecurringJob(coroutineScope, waitTimeWhenEmptyQueue) {
-    val periodeStrategy: VarslingsPeriodeStrategy = DailyVarslingStrategy()
-
     override fun doJob() {
         val now = LocalDateTime.now()
-        if (now.hour < 7 || now.hour > 19) {
+        if (now.hour < 7 || now.hour > 17) {
             return
         }
 
-        var isEmpty = false
-        val prevPeriod = periodeStrategy.previousPeriodeId(LocalDate.now())
+        service.opprettVarslingerFraVentendeMeldinger()
+
         do {
-            val varslinger = service.finnNesteUbehandlede(100, prevPeriod)
-            isEmpty = varslinger.isEmpty()
+            val varslinger = service.finnNesteUbehandlede(100)
             varslinger.forEach {
                 sender.send(it)
                 service.oppdaterSendtStatus(it, true)
             }
-        } while (!isEmpty)
+        } while (!varslinger.isEmpty())
     }
-
 }

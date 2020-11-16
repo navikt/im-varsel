@@ -9,11 +9,10 @@ data class PersonVarsling(
         val personnumer: String,
         val periode: Periode,
         val varselOpprettet: LocalDateTime,
-        var journalført: Boolean = false
+        var joarkRef: String? = null
 )
 
 data class Varsling(
-        val aggregatperiode: String,
         val virksomhetsNr: String,
         val liste: MutableSet<PersonVarsling>,
         val uuid: String = UUID.randomUUID().toString(), // Uuid sendes også til Altinn som referanse

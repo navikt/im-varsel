@@ -2,7 +2,7 @@ package no.nav.helse.slowtests.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsMeldingMelding
+import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import org.apache.kafka.clients.admin.AdminClient
@@ -89,7 +89,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinComponent {
         val om = koin.koin.get<ObjectMapper>()
 
         producer.send(
-                ProducerRecord(topicName, om.writeValueAsString(ManglendeInntektsMeldingMelding(
+                ProducerRecord(topicName, om.writeValueAsString(SpleisInntektsmeldingMelding(
                         "222323",
                         LocalDate.now(),
                         LocalDate.now().plusDays(7),

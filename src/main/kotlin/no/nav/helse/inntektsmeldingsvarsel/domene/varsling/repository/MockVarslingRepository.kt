@@ -1,20 +1,18 @@
 package no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository
 
+import java.sql.Connection
 import java.time.LocalDateTime
 import java.util.*
 
 class MockVarslingRepository(): VarslingRepository {
 
-    private val varsling1 = VarslingDbEntity(data = "[]",read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789", aggregatperiode = "D-2020-01-01")
-    private val varsling2 = VarslingDbEntity(data = "[]",read = false, uuid = UUID.randomUUID().toString(), sent = true, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789", aggregatperiode = "D-2020-01-01")
-    private val varsling3 = VarslingDbEntity(data = "[]",read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789", aggregatperiode = "D-2020-01-01")
+    private val varsling1 = VarslingDbEntity(data = "[]",read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789")
+    private val varsling2 = VarslingDbEntity(data = "[]",read = false, uuid = UUID.randomUUID().toString(), sent = true, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789")
+    private val varsling3 = VarslingDbEntity(data = "[]",read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789")
 
     val list = listOf(varsling1, varsling2, varsling3).toMutableList()
-    override fun findByVirksomhetsnummerAndPeriode(virksomhetsnummer: String, aggregatperiode: String): VarslingDbEntity {
-        return varsling1
-    }
 
-    override fun findBySentStatus(sent: Boolean, max: Int, aggregatPeriode: String): List<VarslingDbEntity> {
+    override fun findBySentStatus(status: Boolean, max: Int): List<VarslingDbEntity> {
         return list
     }
 
@@ -22,8 +20,8 @@ class MockVarslingRepository(): VarslingRepository {
         return listOf(varsling2)
     }
 
-    override fun insert(varsling: VarslingDbEntity) {
-        println("Lagret $varsling")
+    override fun insert(varsling: VarslingDbEntity, connection: Connection) {
+
     }
 
     override fun remove(uuid: String) {
@@ -39,7 +37,6 @@ class MockVarslingRepository(): VarslingRepository {
     }
 
     override fun updateReadStatus(uuid: String, readStatus: Boolean) {
-        TODO("Not yet implemented")
-    }
 
+    }
 }
