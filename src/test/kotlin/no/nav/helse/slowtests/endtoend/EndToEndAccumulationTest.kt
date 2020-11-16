@@ -51,7 +51,7 @@ class EndToEndAccumulationTest : KoinComponent {
     }
 
     @Test
-    internal fun name() {
+    internal fun `Fjerner ventende ved beskjed og sender for ventende eldre enn grensen`() {
         val sendJob = getKoin().get<SendVarslingJob>()
         val mottaksJob = getKoin().get<PollForVarslingsmeldingJob>()
         val readReceiptJob = getKoin().get<UpdateReadStatusJob>()
@@ -67,16 +67,19 @@ class EndToEndAccumulationTest : KoinComponent {
         // assert at det er riktig akkumulert i databasen
         val ventendeRepo = getKoin().get<VentendeBehandlingerRepository>()
         val ventendeMeldinger = ventendeRepo.findOlderThan(LocalDateTime.now())
+        assertThat(ventendeMeldinger).hasSize(1)
 
         sendJob.doJob()
-        val varslingRepo = getKoin().get<VarslingRepository>()
+
         // assert at ting er riktig merket i databasen
+        val varslingRepo = getKoin().get<VarslingRepository>()
         val sentVarslinger = varslingRepo.findSentButUnread(10)
         assertThat(sentVarslinger).hasSize(1)
 
         readReceiptJob.doJob()
+
         // assert at ting er riktig merket i databasen
-        val unreadVarslinger = varslingRepo.findSentButUnread(10)
+        val unreadVarslinger = varslingRepo.findSentButUnread(1)
         assertThat(unreadVarslinger).hasSize(0)
     }
 }
