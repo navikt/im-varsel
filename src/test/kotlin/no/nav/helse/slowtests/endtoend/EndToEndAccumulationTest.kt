@@ -32,7 +32,7 @@ class EndToEndAccumulationTest : KoinTestBase() {
     @AfterAll
     internal fun tearDown() {
         clearAllDatabaseTables()
-        kafkaProdusent.tearDown()
+        kafkaProdusent.deleteTopicAndCloseConnection()
     }
 
     @Test
