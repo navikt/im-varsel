@@ -5,6 +5,7 @@ import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingDbEntity
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
+import no.nav.helse.slowtests.clearAllDatabaseTables
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -92,7 +93,7 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
 
     @AfterEach
     internal fun tearDown() {
-        repo.remove(dbVarsling.uuid)
+        clearAllDatabaseTables()
         stopKoin()
     }
 }
