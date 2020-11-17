@@ -1,8 +1,5 @@
 package no.nav.helse.slowtests.endtoend
 
-import io.ktor.config.*
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.localDevConfig
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
@@ -11,24 +8,17 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingService
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_IKKE_INNTEKTSMELDING
+import no.nav.helse.slowtests.KoinTestBase
 import no.nav.helse.slowtests.clearAllDatabaseTables
 import no.nav.helse.slowtests.kafka.KafkaProducerForTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.koin.core.KoinApplication
-import org.koin.core.KoinComponent
-import org.koin.core.context.GlobalContext
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.core.get
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class EndToEndAccumulationTest : KoinComponent {
+class EndToEndAccumulationTest : KoinTestBase() {
     lateinit var kafkaProdusent: KafkaProducerForTests
 
     val manglerImMelding = SpleisInntektsmeldingMelding(
@@ -39,22 +29,8 @@ class EndToEndAccumulationTest : KoinComponent {
         "01234567890"
     )
 
-    @BeforeAll
-    internal fun setUp() {
-        clearAllDatabaseTables()
-
-        val runLocalModule = localDevConfig(MapApplicationConfig(
-                "altinn_melding.kafka_topic" to KafkaProducerForTests.topicName
-        ))
-
-        startKoin {
-            modules(listOf(common, runLocalModule))
-        }
-    }
-
     @AfterAll
     internal fun tearDown() {
-        stopKoin()
         clearAllDatabaseTables()
         kafkaProdusent.tearDown()
     }

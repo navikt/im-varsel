@@ -7,6 +7,7 @@ import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAlt
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevmalRepository
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
+import no.nav.helse.slowtests.KoinTestBase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -19,16 +20,13 @@ import org.koin.core.get
 import java.time.LocalDateTime
 import java.util.*
 
-internal class PostgresAltinnBrevUtsendelseRepositoryTest : KoinComponent {
+internal class PostgresAltinnBrevUtsendelseRepositoryTest : KoinTestBase() {
 
     lateinit var repo: PostgresAltinnBrevUtsendelseRepository
     lateinit var dataSource: HikariDataSource
 
     @BeforeEach
     internal fun setUp() {
-        startKoin {
-            loadKoinModules(common)
-        }
         dataSource = HikariDataSource(createLocalHikariConfig())
         repo = PostgresAltinnBrevUtsendelseRepository(dataSource)
     }
@@ -46,10 +44,5 @@ internal class PostgresAltinnBrevUtsendelseRepositoryTest : KoinComponent {
         val batchAfterSentStatusUpdate = repo.getNextBatch()
 
         assertThat(batchAfterSentStatusUpdate).hasSize(0)
-    }
-
-    @AfterEach
-    internal fun tearDown() {
-        stopKoin()
     }
 }
