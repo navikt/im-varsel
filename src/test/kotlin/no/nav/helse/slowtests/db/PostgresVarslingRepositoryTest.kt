@@ -5,6 +5,7 @@ import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingDbEntity
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
+import no.nav.helse.slowtests.KoinTestBase
 import no.nav.helse.slowtests.clearAllDatabaseTables
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -17,7 +18,7 @@ import org.koin.core.context.stopKoin
 import java.time.LocalDateTime
 import java.util.*
 
-internal class PostgresVarslingRepositoryTest : KoinComponent {
+internal class PostgresVarslingRepositoryTest : KoinTestBase() {
 
     lateinit var repo: PostgresVarslingRepository
     lateinit var dataSource: HikariDataSource
@@ -33,9 +34,6 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
 
     @BeforeEach
     internal fun setUp() {
-        startKoin {
-            loadKoinModules(common)
-        }
         dataSource = HikariDataSource(createLocalHikariConfig())
         repo = PostgresVarslingRepository(dataSource)
         repo.insert(dbVarsling, dataSource.connection)
@@ -94,6 +92,5 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
     @AfterEach
     internal fun tearDown() {
         clearAllDatabaseTables()
-        stopKoin()
     }
 }

@@ -5,6 +5,7 @@ import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
+import no.nav.helse.slowtests.KoinTestBase
 import no.nav.helse.slowtests.clearAllDatabaseTables
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -17,7 +18,7 @@ import org.koin.core.context.stopKoin
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-internal class PostgresVentendeBehandlingerRepositoryTest : KoinComponent {
+internal class PostgresVentendeBehandlingerRepositoryTest : KoinTestBase() {
 
     lateinit var repo: PostgresVentendeBehandlingerRepository
     lateinit var dataSource: HikariDataSource
@@ -33,9 +34,6 @@ internal class PostgresVentendeBehandlingerRepositoryTest : KoinComponent {
 
     @BeforeEach
     internal fun setUp() {
-        startKoin {
-            loadKoinModules(common)
-        }
         dataSource = HikariDataSource(createLocalHikariConfig())
         repo = PostgresVentendeBehandlingerRepository(dataSource)
     }
@@ -74,6 +72,5 @@ internal class PostgresVentendeBehandlingerRepositoryTest : KoinComponent {
     @AfterEach
     internal fun tearDown() {
         clearAllDatabaseTables()
-        stopKoin()
     }
 }

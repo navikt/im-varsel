@@ -1,35 +1,26 @@
 package no.nav.helse.slowtests.db
 
-import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.TestData
-import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevmalRepository
-import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
+import no.nav.helse.slowtests.KoinTestBase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.koin.core.KoinComponent
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.core.get
 import java.util.*
+import javax.sql.DataSource
 
-internal class PostgresAltinnBrevmalRepositoryTest : KoinComponent {
+internal class PostgresAltinnBrevmalRepositoryTest : KoinTestBase() {
 
     lateinit var repo: PostgresAltinnBrevmalRepository
-    lateinit var dataSource: HikariDataSource
+    lateinit var dataSource: DataSource
 
     private val brevmal = TestData.AltinnBrevmal
 
     @BeforeEach
     internal fun setUp() {
-        startKoin {
-            loadKoinModules(common)
-        }
-        dataSource = HikariDataSource(createLocalHikariConfig())
+        dataSource = get<DataSource>()
         repo = PostgresAltinnBrevmalRepository(dataSource, get())
     }
 
@@ -78,6 +69,5 @@ internal class PostgresAltinnBrevmalRepositoryTest : KoinComponent {
     @AfterEach
     internal fun tearDown() {
         repo.delete(brevmal.id)
-        stopKoin()
     }
 }

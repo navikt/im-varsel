@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
+import no.nav.helse.slowtests.KoinTestBase
 import no.nav.helse.slowtests.kafka.KafkaProducerForTests.Companion.testProps
 import no.nav.helse.slowtests.kafka.KafkaProducerForTests.Companion.topicName
 import org.assertj.core.api.Assertions.assertThat
@@ -21,30 +22,17 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 
-/**
- * Disse testene krever en kjørende Kafka broker på localhost:9092
- * For å kjøre opp en kan du gjøre
- * cd docker/local
- * docker-compose build
- * docker-compose up
- */
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class VarslingsmeldingKafkaClientClientTest : KoinComponent {
+internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
     lateinit var kafkaProdusent: KafkaProducerForTests
 
     @BeforeAll
     internal fun setUp() {
-        startKoin {
-            modules(common)
-        }
-
         kafkaProdusent = KafkaProducerForTests(get())
     }
 
     @AfterAll
     internal fun tearDown() {
         kafkaProdusent.tearDown()
-        stopKoin()
     }
 
     @Test
