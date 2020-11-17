@@ -20,6 +20,8 @@ import org.junit.jupiter.api.TestInstance
 import org.koin.core.KoinApplication
 import org.koin.core.KoinComponent
 import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.core.get
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,12 +44,15 @@ class EndToEndAccumulationTest : KoinComponent {
                 "altinn_melding.kafka_topic" to KafkaProducerForTests.topicName
         ))
 
-        GlobalContext.start(KoinApplication.create().modules(listOf(common, runLocalModule)))
+        startKoin {
+            modules(listOf(common, runLocalModule))
+        }
     }
 
     @AfterAll
     internal fun tearDown() {
         kafkaProdusent.tearDown()
+        stopKoin()
     }
 
     @Test

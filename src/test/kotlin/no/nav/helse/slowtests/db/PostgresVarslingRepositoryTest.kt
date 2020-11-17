@@ -42,7 +42,7 @@ internal class PostgresVarslingRepositoryTest : KoinComponent {
 
     @Test
     internal fun `kan inserte og hente`() {
-        val fradb = repo.findBySentStatus(false,1)
+        val fradb = repo.findBySentStatus(false,1)[0]
 
         assertThat(fradb).isEqualTo(dbVarsling)
     }
