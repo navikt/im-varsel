@@ -5,6 +5,7 @@ import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
+import no.nav.helse.slowtests.clearAllDatabaseTables
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -72,7 +73,7 @@ internal class PostgresVentendeBehandlingerRepositoryTest : KoinComponent {
 
     @AfterEach
     internal fun tearDown() {
-        repo.remove(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, dataSource.connection)
+        clearAllDatabaseTables()
         stopKoin()
     }
 }

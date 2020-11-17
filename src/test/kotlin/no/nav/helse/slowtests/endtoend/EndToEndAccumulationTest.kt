@@ -11,6 +11,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.VarslingService
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_IKKE_INNTEKTSMELDING
+import no.nav.helse.slowtests.clearAllDatabaseTables
 import no.nav.helse.slowtests.kafka.KafkaProducerForTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
@@ -40,6 +41,8 @@ class EndToEndAccumulationTest : KoinComponent {
 
     @BeforeAll
     internal fun setUp() {
+        clearAllDatabaseTables()
+
         val runLocalModule = localDevConfig(MapApplicationConfig(
                 "altinn_melding.kafka_topic" to KafkaProducerForTests.topicName
         ))
@@ -51,8 +54,9 @@ class EndToEndAccumulationTest : KoinComponent {
 
     @AfterAll
     internal fun tearDown() {
-        kafkaProdusent.tearDown()
         stopKoin()
+        clearAllDatabaseTables()
+        kafkaProdusent.tearDown()
     }
 
     @Test
