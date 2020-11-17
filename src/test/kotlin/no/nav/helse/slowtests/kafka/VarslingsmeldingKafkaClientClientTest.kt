@@ -1,7 +1,6 @@
 package no.nav.helse.slowtests.kafka
 
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
 import no.nav.helse.slowtests.KoinTestBase
@@ -12,11 +11,6 @@ import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.koin.core.KoinApplication
-import org.koin.core.KoinComponent
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.core.get
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -32,7 +26,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
 
     @AfterAll
     internal fun tearDown() {
-        kafkaProdusent.tearDown()
+        kafkaProdusent.deleteTopicAndCloseConnection()
     }
 
     @Test
