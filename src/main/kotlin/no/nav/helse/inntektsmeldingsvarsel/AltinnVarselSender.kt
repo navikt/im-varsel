@@ -58,12 +58,14 @@ class AltinnVarselSender(
         }
     }
 
+    private val tittel = "Varsel om manglende inntektsmelding"
+
     fun journalfør(varsel: Varsling): String {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel, varsel.liste))
 
         val response = dokarkivKlient.journalførDokument(
                 JournalpostRequest(
-                        tittel = "Varsel om manglende inntektsmelding",
+                        tittel = tittel,
                         journalposttype = Journalposttype.UTGAAENDE,
                         kanal = "ALTINN",
                         bruker = Bruker(varsel.virksomhetsNr, IdType.ORGNR),
@@ -78,7 +80,7 @@ class AltinnVarselSender(
                                         fysiskDokument = base64EnkodetPdf
                                 )),
                                 brevkode = "varsel_om_manglende_inntektsmelding",
-                                tittel = "Varsel om manglende inntektsmelding",
+                                tittel = tittel,
                         )),
                         datoMottatt = varsel.opprettet.toLocalDate()
                 ), true, UUID.randomUUID().toString()
@@ -95,7 +97,7 @@ class AltinnVarselSender(
 
         val response = dokarkivKlient.journalførDokument(
                 JournalpostRequest(
-                        tittel = "Varsel om manglende inntektsmelding",
+                        tittel = tittel,
                         journalposttype = Journalposttype.UTGAAENDE,
                         kanal = "ALTINN",
                         bruker = Bruker(personVarsel.personnumer, IdType.FNR),
@@ -110,7 +112,7 @@ class AltinnVarselSender(
                                         fysiskDokument = base64EnkodetPdf
                                 )),
                                 brevkode = "varsel_om_manglende_inntektsmelding",
-                                tittel = "Varsel om manglende inntektsmelding",
+                                tittel = tittel,
                         )),
                         datoMottatt = varsel.opprettet.toLocalDate()
                 ), true, UUID.randomUUID().toString()
