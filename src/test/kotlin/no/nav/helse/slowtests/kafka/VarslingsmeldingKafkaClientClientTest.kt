@@ -6,6 +6,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import org.apache.kafka.clients.admin.AdminClient
+import org.apache.kafka.clients.admin.CreateTopicsOptions
 import org.apache.kafka.clients.admin.KafkaAdminClient
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.producer.KafkaProducer
