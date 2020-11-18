@@ -2,6 +2,7 @@ package no.nav.helse.inntektsmeldingsvarsel.varsling
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
+import no.nav.helse.inntektsmeldingsvarsel.ANTALL_FILTRERTE_VARSLER
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
@@ -12,7 +13,6 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_IKKE_INNTEKTSMELDING
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_INNTEKTSMELDING
 import org.slf4j.LoggerFactory
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.sql.DataSource
 
@@ -59,11 +59,6 @@ class VarslingService(
         val msg = om.readValue(jsonMessageString, SpleisInntektsmeldingMelding::class.java)
         logger.debug("Fikk en melding fra kafka på virksomhetsnummer ${msg.organisasjonsnummer} fra ${msg.opprettet}")
 
-        if (!allowList.isAllowed(msg.organisasjonsnummer)) {
-            logger.debug("Virksomheten er ikke tillatt")
-            return
-        }
-
         when(msg.meldingsType) {
             TRENGER_INNTEKTSMELDING -> ventendeRepo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
             TRENGER_IKKE_INNTEKTSMELDING -> datasource.connection.use {
@@ -79,8 +74,7 @@ class VarslingService(
                     Varsling(
                         virksomhetsNr = gruppe.key,
                         liste = gruppe.value.map {
-                            val pdlResponse = pdlClient.person(it.fødselsnummer)?.navn?.firstOrNull()
-                            val navn = if (pdlResponse != null) pdlResponse.fornavn + pdlResponse.etternavn else ""
+                            val navn = hentNavn(it)
                             PersonVarsling(
                                     navn,
                                     it.fødselsnummer,
@@ -90,12 +84,24 @@ class VarslingService(
                 }.forEach  { varsling ->
 
                     datasource.connection.use { con ->
-                        varselRepository.insert(mapper.mapDto(varsling), con)
+
+                        if (allowList.isAllowed(varsling.virksomhetsNr)) {
+                            varselRepository.insert(mapper.mapDto(varsling), con)
+                        } else {
+                            ANTALL_FILTRERTE_VARSLER.inc()
+                            logger.debug("Virksomheten er ikke tillatt")
+                        }
+
                         varsling.liste
                                 .forEach { ventendeRepo.remove(it.personnumer, varsling.virksomhetsNr, it.periode.fom, con) }
                     }
-
                 }
+    }
+
+    private fun hentNavn(it: SpleisInntektsmeldingMelding): String {
+        val pdlResponse = pdlClient.person(it.fødselsnummer)?.navn?.firstOrNull()
+        val navn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else ""
+        return navn
     }
 
     fun oppdaterLestStatus(varsling: Varsling, lestStatus: Boolean) {
