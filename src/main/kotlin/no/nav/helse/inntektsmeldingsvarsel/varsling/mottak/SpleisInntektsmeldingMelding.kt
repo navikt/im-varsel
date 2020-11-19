@@ -10,7 +10,7 @@ data class SpleisInntektsmeldingMelding(
         val tom: LocalDate,
         val opprettet: LocalDateTime, // Dette er tidspunktet da vedtakssystemet ville ha en inntektsmelding
         val fødselsnummer: String,
-        val meldingsType: Meldingstype = Meldingstype.TRENGER_INNTEKTSMELDING
+        val type: Meldingstype = Meldingstype.TRENGER_INNTEKTSMELDING
 ) {
 
     enum class Meldingstype {

@@ -11,9 +11,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPerson
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavn
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
-import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
-import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingDbEntity
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_IKKE_INNTEKTSMELDING
@@ -62,7 +60,7 @@ internal class VarslingServiceTest {
 
     @Test
     fun `Melding om at man ikke lenger mangler IM fjerner ventende melding`() {
-        val trengerIkke = msg_mangler.copy(meldingsType = TRENGER_IKKE_INNTEKTSMELDING)
+        val trengerIkke = msg_mangler.copy(type = TRENGER_IKKE_INNTEKTSMELDING)
         serviceUnderTest.handleMessage(objectMapper.writeValueAsString(trengerIkke))
 
         verify(exactly = 1) { ventendeRepoMock.remove(trengerIkke.fødselsnummer, trengerIkke.organisasjonsnummer, trengerIkke.fom, any()) }

@@ -59,7 +59,7 @@ class VarslingService(
         val msg = om.readValue(jsonMessageString, SpleisInntektsmeldingMelding::class.java)
         logger.debug("Fikk en melding fra kafka på virksomhetsnummer ${msg.organisasjonsnummer} fra ${msg.opprettet}")
 
-        when(msg.meldingsType) {
+        when(msg.type) {
             TRENGER_INNTEKTSMELDING -> ventendeRepo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
             TRENGER_IKKE_INNTEKTSMELDING -> datasource.connection.use {
                 ventendeRepo.remove(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, it)

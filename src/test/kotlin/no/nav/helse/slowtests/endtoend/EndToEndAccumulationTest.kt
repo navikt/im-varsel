@@ -49,7 +49,7 @@ class EndToEndAccumulationTest : KoinTestBase() {
         kafkaProdusent = KafkaProducerForTests(get())
         kafkaProdusent.sendSync(manglerImMelding)
         kafkaProdusent.sendSync(manglerImMelding.copy(organisasjonsnummer = "123"))
-        kafkaProdusent.sendSync(manglerImMelding.copy(meldingsType = TRENGER_IKKE_INNTEKTSMELDING))
+        kafkaProdusent.sendSync(manglerImMelding.copy(type = TRENGER_IKKE_INNTEKTSMELDING))
 
         mottaksJob.doJob()
 
