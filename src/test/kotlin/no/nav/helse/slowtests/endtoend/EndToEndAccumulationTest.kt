@@ -41,6 +41,10 @@ class EndToEndAccumulationTest : KoinTestBase() {
         val mottaksJob = getKoin().get<PollForVarslingsmeldingJob>()
         val readReceiptJob = getKoin().get<UpdateReadStatusJob>()
 
+        // clear kafka køen om den har noe i seg
+        mottaksJob.doJob()
+        clearAllDatabaseTables()
+
         // send meldinger på kafka: samme person 2 arbeidsforhold der den ene
         kafkaProdusent = KafkaProducerForTests(get())
         kafkaProdusent.sendSync(manglerImMelding)
