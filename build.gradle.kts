@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val githubPassword: String by project
 
-val ktorVersion = "1.4.0"
+val ktorVersion = "1.4.1"
 val logback_version = "1.2.1"
 val logback_contrib_version = "0.1.5"
 val jacksonVersion = "2.10.3"
