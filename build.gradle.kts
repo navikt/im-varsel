@@ -102,6 +102,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.10.12-13-43-5b8c5")
+    implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 
     implementation("com.github.tomakehurst:wiremock-standalone:2.25.1")
     implementation("org.postgresql:postgresql:42.2.9")
