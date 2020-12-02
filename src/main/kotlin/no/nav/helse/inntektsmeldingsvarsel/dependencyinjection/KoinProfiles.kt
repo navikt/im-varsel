@@ -265,30 +265,34 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { VarslingMapper(get()) }
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
 
-    single {
-        AltinnVarselSender(
-                get(),
-                AltinnVarselMapper(config.getString("altinn_melding.service_id")),
-                get(),
-                get(),
-                config.getString("altinn_melding.username"),
-                config.getString("altinn_melding.password")
-        ) as VarslingSender
-    }
+//    single {
+//        AltinnVarselSender(
+//                get(),
+//                AltinnVarselMapper(config.getString("altinn_melding.service_id")),
+//                get(),
+//                get(),
+//                config.getString("altinn_melding.username"),
+//                config.getString("altinn_melding.password")
+//        ) as VarslingSender
+//    }
+
+    single { MockAltinnBrevutsendelseSender() as VarslingSender }
 
     single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) as PdlClient}
 
     single { VarslingService(get(), get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
-    single {
-        AltinnReadReceiptClient(
-                get(),
-                config.getString("altinn_melding.username"),
-                config.getString("altinn_melding.password"),
-                config.getString("altinn_melding.service_id"),
-                get()
-        ) as ReadReceiptProvider
-    }
+//    single {
+//        AltinnReadReceiptClient(
+//                get(),
+//                config.getString("altinn_melding.username"),
+//                config.getString("altinn_melding.password"),
+//                config.getString("altinn_melding.service_id"),
+//                get()
+//        ) as ReadReceiptProvider
+//    }
+
+    single { MockReadReceiptProvider() as ReadReceiptProvider }
 
     single { PollForVarslingsmeldingJob(get(), get()) }
     single { SendVarslingJob(get(), get()) }

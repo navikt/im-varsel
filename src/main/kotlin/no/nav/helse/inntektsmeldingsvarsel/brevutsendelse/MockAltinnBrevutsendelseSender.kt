@@ -4,6 +4,6 @@ import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevU
 
 class MockAltinnBrevutsendelseSender : AltinnBrevutsendelseSender {
     override fun send(utsendelse: AltinnBrevUtesendelse) {
-        System.out.println("Sendte ${utsendelse.id} til ${utsendelse.virksomhetsNr}")
+        System.out.println("Sendte ${utsendelse.id}")
     }
 }
