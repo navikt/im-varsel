@@ -6,7 +6,7 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 
 class MockVarslingSender(private val service: VarslingService) : VarslingSender {
     override fun send(varsling: Varsling) {
-        println("Sender varsling med id ${varsling.uuid} til {${varsling.virksomhetsNr} med ${varsling.liste.size} personer i")
+        println("Sender varsling med id ${varsling.uuid} med ${varsling.liste.size} personer i")
         service.oppdaterSendtStatus(varsling, true)
         ANTALL_SENDTE_VARSLER.inc()
         ANTALL_PERSONER_I_SENDTE_VARSLER.inc(varsling.liste.size.toDouble())

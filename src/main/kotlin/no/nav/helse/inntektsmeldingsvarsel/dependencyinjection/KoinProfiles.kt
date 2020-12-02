@@ -276,7 +276,7 @@ fun prodConfig(config: ApplicationConfig) = module {
 //        ) as VarslingSender
 //    }
 
-    single { MockAltinnBrevutsendelseSender() as VarslingSender }
+    single { MockVarslingSender(get()) as VarslingSender }
 
     single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) as PdlClient}
@@ -302,6 +302,7 @@ fun prodConfig(config: ApplicationConfig) = module {
 
     single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
     single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
+
     single { AltinnBrevutsendelseSenderImpl(get(), get(), get(),
             config.getString("altinn_melding.username"),
             config.getString("altinn_melding.password")
