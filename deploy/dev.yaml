@@ -41,6 +41,8 @@ spec:
       - mountPath: /var/run/secrets/nais.io/service_user
         kvPath: /serviceuser/data/dev/srvimvarsel
   webproxy: true
+  secureLogs:
+    enabled: true
   env:
   - name: KOIN_PROFILE
     value: PREPROD
