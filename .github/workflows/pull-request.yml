@@ -2,7 +2,6 @@ name: Pull request
 
 on: [pull_request]
 
-
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/im-varsel:${{ github.sha }}
 

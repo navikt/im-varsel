@@ -1,6 +1,9 @@
 name: Build and push image, then deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/im-varsel:${{ github.sha }}
