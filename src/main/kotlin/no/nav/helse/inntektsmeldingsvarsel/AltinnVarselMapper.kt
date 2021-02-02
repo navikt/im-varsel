@@ -12,14 +12,12 @@ import java.time.format.DateTimeFormatter
 class AltinnVarselMapper(val altinnTjenesteKode: String) {
 
     private fun opprettManglendeInnsendingNotifications(): NotificationBEList {
-        val epost = opprettEpostNotification("Varsel om manglende inntektsmelding",
-                "<p>NAV mangler inntektsmelding for en, eller flere av deres ansatte på virksomheten \$reporteeName\$ for å kunne utbetale stønader det nylig er søkt om.</p>" +
-                        "<p>Logg inn på <a href=\"" + lenkeAltinnPortal() + "\">Altinn</a> for å se hvem det gjelder og hvilken periode søknaden gjelder for.</p>" +
-                        "<p>Vennlig hilsen NAV</p>")
+        val epost = opprettEpostNotification("Inntektsmelding mangler - sykepenger",
+                "<p>Vi mangler inntektsmelding fra dere og kan ikke utbetale sykepenger. Sjekk Altinn for å se hvilke ansatte du må sende inntektsmelding for.</p>" +
+                "<p>Vennlig hilsen NAV</p>")
 
         val sms = opprettSMSNotification(
-                "NAV mangler inntektsmelding for en, eller flere av deres ansatte på virksomheten \$reporteeName\$ for å kunne utbetale stønader det nylig er søkt om. ",
-                "Gå til meldingsboksen i Altinn for å se hvem det gjelder og hvilken periode søknaden gjelder for. \n\nVennlig hilsen NAV"
+                "Vi mangler inntektsmelding fra dere og kan ikke utbetale sykepenger. Sjekk Altinn for å se hvilke ansatte du må sende inntektsmelding for. \n\nVennlig hilsen NAV"
         )
 
         return NotificationBEList()
@@ -28,7 +26,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
 
     fun mapVarslingTilInsertCorrespondence(altinnVarsel: Varsling): InsertCorrespondenceV2 {
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-        val tittel = "Beskjed om manglende inntektsmelding"
+        val tittel = "Inntektsmelding mangler - sykepenger"
         
         val innhold = """
             <html>
@@ -37,17 +35,10 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                </head>
                <body>
                    <div class="melding">
-                       <h2>Varsel om manglende inntektsmelding ifm. søknad om sykepenger</h2>
                        <p>
-                        NAV mangler inntektsmelding for følgende ansatte ved virksomheten (${altinnVarsel.virksomhetsNr}). 
-                        For at vi skal kunne utbetale sykepengene det søkes om må disse sendes oss så snart som mulig. 
-                        Dersom dere har sendt inn disse i løpet av de siste 24 timene kan dere se bort fra dette varselet.
+                        Virksomhet: (${altinnVarsel.virksomhetsNr}).                      
                         </p>
-                        <p></p>
-                        <p>
-                            <a href="https://www.altinn.no/skjemaoversikt/arbeids--og-velferdsetaten-nav/Inntektsmelding-til-NAV/">Skjema for inntektsmelding (NAV 08-30.01) finner du her</a><br>
-                            Benytter dere eget HR-system for å sende inntektsmeldinger kan dere fortsatt benytte dette.
-                        </p>
+                        <p>Det mangler inntektsmelding fra dere, og vi kan ikke utbetale sykepenger for følgende ansatte:</p>
                         ${altinnVarsel.liste.map { 
                         """
                             <p>
@@ -57,6 +48,15 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                             </p>
                         """.trimIndent()
                         }.joinToString(separator = "\n")}
+                        
+                        <p>
+                            For at vi skal kunne utbetale sykepengene, må dere sende inntektsmelding så snart som mulig.
+                        </p>
+                        
+                        <p>
+                            <a href="https://www.altinn.no/skjemaoversikt/arbeids--og-velferdsetaten-nav/Inntektsmelding-til-NAV/">Skjema for inntektsmelding (NAV 08-30.01) finner du her</a><br>
+                            Benytter dere eget HR-system for å sende inntektsmeldinger kan dere fortsatt benytte dette.
+                        </p>
                         
                        <h4>Om denne meldingen:</h4>
                        <p>Denne meldingen er automatisk generert og skal hjelpe arbeidsgivere med å få oversikt over inntektsmeldinger som mangler. NAV påtar seg ikke ansvar for eventuell manglende påminnelse. Vi garanterer heller ikke for at foreldelsesfristen ikke er passert, eller om det er andre grunner til at retten til sykepenger ikke er oppfylt. Dersom arbeidstakeren har åpnet en søknad og avbrutt den, vil det ikke bli sendt melding til dere.</p>
