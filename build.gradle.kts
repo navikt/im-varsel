@@ -4,7 +4,7 @@ val githubPassword: String by project
 val ktorVersion = "1.4.3"
 val logback_version = "1.2.1"
 val logback_contrib_version = "0.1.5"
-val jacksonVersion = "2.10.3"
+val jacksonVersion = "2.12.0"
 val prometheusVersion = "0.6.0"
 val hikariVersion = "3.3.1"
 val vaultJdbcVersion = "1.3.1"
@@ -114,7 +114,7 @@ dependencies {
     implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 
     implementation("com.github.tomakehurst:wiremock-standalone:2.25.1")
-    implementation("org.postgresql:postgresql:42.2.9")
+    implementation("org.postgresql:postgresql:42.2.13")
 
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
