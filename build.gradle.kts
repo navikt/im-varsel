@@ -22,6 +22,7 @@ plugins {
     kotlin("jvm") version "1.4.0"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("org.sonarqube") version "2.8"
+    id("com.autonomousapps.dependency-analysis") version "0.71.0"
     jacoco
 }
 
@@ -60,13 +61,29 @@ buildscript {
 dependencies {
     // SNYK-fikser - Disse kan fjernes etterhver som våre avhengigheter oppdaterer sine versjoner
     // Forsøk å fjerne en og en og kjør snyk test --configuration-matching=runtimeClasspath
-    implementation("commons-collections:commons-collections:3.2.2") // overstyrer transiente 3.2.1
     implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 via ktor-client-apache
-    implementation("com.google.guava:guava:30.0-jre") // overstyrer transiente 29.0-jre
     // -- end snyk fixes
+    constraints {
+        implementation("com.google.guava:guava") {
+            version {
+                strictly("30.1-jre")
+            }
+            because("snyk control")
+        }
+        implementation("commons-collections:commons-collections") {
+            version {
+                strictly("3.2.2")
+            }
+            because("snyk control")
+        }
 
-
-
+        implementation("org.apache.ws.xmlschema:xmlschema-core"){
+            version {
+                strictly("2.2.4")
+            }
+            because("Force newer version of XMLSchema to fix illegal reflective access warning")
+        }
+    }
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -76,17 +93,13 @@ dependencies {
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
 
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:1.2019.09.25-00.21-49b69f0625e0")
-
-    implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.ws.xmlschema:xmlschema-core:2.2.4") // Force newer version of XMLSchema to fix illegal reflective access warning
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
-   implementation("com.sun.activation:javax.activation:1.2.0")
 
     implementation("org.koin:koin-core:$koinVersion")
     implementation("org.koin:koin-ktor:$koinVersion")
@@ -95,11 +108,6 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("ch.qos.logback.contrib:logback-jackson:$logback_contrib_version")
-    implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
-    implementation("net.logstash.logback:logstash-logback-encoder:4.9")
-    implementation("org.codehaus.janino:janino:3.0.6")
-    implementation("com.nimbusds:nimbus-jose-jwt:8.15")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
@@ -126,6 +134,25 @@ dependencies {
     testImplementation("org.assertj:assertj-core:$assertJVersion")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+
+
+    api("io.ktor:ktor-utils-jvm:$ktorVersion")
+    api("io.prometheus:simpleclient:$prometheusVersion")
+    api("org.apache.cxf:cxf-core:$cxfVersion")
+    api("io.ktor:ktor-server-host-common:$ktorVersion")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.3.9-native-mt-2")
+    api("io.ktor:ktor-server-core:$ktorVersion")
+    api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion")
+    implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-simple:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.9-native-mt-2")
+    implementation("org.apache.neethi:neethi:3.1.1")
+    implementation("io.ktor:ktor-http-jvm:$ktorVersion")
+    implementation("com.typesafe:config:1.3.1")
+
 }
 
 tasks.named<KotlinCompile>("compileKotlin")
