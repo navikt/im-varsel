@@ -86,7 +86,7 @@ dependencies {
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
-    implementation("com.sun.activation:javax.activation:1.2.0")
+   implementation("com.sun.activation:javax.activation:1.2.0")
 
     implementation("org.koin:koin-core:$koinVersion")
     implementation("org.koin:koin-ktor:$koinVersion")
@@ -144,8 +144,16 @@ java {
 }
 
 repositories {
-    jcenter()
-    mavenCentral()
+    jcenter{
+        content {
+            excludeGroup("no.nav.helsearbeidsgiver")
+        }
+    }
+    mavenCentral{
+        content {
+            excludeGroup("no.nav.helsearbeidsgiver")
+        }
+    }
     maven("https://kotlin.bintray.com/ktor")
     maven {
         credentials {
@@ -196,5 +204,5 @@ task<Test>("slowTests") {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "6.0.1"
+    gradleVersion = "6.8.2"
 }
