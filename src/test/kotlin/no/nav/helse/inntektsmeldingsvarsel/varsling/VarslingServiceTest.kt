@@ -31,6 +31,7 @@ internal class VarslingServiceTest {
             PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
                 "Navn",
                 null,
+
                 "Navnesen",
                 metadata = PdlPersonNavnMetadata("FREG")
             )
