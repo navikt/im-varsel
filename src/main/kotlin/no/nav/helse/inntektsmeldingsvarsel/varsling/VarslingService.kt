@@ -99,7 +99,7 @@ class VarslingService(
     }
 
     private fun hentNavn(it: SpleisInntektsmeldingMelding): String {
-        val pdlResponse = pdlClient.person(it.fødselsnummer)?.navn?.firstOrNull()
+        val pdlResponse = pdlClient.personNavn(it.fødselsnummer)?.navn?.firstOrNull()
         val navn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else ""
         return navn
     }

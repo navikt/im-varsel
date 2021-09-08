@@ -8,8 +8,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavn
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
@@ -27,7 +27,14 @@ internal class VarslingServiceTest {
     val datasourceMock = mockk<HikariDataSource>(relaxed = true)
 
     val pdlClientMock = mockk<PdlClient>() {
-        every { person(any()) } returns PdlPerson(listOf(PdlPersonNavn("Navn", null, "Navnesen")))
+        every { personNavn(any()) } returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
+            PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
+                "Navn",
+                null,
+                "Navnesen",
+                metadata = PdlPersonNavnMetadata("FREG")
+            )
+        ))
     }
 
     val objectMapper = ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())

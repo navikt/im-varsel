@@ -15,14 +15,11 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.RestSTSAccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavn
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
@@ -50,6 +47,7 @@ import org.apache.kafka.common.config.SaslConfigs
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
@@ -119,12 +117,46 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
-    single { object : RestStsClient { override fun getOidcToken(): String { return "fake token"} } as RestStsClient }
+    single { object : AccessTokenProvider { override fun getToken(): String { return "fake token"} } } bind AccessTokenProvider::class
     single {MockReadReceiptProvider() as ReadReceiptProvider}
 
-    single { object: PdlClient {
-            override fun person(ident: String): PdlPerson? = PdlPerson(listOf(PdlPersonNavn("Test", null, "Testesen")))
-        } as PdlClient
+    single {
+        object : PdlClient {
+            override fun fullPerson(ident: String) =
+                PdlHentFullPerson(
+                    PdlHentFullPerson.PdlFullPersonliste(
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList()
+                    ),
+
+                    PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
+
+                    PdlHentFullPerson.PdlGeografiskTilknytning(
+                        PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND,
+                        null,
+                        null,
+                        "SWE"
+                    )
+                )
+
+            override fun personNavn(ident: String) =
+                PdlHentPersonNavn.PdlPersonNavneliste(
+                    listOf(
+                        PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
+                            "Ola",
+                            "M",
+                            "Avsender",
+                            PdlPersonNavnMetadata("freg")
+                        )
+                    )
+                )
+        }
+
     }
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
@@ -203,8 +235,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
-    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
-    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) as PdlClient }
+    single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
+    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
     single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
 
@@ -276,7 +308,7 @@ fun prodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
-    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
+    single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) as PdlClient}
 
     single { VarslingService(get(), get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
