@@ -51,7 +51,7 @@ internal class PostgresVentendeBehandlingerRepositoryTest : KoinTestBase() {
     @Test
     internal fun `kan fjerne når spleis ikke lenger venter på IM`() {
         repo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
-        repo.remove(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, dataSource.connection)
+        repo.remove(msg.fødselsnummer, msg.organisasjonsnummer, dataSource.connection)
 
         val result = repo.findOlderThan(msg.opprettet)
 

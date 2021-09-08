@@ -63,7 +63,7 @@ internal class VarslingServiceTest {
         val trengerIkke = msg_mangler.copy(type = TRENGER_IKKE_INNTEKTSMELDING)
         serviceUnderTest.handleMessage(objectMapper.writeValueAsString(trengerIkke))
 
-        verify(exactly = 1) { ventendeRepoMock.remove(trengerIkke.fødselsnummer, trengerIkke.organisasjonsnummer, trengerIkke.fom, any()) }
+        verify(exactly = 1) { ventendeRepoMock.remove(trengerIkke.fødselsnummer, trengerIkke.organisasjonsnummer, any()) }
         verify(exactly = 0) { ventendeRepoMock.insertIfNotExists(msg_mangler.fødselsnummer, msg_mangler.organisasjonsnummer, msg_mangler.fom, msg_mangler.tom, msg_mangler.opprettet) }
         verify(exactly = 0) { varselRepo.insert(any(), any()) }
     }
@@ -76,7 +76,7 @@ internal class VarslingServiceTest {
         serviceUnderTest.opprettVarslingerFraVentendeMeldinger()
 
         verify(exactly = 1) { allowMock.isAllowed(msg_mangler.organisasjonsnummer) }
-        verify(exactly = 1) { ventendeRepoMock.remove(msg_mangler.fødselsnummer, msg_mangler.organisasjonsnummer, msg_mangler.fom, any()) }
+        verify(exactly = 1) { ventendeRepoMock.remove(msg_mangler.fødselsnummer, msg_mangler.organisasjonsnummer, any()) }
         verify(exactly = 0) { varselRepo.insert(any(), any()) }
     }
 }
