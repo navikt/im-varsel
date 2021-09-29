@@ -209,7 +209,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
-/*    single {
+    single {
         AltinnVarselSender(
                 get(),
                 AltinnVarselMapper(config.getString("altinn_melding.service_id")),
@@ -218,9 +218,9 @@ fun preprodConfig(config: ApplicationConfig) = module {
                 config.getString("altinn_melding.username"),
                 config.getString("altinn_melding.password")
         ) as VarslingSender
-    }*/
+    }
 
-    single { MockVarslingSender(get()) as VarslingSender }
+    // single { MockVarslingSender(get()) as VarslingSender }
 
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
     single {
