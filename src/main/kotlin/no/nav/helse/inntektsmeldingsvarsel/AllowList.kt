@@ -21,3 +21,9 @@ class ResourceFileAllowList(resourceFilePath: String) : AllowList {
         return allowList.contains(virksomhetsnummer)
     }
 }
+
+class PilotAllowList(private val allowDigits: Set<Char>) : AllowList {
+    override fun isAllowed(virksomhetsnummer: String): Boolean {
+        return allowDigits.contains(virksomhetsnummer[5])
+    }
+}
