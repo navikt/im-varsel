@@ -52,7 +52,7 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
         repo.updateData(dbVarsling.uuid, jsonData)
         val afterUpdate = repo.findBySentStatus(false, 1)[0]
 
-        assertThat(afterUpdate.data).isEqualTo(jsonData)
+        assertThat(afterUpdate?.data).isEqualTo(jsonData)
     }
 
     @Test
@@ -67,8 +67,8 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
 
         val afterUpdate = allSent.first()
 
-        assertThat(afterUpdate.behandlet).isEqualTo(timeOfUpdate)
-        assertThat(afterUpdate.sent).isEqualTo(true)
+        assertThat(afterUpdate?.behandlet).isEqualTo(timeOfUpdate)
+        assertThat(afterUpdate?.sent).isEqualTo(true)
     }
 
     @Test
@@ -77,7 +77,7 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
 
         val afterUpdate = repo.findBySentStatus(false, 1)[0]
 
-        assertThat(afterUpdate.read).isEqualTo(true)
+        assertThat(afterUpdate?.read).isEqualTo(true)
     }
 
     @Test
