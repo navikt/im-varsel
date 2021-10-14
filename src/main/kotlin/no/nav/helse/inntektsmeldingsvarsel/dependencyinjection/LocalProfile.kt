@@ -1,10 +1,8 @@
 package no.nav.helse.inntektsmeldingsvarsel.dependencyinjection
 
 import io.ktor.config.*
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavn
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.inntektsmeldingsvarsel.AllowAll
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.MockAltinnBrevutsendelseSender
@@ -23,6 +21,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
@@ -38,13 +37,47 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
-    single { object : RestStsClient { override fun getOidcToken(): String { return "fake token"} } as RestStsClient }
-    single { MockReadReceiptProvider() as ReadReceiptProvider }
+    single { object : AccessTokenProvider { override fun getToken(): String { return "fake token"} } } bind AccessTokenProvider::class
+    single {MockReadReceiptProvider() as ReadReceiptProvider}
 
-    single { object: PdlClient {
-        override fun person(ident: String): PdlPerson? = PdlPerson(listOf(PdlPersonNavn("Test", null, "Testesen")))
-    } as PdlClient
-    }
+    single {
+        object : PdlClient {
+            override fun fullPerson(ident: String) =
+                PdlHentFullPerson(
+                    PdlHentFullPerson.PdlFullPersonliste(
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList()
+                    ),
+
+                    PdlHentFullPerson.PdlIdentResponse(listOf(PdlIdent("aktør-id", PdlIdent.PdlIdentGruppe.AKTORID))),
+
+                    PdlHentFullPerson.PdlGeografiskTilknytning(
+                        PdlHentFullPerson.PdlGeografiskTilknytning.PdlGtType.UTLAND,
+                        null,
+                        null,
+                        "SWE"
+                    )
+                )
+
+            override fun personNavn(ident: String) =
+                PdlHentPersonNavn.PdlPersonNavneliste(
+                    listOf(
+                        PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
+                            "Ola",
+                            "M",
+                            "Avsender",
+                            PdlPersonNavnMetadata("freg")
+                        )
+                    )
+                )
+        }
+
+    } bind PdlClient::class
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }

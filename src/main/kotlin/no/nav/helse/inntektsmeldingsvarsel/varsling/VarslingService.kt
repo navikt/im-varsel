@@ -62,7 +62,7 @@ class VarslingService(
         when(msg.type) {
             TRENGER_INNTEKTSMELDING -> ventendeRepo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
             TRENGER_IKKE_INNTEKTSMELDING -> datasource.connection.use {
-                ventendeRepo.remove(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, it)
+                ventendeRepo.remove(msg.fødselsnummer, msg.organisasjonsnummer, it)
             }
         }
     }
@@ -93,13 +93,13 @@ class VarslingService(
                         }
 
                         varsling.liste
-                                .forEach { ventendeRepo.remove(it.personnumer, varsling.virksomhetsNr, it.periode.fom, con) }
+                                .forEach { ventendeRepo.remove(it.personnumer, varsling.virksomhetsNr, con) }
                     }
                 }
     }
 
     private fun hentNavn(it: SpleisInntektsmeldingMelding): String {
-        val pdlResponse = pdlClient.person(it.fødselsnummer)?.navn?.firstOrNull()
+        val pdlResponse = pdlClient.personNavn(it.fødselsnummer)?.navn?.firstOrNull()
         val navn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else ""
         return navn
     }

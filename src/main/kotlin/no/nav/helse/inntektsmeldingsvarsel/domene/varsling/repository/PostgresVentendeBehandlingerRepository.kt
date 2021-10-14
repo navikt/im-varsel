@@ -1,6 +1,8 @@
 package no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository
 
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
+import no.nav.helse.inntektsmeldingsvarsel.web.mainLogger
+import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Timestamp
@@ -10,6 +12,7 @@ import javax.sql.DataSource
 
 class PostgresVentendeBehandlingerRepository(private val ds: DataSource): VentendeBehandlingerRepository{
 
+    private val logger = LoggerFactory.getLogger(PostgresVentendeBehandlingerRepository::class.java)
     private val tableName = "ventende_behandlinger"
     private val insertStatement = """
         INSERT INTO $tableName(fødselsnummer, organisasjonsnummer, fom, tom, opprettet) VALUES(?, ?, ?, ?, ?)
@@ -17,7 +20,7 @@ class PostgresVentendeBehandlingerRepository(private val ds: DataSource): Venten
             DO NOTHING
     """.trimIndent()
 
-    private val removeStatement = "DELETE FROM $tableName where fødselsnummer = ? and organisasjonsnummer = ? and fom = ?"
+    private val removeStatement = "DELETE FROM $tableName where fødselsnummer = ? and organisasjonsnummer = ?"
     private val findStatement = "SELECT * FROM $tableName WHERE opprettet <= ?"
 
     override fun insertIfNotExists(fnr: String, virksomhet: String, fom: LocalDate, tom: LocalDate, opprettet: LocalDateTime) {
@@ -32,12 +35,15 @@ class PostgresVentendeBehandlingerRepository(private val ds: DataSource): Venten
         }
     }
 
-    override fun remove(fnr: String, virksomhet: String, fom: LocalDate, con: Connection) {
-        con.prepareStatement(removeStatement).apply {
+    override fun remove(fnr: String, virksomhet: String, con: Connection) {
+        val affectedRows = con.prepareStatement(removeStatement).apply {
             setString(1, fnr)
             setString(2, virksomhet)
-            setTimestamp(3, Timestamp.valueOf(fom.atStartOfDay()))
         }.executeUpdate()
+
+        if (affectedRows == 0) {
+            logger.warn("Fikk melding om at IM ikke mangler, men ingen ventende")
+        }
     }
 
     override fun findOlderThan(date: LocalDateTime): Set<SpleisInntektsmeldingMelding> {

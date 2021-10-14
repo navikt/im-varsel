@@ -26,7 +26,7 @@ interface VentendeBehandlingerRepository {
     /**
      * Fjerner alle ventende saker på den gitte nøkkelen
      */
-    fun remove(fnr: String, virksomhet: String, fom: LocalDate, con: Connection)
+    fun remove(fnr: String, virksomhet: String, con: Connection)
 
     /**
      * Finner alle saker som er endre enn den gitt datoen. Disse kan da grupperes på virksomhet for

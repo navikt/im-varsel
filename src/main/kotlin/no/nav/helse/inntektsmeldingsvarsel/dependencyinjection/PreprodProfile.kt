@@ -2,8 +2,8 @@ package no.nav.helse.inntektsmeldingsvarsel.dependencyinjection
 
 import io.ktor.config.*
 import io.ktor.util.*
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.RestSTSAccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
@@ -28,6 +28,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldi
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.common.config.SaslConfigs
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
@@ -35,8 +36,7 @@ import javax.sql.DataSource
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
     single {
-        getDataSource(
-            createHikariConfig(config.getjdbcUrlFromProperties()),
+        getDataSource(createHikariConfig(config.getjdbcUrlFromProperties()),
             config.getString("database.name"),
             config.getString("database.vault.mountpath")) as DataSource
     }
@@ -68,18 +68,18 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
-/*    single {
+    single {
         AltinnVarselSender(
-                get(),
-                AltinnVarselMapper(config.getString("altinn_melding.service_id")),
-                get(),
-                get(),
-                config.getString("altinn_melding.username"),
-                config.getString("altinn_melding.password")
+            get(),
+            AltinnVarselMapper(config.getString("altinn_melding.service_id")),
+            get(),
+            get(),
+            config.getString("altinn_melding.username"),
+            config.getString("altinn_melding.password")
         ) as VarslingSender
-    }*/
+    }
 
-    single { MockVarslingSender(get()) as VarslingSender }
+    // single { MockVarslingSender(get()) as VarslingSender }
 
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
     single {
@@ -94,14 +94,14 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
-    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
-    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) as PdlClient }
+    single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
+    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
     single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
 
     single { PollForVarslingsmeldingJob(get(), get()) }
     single { SendVarslingJob(get(), get()) }
-    single { UpdateReadStatusJob(get(), get()) }
+    single { UpdateReadStatusJob(get(), get())}
 
     single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
     single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }

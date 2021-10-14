@@ -2,9 +2,8 @@ name: Pull request
 
 on: [pull_request]
 
-
 env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/im-varsel:${{ github.sha }}
+  IMAGE: ghcr.io/${{ github.repository }}/im-varsel:${{ github.sha }}
 
 jobs:
 

@@ -2,8 +2,8 @@ package no.nav.helse.inntektsmeldingsvarsel.dependencyinjection
 
 import io.ktor.config.*
 import io.ktor.util.*
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.RestSTSAccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
@@ -29,14 +29,14 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafka
 import org.apache.cxf.frontend.ClientProxy
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.common.config.SaslConfigs
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
 fun prodConfig(config: ApplicationConfig) = module {
     single {
-        getDataSource(
-            createHikariConfig(config.getjdbcUrlFromProperties()),
+        getDataSource(createHikariConfig(config.getjdbcUrlFromProperties()),
             config.getString("database.name"),
             config.getString("database.vault.mountpath")) as DataSource
     }
@@ -87,10 +87,10 @@ fun prodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
-    single { RestStsClientImpl(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) as RestStsClient }
-    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) as PdlClient }
+    single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
+    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) } bind PdlClient::class
 
-    single { VarslingService(get(), get(), get(), get(), get(), get(), PilotAllowList(setOf('1'))) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
     single {
         AltinnReadReceiptClient(
             get(),

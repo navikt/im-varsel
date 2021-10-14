@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val githubPassword: String by project
 
-val ktorVersion = "1.4.1"
+val ktorVersion = "1.5.3"
 val logback_version = "1.2.1"
 val logback_contrib_version = "0.1.5"
-val jacksonVersion = "2.10.3"
+val jacksonVersion = "2.12.0"
 val prometheusVersion = "0.6.0"
 val hikariVersion = "3.3.1"
 val vaultJdbcVersion = "1.3.1"
@@ -14,7 +14,7 @@ val junitJupiterVersion = "5.5.0-RC2"
 val assertJVersion = "3.12.2"
 val mockKVersion = "1.9.3"
 val koinVersion = "2.0.1"
-val cxfVersion = "3.3.1"
+val cxfVersion = "3.4.2"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
 
@@ -58,6 +58,15 @@ buildscript {
 }
 
 dependencies {
+    // SNYK-fikser - Disse kan fjernes etterhver som våre avhengigheter oppdaterer sine versjoner
+    // Forsøk å fjerne en og en og kjør snyk test --configuration-matching=runtimeClasspath
+    implementation("commons-collections:commons-collections:3.2.2") // overstyrer transiente 3.2.1
+    implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 via ktor-client-apache
+    implementation("com.google.guava:guava:30.0-jre") // overstyrer transiente 29.0-jre
+    // -- end snyk fixes
+
+
+
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -101,21 +110,17 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2020.10.12-13-43-5b8c5")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.08.27-15-00-1d672")
     implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 
     implementation("com.github.tomakehurst:wiremock-standalone:2.25.1")
-    implementation("org.postgresql:postgresql:42.2.9")
+    implementation("org.postgresql:postgresql:42.2.13")
 
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
-    testImplementation("org.koin:koin-test:$koinVersion")
-    implementation("com.github.javafaker:javafaker:1.0.1") // flytt denne til test når generatorene ikke er nødvendige i prod-koden lenger
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2")
     testImplementation("io.mockk:mockk:$mockKVersion")
-    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")

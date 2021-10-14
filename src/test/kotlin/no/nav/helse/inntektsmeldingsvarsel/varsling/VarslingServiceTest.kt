@@ -8,8 +8,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavn
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
@@ -27,7 +27,15 @@ internal class VarslingServiceTest {
     val datasourceMock = mockk<HikariDataSource>(relaxed = true)
 
     val pdlClientMock = mockk<PdlClient>() {
-        every { person(any()) } returns PdlPerson(listOf(PdlPersonNavn("Navn", null, "Navnesen")))
+        every { personNavn(any()) } returns PdlHentPersonNavn.PdlPersonNavneliste(listOf(
+            PdlHentPersonNavn.PdlPersonNavneliste.PdlPersonNavn(
+                "Navn",
+                null,
+
+                "Navnesen",
+                metadata = PdlPersonNavnMetadata("FREG")
+            )
+        ))
     }
 
     val objectMapper = ObjectMapper().registerModule(KotlinModule()).registerModule(JavaTimeModule())
@@ -63,7 +71,7 @@ internal class VarslingServiceTest {
         val trengerIkke = msg_mangler.copy(type = TRENGER_IKKE_INNTEKTSMELDING)
         serviceUnderTest.handleMessage(objectMapper.writeValueAsString(trengerIkke))
 
-        verify(exactly = 1) { ventendeRepoMock.remove(trengerIkke.fødselsnummer, trengerIkke.organisasjonsnummer, trengerIkke.fom, any()) }
+        verify(exactly = 1) { ventendeRepoMock.remove(trengerIkke.fødselsnummer, trengerIkke.organisasjonsnummer, any()) }
         verify(exactly = 0) { ventendeRepoMock.insertIfNotExists(msg_mangler.fødselsnummer, msg_mangler.organisasjonsnummer, msg_mangler.fom, msg_mangler.tom, msg_mangler.opprettet) }
         verify(exactly = 0) { varselRepo.insert(any(), any()) }
     }
@@ -76,7 +84,7 @@ internal class VarslingServiceTest {
         serviceUnderTest.opprettVarslingerFraVentendeMeldinger()
 
         verify(exactly = 1) { allowMock.isAllowed(msg_mangler.organisasjonsnummer) }
-        verify(exactly = 1) { ventendeRepoMock.remove(msg_mangler.fødselsnummer, msg_mangler.organisasjonsnummer, msg_mangler.fom, any()) }
+        verify(exactly = 1) { ventendeRepoMock.remove(msg_mangler.fødselsnummer, msg_mangler.organisasjonsnummer, any()) }
         verify(exactly = 0) { varselRepo.insert(any(), any()) }
     }
 }

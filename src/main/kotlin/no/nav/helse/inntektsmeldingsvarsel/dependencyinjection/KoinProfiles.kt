@@ -15,14 +15,11 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClient
-import no.nav.helse.arbeidsgiver.integrasjoner.RestStsClientImpl
+import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
+import no.nav.helse.arbeidsgiver.integrasjoner.RestSTSAccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPerson
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavn
+import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
@@ -50,6 +47,7 @@ import org.apache.kafka.common.config.SaslConfigs
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
@@ -106,6 +104,8 @@ fun buildAndTestConfig() = module {
 
 
 }
+
+
 
 // utils
 @KtorExperimentalAPI
