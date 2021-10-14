@@ -40,7 +40,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single {
         getDataSource(createHikariConfig(config.getjdbcUrlFromProperties()),
             config.getString("database.name"),
-            config.getString("database.vault.mountpath")) as DataSource
+            config.getString("database.vault.mountpath"))
     }
 
     single {
@@ -50,7 +50,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
             SaslConfigs.SASL_MECHANISM to "PLAIN",
             SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required " +
                     "username=\"${config.getString("kafka.username")}\" password=\"${config.getString("kafka.password")}\";"
-        ), config.getString("altinn_melding.kafka_topic")) as ManglendeInntektsmeldingMeldingProvider
+        ), config.getString("altinn_melding.kafka_topic"))
     }
 
     single {
@@ -78,12 +78,12 @@ fun preprodConfig(config: ApplicationConfig) = module {
             get(),
             ALTINN_MELDING_USERNAME,
             ALTINN_MELDING_PASSWORD
-        ) as VarslingSender
+        )
     }
 
     // single { MockVarslingSender(get()) as VarslingSender }
 
-    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
+    single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) }
     single {
         AltinnReadReceiptClient(
             get(),
@@ -91,11 +91,11 @@ fun preprodConfig(config: ApplicationConfig) = module {
             ALTINN_MELDING_PASSWORD,
             config.getString("altinn_melding.service_id"),
             get()
-        ) as ReadReceiptProvider
+        )
     }
 
-    single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
+    single { PostgresVarslingRepository(get()) }
+    single { PostgresVentendeBehandlingerRepository(get()) }
     single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
@@ -105,9 +105,10 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get())}
 
-    single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
-    single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
-    single { AltinnBrevutsendelseSenderImpl(get(), get(), get(),ALTINN_MELDING_USERNAME,ALTINN_MELDING_PASSWORD) as AltinnBrevutsendelseSender
+    single { PostgresAltinnBrevUtsendelseRepository(get()) }
+    single { PostgresAltinnBrevmalRepository(get(), get()) }
+    single {
+        AltinnBrevutsendelseSenderImpl(get(), get(), get(),ALTINN_MELDING_USERNAME,ALTINN_MELDING_PASSWORD)
     }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
 }

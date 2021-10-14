@@ -1,3 +1,5 @@
+@file:Suppress("DuplicatedCode")
+
 package no.nav.helse.inntektsmeldingsvarsel.dependencyinjection
 
 import io.ktor.config.*
@@ -26,19 +28,19 @@ import org.koin.dsl.module
 import javax.sql.DataSource
 
 fun localDevConfig(config: ApplicationConfig) = module {
-    single { getDataSource(createLocalHikariConfig(), "im-varsel", null) as DataSource }
+    single { getDataSource(createLocalHikariConfig(), "im-varsel", null) }
 
     single {
         VarslingsmeldingKafkaClient(mutableMapOf<String, Any>(
             "bootstrap.servers" to "localhost:9092",
             "max.poll.interval.ms" to "30000")
-            , config.getString("altinn_melding.kafka_topic")) as ManglendeInntektsmeldingMeldingProvider
+            , config.getString("altinn_melding.kafka_topic"))
     }
 
     single { VarslingMapper(get()) }
 
     single { object : AccessTokenProvider { override fun getToken(): String { return "fake token"} } } bind AccessTokenProvider::class
-    single {MockReadReceiptProvider() as ReadReceiptProvider}
+    single { MockReadReceiptProvider() }
 
     single {
         object : PdlClient {
@@ -79,17 +81,17 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     } bind PdlClient::class
 
-    single { PostgresVarslingRepository(get()) as VarslingRepository }
-    single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
+    single { PostgresVarslingRepository(get()) }
+    single { PostgresVentendeBehandlingerRepository(get()) }
     single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
 
-    single { MockVarslingSender(get()) as VarslingSender }
+    single { MockVarslingSender(get()) }
     single { PollForVarslingsmeldingJob(get(), get()) }
     single { SendVarslingJob(get(), get()) }
     single { UpdateReadStatusJob(get(), get()) }
 
-    single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
-    single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
-    single { MockAltinnBrevutsendelseSender() as AltinnBrevutsendelseSender }
+    single { PostgresAltinnBrevUtsendelseRepository(get()) }
+    single { PostgresAltinnBrevmalRepository(get(), get()) }
+    single { MockAltinnBrevutsendelseSender() }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
 }
