@@ -35,6 +35,8 @@ import javax.sql.DataSource
 
 @KtorExperimentalAPI
 fun preprodConfig(config: ApplicationConfig) = module {
+    val ALTINN_MELDING_USERNAME: String = config.getString("altinn_melding.username")
+    val ALTINN_MELDING_PASSWORD: String =  config.getString("altinn_melding.password")
     single {
         getDataSource(createHikariConfig(config.getjdbcUrlFromProperties()),
             config.getString("database.name"),
@@ -74,8 +76,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
             AltinnVarselMapper(config.getString("altinn_melding.service_id")),
             get(),
             get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password")
+            ALTINN_MELDING_USERNAME,
+            ALTINN_MELDING_PASSWORD
         ) as VarslingSender
     }
 
@@ -85,8 +87,8 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single {
         AltinnReadReceiptClient(
             get(),
-            config.getString("altinn_melding.username"),
-            config.getString("altinn_melding.password"),
+            ALTINN_MELDING_USERNAME,
+            ALTINN_MELDING_PASSWORD,
             config.getString("altinn_melding.service_id"),
             get()
         ) as ReadReceiptProvider
@@ -105,10 +107,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
 
     single { PostgresAltinnBrevUtsendelseRepository(get()) as AltinnBrevUtsendelseRepository }
     single { PostgresAltinnBrevmalRepository(get(), get()) as AltinnBrevMalRepository }
-    single { AltinnBrevutsendelseSenderImpl(get(), get(), get(),
-        config.getString("altinn_melding.username"),
-        config.getString("altinn_melding.password")
-    ) as AltinnBrevutsendelseSender
+    single { AltinnBrevutsendelseSenderImpl(get(), get(), get(),ALTINN_MELDING_USERNAME,ALTINN_MELDING_PASSWORD) as AltinnBrevutsendelseSender
     }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
 }
