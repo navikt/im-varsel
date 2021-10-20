@@ -26,7 +26,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
 
     fun mapVarslingTilInsertCorrespondence(altinnVarsel: Varsling): InsertCorrespondenceV2 {
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-        val tittel = "Inntektsmelding mangler - sykepenger"
+        val tittel = "Inntektsmelding mangler for sykepenger"
         
         val innhold = """
             <html>
@@ -35,10 +35,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                </head>
                <body>
                    <div class="melding">
-                       <p>
-                        Virksomhet: (${altinnVarsel.virksomhetsNr}).                      
-                        </p>
-                        <p>Det mangler inntektsmelding fra dere, og vi kan ikke utbetale sykepenger for følgende ansatte:</p>
+                        <p>NAV mangler inntektsmelding for ansatte ved virksomheten (810007842). For at vi skal kunne utbetale sykepengene, må inntektsmeldinger sendes oss så snart som mulig. Dere kan se bort fra varselet hvis dere har sendt inntektsmelding i løpet av de siste 24 timene for disse ansatte:</p>
                         ${altinnVarsel.liste.map { 
                         """
                             <p>
@@ -48,10 +45,6 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                             </p>
                         """.trimIndent()
                         }.joinToString(separator = "\n")}
-                        
-                        <p>
-                            For at vi skal kunne utbetale sykepengene, må dere sende inntektsmelding så snart som mulig.
-                        </p>
                         
                         <p>
                             <a href="https://www.altinn.no/skjemaoversikt/arbeids--og-velferdsetaten-nav/Inntektsmelding-til-NAV/">Skjema for inntektsmelding (NAV 08-30.01) finner du her</a><br>
