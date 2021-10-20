@@ -3,7 +3,7 @@ package no.nav.helse.inntektsmeldingsvarsel.dependencyinjection
 import io.ktor.config.*
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
-import no.nav.helse.inntektsmeldingsvarsel.AllowAll
+import no.nav.helse.inntektsmeldingsvarsel.PilotAllowList
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.MockAltinnBrevutsendelseSender
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.SendAltinnBrevUtsendelseJob
@@ -81,7 +81,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
-    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), PilotAllowList(setOf('1'))) }
 
     single { MockVarslingSender(get()) as VarslingSender }
     single { PollForVarslingsmeldingJob(get(), get()) }
