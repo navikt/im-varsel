@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test
 
 internal class AllowListTest {
     @Test
-    internal fun `AllowAll tillater hva som helst`() {
+    internal fun `PilotAllow tillater ikke hva som helst`() {
         val allowAll = AllowAll()
-        assertThat(allowAll.isAllowed("1234")).isTrue()
-        assertThat(allowAll.isAllowed("")).isTrue()
+        assertThat(allowAll.isAllowed("12341234")).isTrue()
+        assertThat(allowAll.isAllowed("")).isFalse()
     }
 
     @Test
