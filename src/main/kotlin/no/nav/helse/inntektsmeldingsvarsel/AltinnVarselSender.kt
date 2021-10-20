@@ -33,6 +33,7 @@ class AltinnVarselSender(
                 if (it.joarkRef == null) {
                     it.joarkRef = journalførEnkeltVarsel(varsling, it)
                     varslingService.oppdaterData(varsling)
+                    log.info("Journalført enkeltvarsling med joarRef {}",it.joarkRef)
                 }
             }
 

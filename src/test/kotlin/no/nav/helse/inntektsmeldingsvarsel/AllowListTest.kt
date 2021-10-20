@@ -1,5 +1,6 @@
 package no.nav.helse.inntektsmeldingsvarsel
 
+
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -10,11 +11,4 @@ internal class AllowListTest {
         assertThat(allowAll.isAllowed("12341234")).isTrue()
     }
 
-    @Test
-    internal fun `ResourceFileAllowList leser fra en resource fil og tillater kun oppføringer på linjer i filen`() {
-        val allowList = ResourceFileAllowList("/allow-list-test")
-        assertThat(allowList.isAllowed("974778725")).isTrue()
-        assertThat(allowList.isAllowed("1234566789")).isFalse()
-        assertThat(allowList.isAllowed("")).isFalse()
-    }
 }

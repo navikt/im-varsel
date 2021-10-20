@@ -10,17 +10,17 @@ class AllowAll : AllowList {
     }
 }
 
-class ResourceFileAllowList(resourceFilePath: String) : AllowList {
-    val allowList = this::class.java.getResource(resourceFilePath)
-            .readText()
-            .split("\n")
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-
-    override fun isAllowed(virksomhetsnummer: String): Boolean {
-        return allowList.contains(virksomhetsnummer)
-    }
-}
+//class ResourceFileAllowList(resourceFilePath: String) : AllowList {
+//    val allowList = this::class.java.getResource(resourceFilePath)
+//            .readText()
+//            .split("\n")
+//            .map { it.trim() }
+//            .filter { it.isNotEmpty() }
+//
+//    override fun isAllowed(virksomhetsnummer: String): Boolean {
+//        return allowList.contains(virksomhetsnummer)
+//    }
+//}
 
 class PilotAllowList(private val allowDigits: Set<Char>) : AllowList {
     override fun isAllowed(virksomhetsnummer: String): Boolean {
