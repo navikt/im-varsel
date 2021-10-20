@@ -92,7 +92,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) } bind PdlClient::class
 
-    single { VarslingService(get(), get(), get(), get(), get(), get(), ResourceFileAllowList("/allow-list/virksomheter-allow-prod")) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), PilotAllowList(setOf('1'))) }
     single {
         AltinnReadReceiptClient(
             get(),

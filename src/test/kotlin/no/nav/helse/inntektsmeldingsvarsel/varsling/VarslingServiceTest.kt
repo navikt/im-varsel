@@ -11,6 +11,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlHentPersonNavn
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
+import no.nav.helse.inntektsmeldingsvarsel.PilotAllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
@@ -20,7 +21,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal class VarslingServiceTest {
-    val allowMock = mockk<AllowList>()
+    val allowMock = mockk<PilotAllowList>()
     val varselRepo = mockk<VarslingRepository>(relaxed = true)
     val ventendeRepoMock = mockk<VentendeBehandlingerRepository>(relaxed = true)
     val altinnVarselMapperMock = mockk<VarslingMapper>()
