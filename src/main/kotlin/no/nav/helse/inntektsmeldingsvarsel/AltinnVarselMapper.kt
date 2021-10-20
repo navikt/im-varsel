@@ -17,7 +17,8 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                 "<p>Vennlig hilsen NAV</p>")
 
         val sms = opprettSMSNotification(
-                "Vi mangler inntektsmelding fra dere og kan ikke utbetale sykepenger. Sjekk Altinn for å se hvilke ansatte du må sende inntektsmelding for. \n\nVennlig hilsen NAV"
+                "Vi mangler inntektsmelding fra dere og kan ikke utbetale sykepenger.",
+                "Sjekk Altinn for å se hvilke ansatte du må sende inntektsmelding for. \n\nVennlig hilsen NAV"
         )
 
         return NotificationBEList()
