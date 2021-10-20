@@ -8,7 +8,6 @@ internal class AllowListTest {
     internal fun `PilotAllow tillater ikke hva som helst`() {
         val allowAll = AllowAll()
         assertThat(allowAll.isAllowed("12341234")).isTrue()
-        assertThat(allowAll.isAllowed("")).isFalse()
     }
 
     @Test
