@@ -33,7 +33,6 @@ class AltinnVarselSender(
                 if (it.joarkRef == null) {
                     it.joarkRef = journalførEnkeltVarsel(varsling, it)
                     varslingService.oppdaterData(varsling)
-                    log.info("Journalført enkeltvarsling med joarRef {}",it.joarkRef)
                 }
             }
 
@@ -51,6 +50,7 @@ class AltinnVarselSender(
             }
 
             ANTALL_SENDTE_VARSLER.inc()
+            log.info("Sent varsel meed size {}", varsling.liste.size)
             ANTALL_PERSONER_I_SENDTE_VARSLER.inc(varsling.liste.size.toDouble())
 
         } catch (e: Exception) {
@@ -88,7 +88,7 @@ class AltinnVarselSender(
 
         )
 
-        log.debug("Journalført ${varsel.uuid} med ref ${response.journalpostId}")
+        log.info("Journalført ${varsel.uuid} med ref ${response.journalpostId}")
         return response.journalpostId
     }
 
@@ -120,7 +120,7 @@ class AltinnVarselSender(
 
         )
 
-        log.debug("Journalført varsel for enkeltperson på ${eksternrefId} med ref ${response.journalpostId}")
+        log.info("Journalført varsel for enkeltperson på ${eksternrefId} med ref ${response.journalpostId}")
 
         return response.journalpostId
     }
