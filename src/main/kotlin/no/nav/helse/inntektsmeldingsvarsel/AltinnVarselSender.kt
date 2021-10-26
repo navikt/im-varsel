@@ -59,7 +59,7 @@ class AltinnVarselSender(
         }
     }
 
-    private val tittel = "Varsel om manglende inntektsmelding"
+    private val tittel = "Inntektsmelding mangler for sykepenger"
 
     fun journalfør(varsel: Varsling): String {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel, varsel.liste))

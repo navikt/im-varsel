@@ -48,7 +48,7 @@ class EndToEndAccumulationTest : KoinTestBase() {
         // send meldinger på kafka: samme person 2 arbeidsforhold der den ene
         kafkaProdusent = KafkaProducerForTests(get())
         kafkaProdusent.sendSync(manglerImMelding)
-        kafkaProdusent.sendSync(manglerImMelding.copy(organisasjonsnummer = "123111333"))
+        kafkaProdusent.sendSync(manglerImMelding.copy(organisasjonsnummer = "123"))
         kafkaProdusent.sendSync(manglerImMelding.copy(type = TRENGER_IKKE_INNTEKTSMELDING))
 
         mottaksJob.doJob()

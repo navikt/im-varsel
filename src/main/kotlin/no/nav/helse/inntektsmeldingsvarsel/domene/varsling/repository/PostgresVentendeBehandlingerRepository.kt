@@ -42,7 +42,7 @@ class PostgresVentendeBehandlingerRepository(private val ds: DataSource): Venten
         }.executeUpdate()
 
         if (affectedRows == 0) {
-            logger.warn("Fikk melding om at IM ikke mangler, men ingen ventende")
+            logger.debug("Fikk melding om at IM ikke mangler, men ingen ventende")
         }
     }
 
