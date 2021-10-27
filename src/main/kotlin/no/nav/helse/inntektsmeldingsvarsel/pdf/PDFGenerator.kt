@@ -41,7 +41,7 @@ class PDFGenerator {
         contentStream.showText("Personer:")
         personvarslinger.forEach {
             contentStream.newLineAtOffset(0F, -LINE_HEIGHT)
-            contentStream.showText("${it.navn} (${it.personnumer}) for perioden ${DATE_FORMAT.format(it.periode.fom)} - ${DATE_FORMAT.format(it.periode.fom)}")
+            contentStream.showText("${it.navn} (${it.personnumer}) for perioden ${DATE_FORMAT.format(it.periode.fom)} - ${DATE_FORMAT.format(it.periode.tom)}")
         }
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 2)
         contentStream.showText("Opprettet: ${TIMESTAMP_FORMAT.format(LocalDateTime.now())}")
