@@ -220,7 +220,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
         ) as VarslingSender
     }
 
-    single { MockVarslingSender(get()) as VarslingSender }
+    //single { MockVarslingSender(get()) as VarslingSender }
 
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
     single {
