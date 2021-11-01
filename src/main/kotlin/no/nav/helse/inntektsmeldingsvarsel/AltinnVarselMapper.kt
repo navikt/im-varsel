@@ -36,7 +36,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                </head>
                <body>
                    <div class="melding">
-                        <p>NAV mangler inntektsmelding for ansatte ved virksomheten (810007842). For at vi skal kunne utbetale sykepengene, må inntektsmeldinger sendes oss så snart som mulig. Dere kan se bort fra varselet hvis dere har sendt inntektsmelding i løpet av de siste 24 timene for disse ansatte:</p>
+                        <p>NAV mangler inntektsmelding for ansatte ved virksomheten (${altinnVarsel.virksomhetsNr}). For at vi skal kunne utbetale sykepengene, må inntektsmeldinger sendes oss så snart som mulig. Dere kan se bort fra varselet hvis dere har sendt inntektsmelding i løpet av de siste 24 timene for disse ansatte:</p>
                         ${altinnVarsel.liste.map { 
                         """
                             <p>
@@ -63,7 +63,7 @@ class AltinnVarselMapper(val altinnTjenesteKode: String) {
                 .withLanguageCode("1044")
                 .withMessageTitle(tittel)
                 .withMessageBody(innhold)
-                .withMessageSummary("NAV mangler inntektsmelding for en, eller flere av deres ansatte for å kunne utbetale stønaderdet nylig er søkt om.")
+                .withMessageSummary("Inntektsmelding mangler for sykepenger")
 
         return InsertCorrespondenceV2()
                 .withAllowForwarding(false)
