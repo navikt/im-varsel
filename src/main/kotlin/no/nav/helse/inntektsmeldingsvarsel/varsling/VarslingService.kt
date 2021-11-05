@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.ANTALL_FILTRERTE_VARSLER
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
-import no.nav.helse.inntektsmeldingsvarsel.PilotAllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.Periode
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
@@ -24,7 +23,7 @@ class VarslingService(
         private val mapper: VarslingMapper,
         private val om: ObjectMapper,
         private val pdlClient: PdlClient,
-        private val allowList: PilotAllowList
+        private val allowList: AllowList
 ) {
 
     val logger = LoggerFactory.getLogger(VarslingService::class.java)
