@@ -94,7 +94,7 @@ class AltinnVarselSender(
 
     fun journalførEnkeltVarsel(varsel: Varsling, personVarsel: PersonVarsling): String {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(varsel, setOf(personVarsel)))
-        val eksternrefId = varsel.uuid +  "-" + varsel.liste.indexOfFirst { it.personnumer == personVarsel.personnumer }
+        val eksternrefId = varsel.uuid +  "-" + varsel.liste.indexOfFirst { it.personnumer == personVarsel.personnumer && personVarsel.periode.fom == it.periode.fom }
 
         val response = dokarkivKlient.journalførDokument(
                 JournalpostRequest(
