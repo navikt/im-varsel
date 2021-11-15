@@ -7,6 +7,78 @@
   "url": "",
   "team": "helsearbeidsgiver",
   "views": [
-
+    {
+      "title": "Tidsserier - varsler",
+      "description": "Varsler for Intektsmelding",
+      "specType": "echart",
+      "spec": {
+        "url": "",
+        "option": {
+          "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+              "type": "cross",
+              "crossStyle": {
+                "color": "#999"
+              }
+            }
+          },
+          "legend": {
+            "left": "center",
+            "data": [
+              "Sent",
+              "Lest",
+            ]
+          },
+          "xAxis": {
+            "type": "category",
+            "name": "Uke",
+            "data": [
+              @ukeSerie
+            ]
+          },
+          "yAxis": [
+            {
+              "type": "value",
+              "name": "Antall"
+            }
+          ],
+          "series": [
+            {
+              "data": [
+                @sent
+              ],
+              "name": "Sent",
+              "type": "line"
+            },
+            {
+              "data": [
+                @lest
+              ],
+              "name": "Lest",
+              "type": "line"
+            },
+          ],
+          "toolbox": {
+            "show": true,
+            "left": "center",
+            "top": "bottom",
+            "feature": {
+              "magicType": {
+                "type": [
+                  "line",
+                  "bar"
+                ]
+              },
+              "dataView": {
+                "show": true,
+                "readOnly": true
+              },
+              "saveAsImage": {}
+            }
+          }
+        }
+      }
+    }
   ]
 }

@@ -12,11 +12,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.utils.RecurringJob
 import no.nav.helse.arbeidsgiver.utils.loadFromResources
+import no.nav.helse.inntektsmeldingsvarsel.db.IStatsRepo
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDateTime
 
 class DatapakkePublisherJob (
+    private val statsRepo: IStatsRepo,
     private val httpClient: HttpClient,
     private val datapakkeApiUrl: String,
     private val datapakkeId: String,
@@ -32,9 +34,14 @@ class DatapakkePublisherJob (
         if(applyWeeklyOnly && now.dayOfWeek != DayOfWeek.MONDAY && now.hour != 0) {
             return // Ikke kjør jobben med mindre det er natt til mandag
         }
+        val timeseries = statsRepo.getVarselStats()
 
         val datapakkeTemplate = "datapakke/datapakke-im-varsel.json".loadFromResources()
         val populatedDatapakke = datapakkeTemplate
+            .replace("@ukeSerie", timeseries.map { it.weekNumber }.joinToString())
+            .replace("@sent", timeseries.map { it.sent }.joinToString())
+            .replace("@lest", timeseries.map { it.lest }.joinToString())
+
         logger.info("genererte datapakke med data: $populatedDatapakke")
 
 

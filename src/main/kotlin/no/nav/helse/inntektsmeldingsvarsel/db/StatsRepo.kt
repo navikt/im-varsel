@@ -4,8 +4,9 @@ import javax.sql.DataSource
 import kotlin.collections.ArrayList
 
 data class VarselStats(
-    val antall: Int,
-    val dato: Date
+    val weekNumber: Int,
+    val sent: Int,
+    val lest: Int
 )
 interface IStatsRepo{
     fun getVarselStats(): List<VarselStats>
@@ -16,12 +17,13 @@ class StatsRepoImpl(
 ): IStatsRepo {
     override fun getVarselStats(): List<VarselStats> {
         val query = """
-            SELECT 
-                count(*) as antall,
-                date(data->>'opprettet') as dato
-            FROM varsling
-            WHERE sent = 1
-            GROUP BY  dato;
+            SELECT
+                extract('week' from behandlet) as uke,
+                count(*) filter( WHERE sent = true) as sent,
+                count(*) filter( WHERE read=true and sent = true) as read
+            from varsling
+            group by extract('week' from behandlet)
+            order by extract('week' from behandlet);
         """.trimIndent()
 
         ds.connection.use {
@@ -30,8 +32,9 @@ class StatsRepoImpl(
             while (res.next()){
                 returnValue.add(
                     VarselStats(
-                        res.getInt("antall"),
-                        res.getDate("dato")
+                        res.getInt("uke"),
+                        res.getInt("sent"),
+                        res.getInt("lest")
                     )
                 )
             }
