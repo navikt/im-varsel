@@ -21,6 +21,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
+import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSenderImpl
@@ -30,6 +31,9 @@ import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevM
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtsendelseRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevUtsendelseRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevmalRepository
+import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
+import no.nav.helse.inntektsmeldingsvarsel.db.IStatsRepo
+import no.nav.helse.inntektsmeldingsvarsel.db.StatsRepoImpl
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.getDataSource
@@ -252,6 +256,10 @@ fun preprodConfig(config: ApplicationConfig) = module {
             ) as AltinnBrevutsendelseSender
     }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
+
+    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { StatsRepoImpl(get()) } bind IStatsRepo::class
+
 }
 
 @KtorExperimentalAPI
