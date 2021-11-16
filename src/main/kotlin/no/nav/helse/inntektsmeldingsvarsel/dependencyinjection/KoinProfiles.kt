@@ -346,6 +346,9 @@ fun prodConfig(config: ApplicationConfig) = module {
     }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
 
+    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { StatsRepoImpl(get()) } bind IStatsRepo::class
+
 
 }
 
