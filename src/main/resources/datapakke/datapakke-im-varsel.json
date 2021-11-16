@@ -27,7 +27,7 @@
             "left": "center",
             "data": [
               "Sent",
-              "Lest",
+              "Lest"
             ]
           },
           "xAxis": {
@@ -57,7 +57,7 @@
               ],
               "name": "Lest",
               "type": "line"
-            },
+            }
           ],
           "toolbox": {
             "show": true,

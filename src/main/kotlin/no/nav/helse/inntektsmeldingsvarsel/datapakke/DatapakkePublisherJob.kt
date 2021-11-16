@@ -46,11 +46,11 @@ class DatapakkePublisherJob (
 
 
         runBlocking {
-            /* val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {
+            val response = httpClient.put<HttpResponse>("$datapakkeApiUrl/$datapakkeId") {
                 contentType(ContentType.Application.Json)
                 body = om.readTree(populatedDatapakke)
             }
-            logger.info("Oppdaterte datapakke $datapakkeId med respons ${response.readText()}") */
+            logger.info("Oppdaterte datapakke $datapakkeId med respons ${response.readText()}")
         }
     }
 }
