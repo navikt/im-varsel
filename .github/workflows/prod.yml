@@ -1,9 +1,8 @@
-name: Bygg og deploy til prod
+name: Release
 
 on:
-  push:
-    tags:
-      - prod/*
+  release:
+    types: [published]
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}/im-varsel:${{ github.sha }}
@@ -39,7 +38,7 @@ jobs:
       - name: build og test app
         run: bash ./gradlew --console=plain build test slowTests jacocoTestReport sonarqube
         env:
-          SONAR_TOKEN: ${{ secrets.SONARTOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
