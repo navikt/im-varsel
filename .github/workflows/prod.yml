@@ -1,9 +1,8 @@
 name: Bygg og deploy til prod
 
 on:
-  push:
-    tags:
-      - prod/*
+  release:
+    types: [published]
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}/im-varsel:${{ github.sha }}
