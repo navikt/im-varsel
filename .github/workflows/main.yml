@@ -1,4 +1,4 @@
-name: Build and push image, then deploy
+name: Preprod
 
 on:
   push:
