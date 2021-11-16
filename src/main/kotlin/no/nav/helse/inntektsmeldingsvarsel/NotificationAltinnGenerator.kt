@@ -35,13 +35,14 @@ internal object NotificationAltinnGenerator {
     private fun opprettNotification(fraEpost: String?, type: TransportType, textTokens: Array<TextToken?>): Notification {
         require(textTokens.size == 2) { "Antall textTokens må være 2. Var " + textTokens.size }
         return Notification()
-                .withLanguageCode(NORSK_BOKMAL)
-                .withNotificationType("TokenTextOnly")
-                .withFromAddress(mapNullable(fraEpost, Function { epost: String? -> epost }))
-                .withReceiverEndPoints(ReceiverEndPointBEList()
-                        .withReceiverEndPoint(ReceiverEndPoint().withTransportType(type))
-                )
-                .withTextTokens(TextTokenSubstitutionBEList().withTextToken(*textTokens))
+            .withLanguageCode(NORSK_BOKMAL)
+            .withNotificationType("TokenTextOnly")
+            .withFromAddress(mapNullable(fraEpost, Function { epost: String? -> epost }))
+            .withReceiverEndPoints(
+                ReceiverEndPointBEList()
+                    .withReceiverEndPoint(ReceiverEndPoint().withTransportType(type))
+            )
+            .withTextTokens(TextTokenSubstitutionBEList().withTextToken(*textTokens))
     }
 
     private fun konverterTilTextTokens(vararg text: String): Array<TextToken?> {

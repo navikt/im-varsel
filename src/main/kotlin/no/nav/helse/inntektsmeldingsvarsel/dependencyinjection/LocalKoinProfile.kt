@@ -29,10 +29,13 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single<DataSource> { getDataSource(createLocalHikariConfig(), "im-varsel", null) }
 
     single<ManglendeInntektsmeldingMeldingProvider> {
-        VarslingsmeldingKafkaClient(mutableMapOf<String, Any>(
-            "bootstrap.servers" to "localhost:9092",
-            "max.poll.interval.ms" to "30000")
-            , config.getString("altinn_melding.kafka_topic"))
+        VarslingsmeldingKafkaClient(
+            mutableMapOf<String, Any>(
+                "bootstrap.servers" to "localhost:9092",
+                "max.poll.interval.ms" to "30000"
+            ),
+            config.getString("altinn_melding.kafka_topic")
+        )
     }
 
     single { VarslingMapper(get()) }
@@ -76,7 +79,6 @@ fun localDevConfig(config: ApplicationConfig) = module {
                     )
                 )
         }
-
     } bind PdlClient::class
 
     single<VarslingRepository> { PostgresVarslingRepository(get()) }

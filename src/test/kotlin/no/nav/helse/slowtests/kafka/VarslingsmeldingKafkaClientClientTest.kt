@@ -15,7 +15,6 @@ import org.koin.core.get
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-
 internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
     lateinit var kafkaProdusent: KafkaProducerForTests
 
@@ -54,13 +53,14 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
 
         assertThat(noMessagesExpected).isEmpty()
 
-        kafkaProdusent.sendSync(SpleisInntektsmeldingMelding(
-                        "222323",
-                        LocalDate.now(),
-                        LocalDate.now().plusDays(7),
-                        LocalDateTime.now(),
-                        "0102030405718"
-                )
+        kafkaProdusent.sendSync(
+            SpleisInntektsmeldingMelding(
+                "222323",
+                LocalDate.now(),
+                LocalDate.now().plusDays(7),
+                LocalDateTime.now(),
+                "0102030405718"
+            )
         )
 
         val oneMessageExpected = client.getMessagesToProcess()

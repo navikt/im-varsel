@@ -45,9 +45,9 @@ tasks.jacocoTestReport {
 
 tasks.withType<JacocoReport> {
     classDirectories.setFrom(
-            sourceSets.main.get().output.asFileTree.matching {
-                exclude("**/Koin**", "**/App**", "**Mock**")
-            }
+        sourceSets.main.get().output.asFileTree.matching {
+            exclude("**/Koin**", "**/App**", "**Mock**")
+        }
     )
 }
 
@@ -64,8 +64,6 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 via ktor-client-apache
     implementation("com.google.guava:guava:30.0-jre") // overstyrer transiente 29.0-jre
     // -- end snyk fixes
-
-
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
@@ -154,7 +152,6 @@ repositories {
         }
         setUrl("https://maven.pkg.github.com/navikt/helse-arbeidsgiver-felles-backend")
     }
-
 }
 
 tasks.named<Jar>("jar") {

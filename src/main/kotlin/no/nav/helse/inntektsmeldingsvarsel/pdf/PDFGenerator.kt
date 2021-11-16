@@ -71,12 +71,12 @@ class PDFGenerator {
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 4)
 
         mal.bodyHtml
-                .replace(Regex("<[^>]*>"), "")
-                .split('\n')
-                .forEach {
-                    contentStream.newLineAtOffset(0F, -LINE_HEIGHT)
-                    contentStream.showText(it.trim())
-                }
+            .replace(Regex("<[^>]*>"), "")
+            .split('\n')
+            .forEach {
+                contentStream.newLineAtOffset(0F, -LINE_HEIGHT)
+                contentStream.showText(it.trim())
+            }
 
         contentStream.endText()
         contentStream.close()

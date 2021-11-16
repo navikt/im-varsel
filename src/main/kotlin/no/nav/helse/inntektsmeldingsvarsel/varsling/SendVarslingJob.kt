@@ -7,10 +7,10 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 class SendVarslingJob(
-        private val service: VarslingService,
-        private val sender: VarslingSender,
-        coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
-        waitTimeWhenEmptyQueue: Duration = Duration.ofHours(1)
+    private val service: VarslingService,
+    private val sender: VarslingSender,
+    coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    waitTimeWhenEmptyQueue: Duration = Duration.ofHours(1)
 ) : RecurringJob(coroutineScope, waitTimeWhenEmptyQueue) {
     override fun doJob() {
         val now = LocalDateTime.now()

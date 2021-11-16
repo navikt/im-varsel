@@ -36,14 +36,14 @@ internal class PostgresAltinnBrevmalRepositoryTest : KoinTestBase() {
         repo.insert(brevmal)
 
         val endretBrevmal = brevmal.copy(
-                header = "Ny header",
-                altinnTjenestekode = "ny kode",
-                altinnTjenesteVersjon = "ny tjenesteversjon",
-                bodyHtml = "ny melding",
-                joarkBrevkode = "ny brevkode",
-                joarkTema = "nytt tema",
-                joarkTittel = "ny tittel",
-                summary = "ny oppsummering"
+            header = "Ny header",
+            altinnTjenestekode = "ny kode",
+            altinnTjenesteVersjon = "ny tjenesteversjon",
+            bodyHtml = "ny melding",
+            joarkBrevkode = "ny brevkode",
+            joarkTema = "nytt tema",
+            joarkTittel = "ny tittel",
+            summary = "ny oppsummering"
         )
 
         repo.update(endretBrevmal)

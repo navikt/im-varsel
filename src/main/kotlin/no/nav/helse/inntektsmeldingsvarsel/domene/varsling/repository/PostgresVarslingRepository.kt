@@ -98,13 +98,13 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
 
     private fun mapToDto(res: ResultSet): VarslingDbEntity {
         return VarslingDbEntity(
-                data = res.getString("data"),
-                uuid = res.getString("uuid"),
-                sent = res.getBoolean("sent"),
-                read = res.getBoolean("read"),
-                opprettet = res.getTimestamp("opprettet").toLocalDateTime(),
-                behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
-                virksomhetsNr = res.getString("virksomhetsNr")
+            data = res.getString("data"),
+            uuid = res.getString("uuid"),
+            sent = res.getBoolean("sent"),
+            read = res.getBoolean("read"),
+            opprettet = res.getTimestamp("opprettet").toLocalDateTime(),
+            behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
+            virksomhetsNr = res.getString("virksomhetsNr")
         )
     }
 }

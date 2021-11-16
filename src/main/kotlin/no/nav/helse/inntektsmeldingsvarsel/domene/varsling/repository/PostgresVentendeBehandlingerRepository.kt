@@ -1,7 +1,6 @@
 package no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository
 
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
-import no.nav.helse.inntektsmeldingsvarsel.web.mainLogger
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.ResultSet
@@ -10,7 +9,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.sql.DataSource
 
-class PostgresVentendeBehandlingerRepository(private val ds: DataSource): VentendeBehandlingerRepository{
+class PostgresVentendeBehandlingerRepository(private val ds: DataSource) : VentendeBehandlingerRepository {
 
     private val logger = LoggerFactory.getLogger(PostgresVentendeBehandlingerRepository::class.java)
     private val tableName = "ventende_behandlinger"
@@ -61,11 +60,11 @@ class PostgresVentendeBehandlingerRepository(private val ds: DataSource): Venten
 
     private fun mapToDto(res: ResultSet): SpleisInntektsmeldingMelding {
         return SpleisInntektsmeldingMelding(
-                organisasjonsnummer = res.getString("organisasjonsnummer"),
-                fødselsnummer = res.getString("fødselsnummer"),
-                fom = res.getTimestamp("fom").toLocalDateTime().toLocalDate(),
-                tom = res.getTimestamp("tom").toLocalDateTime().toLocalDate(),
-                opprettet = res.getTimestamp("opprettet").toLocalDateTime(),
+            organisasjonsnummer = res.getString("organisasjonsnummer"),
+            fødselsnummer = res.getString("fødselsnummer"),
+            fom = res.getTimestamp("fom").toLocalDateTime().toLocalDate(),
+            tom = res.getTimestamp("tom").toLocalDateTime().toLocalDate(),
+            opprettet = res.getTimestamp("opprettet").toLocalDateTime(),
         )
     }
 }

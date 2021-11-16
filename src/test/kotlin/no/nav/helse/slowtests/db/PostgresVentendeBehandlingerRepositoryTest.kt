@@ -2,7 +2,6 @@ package no.nav.helse.slowtests.db
 
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.slowtests.KoinTestBase
@@ -11,10 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.koin.core.KoinComponent
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -23,13 +18,12 @@ internal class PostgresVentendeBehandlingerRepositoryTest : KoinTestBase() {
     lateinit var repo: PostgresVentendeBehandlingerRepository
     lateinit var dataSource: HikariDataSource
 
-
     private val msg = SpleisInntektsmeldingMelding(
-            "123456785",
-            LocalDate.now(),
-            LocalDate.now().plusDays(1),
-            LocalDateTime.now(),
-            "123"
+        "123456785",
+        LocalDate.now(),
+        LocalDate.now().plusDays(1),
+        LocalDateTime.now(),
+        "123"
     )
 
     @BeforeEach
@@ -40,7 +34,7 @@ internal class PostgresVentendeBehandlingerRepositoryTest : KoinTestBase() {
 
     @Test
     internal fun `kan inserte og finne`() {
-        repo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg. tom, msg.opprettet)
+        repo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
 
         val result = repo.findOlderThan(msg.opprettet)
 

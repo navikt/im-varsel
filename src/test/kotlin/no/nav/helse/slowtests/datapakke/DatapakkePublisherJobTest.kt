@@ -12,20 +12,17 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
 import no.nav.helse.inntektsmeldingsvarsel.db.IStatsRepo
 import no.nav.helse.inntektsmeldingsvarsel.db.VarselStats
 import no.nav.helse.slowtests.KoinTestBase
-import no.nav.helse.slowtests.kafka.KafkaProducerForTests
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.koin.core.inject
 import java.util.*
 import kotlin.random.Random
 
-class DatapakkePublisherJobTest : KoinTestBase(){
+class DatapakkePublisherJobTest : KoinTestBase() {
     val httpClient = mockk<HttpClient>()
     val repo = mockk<IStatsRepo>()
 
@@ -53,10 +50,12 @@ class DatapakkePublisherJobTest : KoinTestBase(){
         om.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        om.setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
-            indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-            indentObjectsWith(DefaultIndenter("  ", "\n"))
-        })
+        om.setDefaultPrettyPrinter(
+            DefaultPrettyPrinter().apply {
+                indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                indentObjectsWith(DefaultIndenter("  ", "\n"))
+            }
+        )
 
         DatapakkePublisherJob(
             repo,
@@ -65,6 +64,5 @@ class DatapakkePublisherJobTest : KoinTestBase(){
             "5683d0148392e99e79737fe6889aae68",
             om = om
         ).doJob()
-
     }
 }

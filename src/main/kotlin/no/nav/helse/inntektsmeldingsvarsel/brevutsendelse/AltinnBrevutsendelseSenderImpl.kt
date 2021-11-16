@@ -21,16 +21,17 @@ interface AltinnBrevutsendelseSender {
 }
 
 class AltinnBrevutsendelseSenderImpl(
-        private val joarkClient: DokarkivKlient,
-        private val malRepo: AltinnBrevMalRepository,
-        private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
-        private val username: String,
-        private val password: String) : AltinnBrevutsendelseSender {
+    private val joarkClient: DokarkivKlient,
+    private val malRepo: AltinnBrevMalRepository,
+    private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
+    private val username: String,
+    private val password: String
+) : AltinnBrevutsendelseSender {
 
     private val log = LoggerFactory.getLogger("AltinnBrevutsendelseSender")
     private val brevMalCache = SimpleHashMapCache<AltinnBrevmal>(
-            cacheDuration = Duration.ofHours(1),
-            maxCachedItems = 2
+        cacheDuration = Duration.ofHours(1),
+        maxCachedItems = 2
     )
     private val pdfGenerator = PDFGenerator()
 
@@ -40,15 +41,14 @@ class AltinnBrevutsendelseSenderImpl(
 
     override fun send(utsendelse: AltinnBrevUtesendelse) {
         val mal = if (brevMalCache.hasValidCacheEntry(utsendelse.altinnBrevMalId.toString()))
-                        brevMalCache.get(utsendelse.altinnBrevMalId.toString())
-                else malRepo.get(utsendelse.altinnBrevMalId)
-
+            brevMalCache.get(utsendelse.altinnBrevMalId.toString())
+        else malRepo.get(utsendelse.altinnBrevMalId)
 
         try {
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
-                    username, password,
-                    SYSTEM_USER_CODE, utsendelse.id.toString(),
-                    mapToAltinnMessageFormat(utsendelse, mal)
+                username, password,
+                SYSTEM_USER_CODE, utsendelse.id.toString(),
+                mapToAltinnMessageFormat(utsendelse, mal)
             )
 
             if (receiptExternal.receiptStatusCode != ReceiptStatusEnum.OK) {
@@ -57,37 +57,39 @@ class AltinnBrevutsendelseSenderImpl(
             }
             journalfør(utsendelse, mal)
             ANTALL_SENDTE_BREV.inc()
-
         } catch (e: Exception) {
             log.error("Feil ved sending av brev til Altinn", e)
             throw e
         }
     }
 
-
     fun journalfør(brevutsendelse: AltinnBrevUtesendelse, brevmal: AltinnBrevmal): String {
         val base64EnkodetPdf = Base64.getEncoder().encodeToString(pdfGenerator.lagPDF(brevmal))
 
         val request = JournalpostRequest(
-                tema = brevmal.joarkTema,
-                journalposttype = Journalposttype.UTGAAENDE,
-                kanal = "ALTINN",
-                tittel = brevmal.joarkTittel,
-                bruker = Bruker(brevutsendelse.virksomhetsNr, IdType.ORGNR),
-                eksternReferanseId = "helsearbeisgiver-altinn-ut-${brevutsendelse.id}",
-                avsenderMottaker = AvsenderMottaker(
-                        brevutsendelse.virksomhetsNr,
-                        IdType.ORGNR,
-                        "Arbeidsgiver"
-                ),
-                dokumenter = listOf(Dokument(
-                        tittel = brevmal.joarkTittel,
-                        brevkode = brevmal.joarkBrevkode,
-                        dokumentVarianter = listOf(DokumentVariant(
-                                fysiskDokument = base64EnkodetPdf
-                        ))
-                )),
-                datoMottatt = LocalDate.now()
+            tema = brevmal.joarkTema,
+            journalposttype = Journalposttype.UTGAAENDE,
+            kanal = "ALTINN",
+            tittel = brevmal.joarkTittel,
+            bruker = Bruker(brevutsendelse.virksomhetsNr, IdType.ORGNR),
+            eksternReferanseId = "helsearbeisgiver-altinn-ut-${brevutsendelse.id}",
+            avsenderMottaker = AvsenderMottaker(
+                brevutsendelse.virksomhetsNr,
+                IdType.ORGNR,
+                "Arbeidsgiver"
+            ),
+            dokumenter = listOf(
+                Dokument(
+                    tittel = brevmal.joarkTittel,
+                    brevkode = brevmal.joarkBrevkode,
+                    dokumentVarianter = listOf(
+                        DokumentVariant(
+                            fysiskDokument = base64EnkodetPdf
+                        )
+                    )
+                )
+            ),
+            datoMottatt = LocalDate.now()
         )
 
         val joarkRef = joarkClient.journalførDokument(request, true, UUID.randomUUID().toString())
@@ -98,19 +100,17 @@ class AltinnBrevutsendelseSenderImpl(
 
     fun mapToAltinnMessageFormat(utsendelse: AltinnBrevUtesendelse, mal: AltinnBrevmal): InsertCorrespondenceV2 {
         val meldingsInnhold = ExternalContentV2()
-                .withLanguageCode("1044")
-                .withMessageTitle(mal.header)
-                .withMessageBody(mal.bodyHtml)
-                .withMessageSummary(mal.summary)
+            .withLanguageCode("1044")
+            .withMessageTitle(mal.header)
+            .withMessageBody(mal.bodyHtml)
+            .withMessageSummary(mal.summary)
 
         return InsertCorrespondenceV2()
-                .withAllowForwarding(false)
-                .withReportee(utsendelse.virksomhetsNr)
-                .withMessageSender("NAV (Arbeids- og velferdsetaten)")
-                .withServiceCode(mal.altinnTjenestekode)
-                .withServiceEdition(mal.altinnTjenesteVersjon)
-                .withContent(meldingsInnhold)
+            .withAllowForwarding(false)
+            .withReportee(utsendelse.virksomhetsNr)
+            .withMessageSender("NAV (Arbeids- og velferdsetaten)")
+            .withServiceCode(mal.altinnTjenestekode)
+            .withServiceEdition(mal.altinnTjenesteVersjon)
+            .withContent(meldingsInnhold)
     }
-
-
 }

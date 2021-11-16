@@ -4,17 +4,12 @@ import com.zaxxer.hikari.HikariDataSource
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingDbEntity
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.common
 import no.nav.helse.slowtests.KoinTestBase
 import no.nav.helse.slowtests.clearAllDatabaseTables
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.koin.core.KoinComponent
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import java.time.LocalDateTime
 import java.util.*
 
@@ -24,12 +19,12 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
     lateinit var dataSource: HikariDataSource
 
     private val dbVarsling = VarslingDbEntity(
-            uuid = UUID.randomUUID().toString(),
-            data = "[]",
-            sent = false,
-            read = false,
-            opprettet = LocalDateTime.now(),
-            virksomhetsNr = "123456789"
+        uuid = UUID.randomUUID().toString(),
+        data = "[]",
+        sent = false,
+        read = false,
+        opprettet = LocalDateTime.now(),
+        virksomhetsNr = "123456789"
     )
 
     @BeforeEach
@@ -41,7 +36,7 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
 
     @Test
     internal fun `kan inserte og hente`() {
-        val fradb = repo.findBySentStatus(false,1)[0]
+        val fradb = repo.findBySentStatus(false, 1)[0]
 
         assertThat(fradb).isEqualTo(dbVarsling)
     }

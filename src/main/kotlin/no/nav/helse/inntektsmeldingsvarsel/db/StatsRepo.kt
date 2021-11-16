@@ -1,5 +1,4 @@
 package no.nav.helse.inntektsmeldingsvarsel.db
-import java.util.Date
 import javax.sql.DataSource
 import kotlin.collections.ArrayList
 
@@ -8,13 +7,13 @@ data class VarselStats(
     val sent: Int,
     val lest: Int
 )
-interface IStatsRepo{
+interface IStatsRepo {
     fun getVarselStats(): List<VarselStats>
 }
 
 class StatsRepoImpl(
     private val ds: DataSource
-): IStatsRepo {
+) : IStatsRepo {
     override fun getVarselStats(): List<VarselStats> {
         val query = """
             SELECT
@@ -29,7 +28,7 @@ class StatsRepoImpl(
         ds.connection.use {
             val res = it.prepareStatement(query).executeQuery()
             val returnValue = ArrayList<VarselStats>()
-            while (res.next()){
+            while (res.next()) {
                 returnValue.add(
                     VarselStats(
                         res.getInt("uke"),

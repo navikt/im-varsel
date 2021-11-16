@@ -13,7 +13,6 @@ import no.nav.helse.inntektsmeldingsvarsel.pdf.PDFGenerator
 import org.koin.ktor.ext.get
 import java.util.*
 
-
 /**
  * Enkel UI og API ment for internt bruk.
  *
@@ -36,7 +35,6 @@ fun Application.altinnBrevRoutes() {
             val mal = brevMalRepository.getAll()
             call.respond(mal)
         }
-
 
         get("/brevmal/{id}") {
             val uuid = UUID.fromString(call.parameters.get("id"))

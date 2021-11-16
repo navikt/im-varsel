@@ -39,19 +39,24 @@ import javax.sql.DataSource
 @KtorExperimentalAPI
 fun prodConfig(config: ApplicationConfig) = module {
     single<DataSource> {
-        getDataSource(createHikariConfig(config.getjdbcUrlFromProperties()),
+        getDataSource(
+            createHikariConfig(config.getjdbcUrlFromProperties()),
             config.getString("database.name"),
-            config.getString("database.vault.mountpath"))
+            config.getString("database.vault.mountpath")
+        )
     }
 
     single<ManglendeInntektsmeldingMeldingProvider> {
-        VarslingsmeldingKafkaClient(mutableMapOf(
-            "bootstrap.servers" to config.getString("kafka.endpoint"),
-            CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL",
-            SaslConfigs.SASL_MECHANISM to "PLAIN",
-            SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+        VarslingsmeldingKafkaClient(
+            mutableMapOf(
+                "bootstrap.servers" to config.getString("kafka.endpoint"),
+                CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL",
+                SaslConfigs.SASL_MECHANISM to "PLAIN",
+                SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required " +
                     "username=\"${config.getString("kafka.username")}\" password=\"${config.getString("kafka.password")}\";"
-        ), config.getString("altinn_melding.kafka_topic"))
+            ),
+            config.getString("altinn_melding.kafka_topic")
+        )
     }
 
     single {
@@ -94,7 +99,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     }
 
     single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
-    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get() ) } bind PdlClient::class
+    single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
     single { VarslingService(get(), get(), get(), get(), get(), get(), PilotAllowList(setOf('1'))) }
     single<ReadReceiptProvider> {
@@ -112,14 +117,15 @@ fun prodConfig(config: ApplicationConfig) = module {
 
     single { UpdateReadStatusJob(get(), get()) }
 
-
     single<AltinnBrevUtsendelseRepository> { PostgresAltinnBrevUtsendelseRepository(get()) }
     single<AltinnBrevMalRepository> { PostgresAltinnBrevmalRepository(get(), get()) }
 
-    single<AltinnBrevutsendelseSender> { AltinnBrevutsendelseSenderImpl(get(), get(), get(),
-        config.getString("altinn_melding.username"),
-        config.getString("altinn_melding.password")
-    )
+    single<AltinnBrevutsendelseSender> {
+        AltinnBrevutsendelseSenderImpl(
+            get(), get(), get(),
+            config.getString("altinn_melding.username"),
+            config.getString("altinn_melding.password")
+        )
     }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
 }

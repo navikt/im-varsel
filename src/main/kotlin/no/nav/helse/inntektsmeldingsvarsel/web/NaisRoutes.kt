@@ -35,7 +35,7 @@ fun Application.nais() {
         get("/isready") {
             val kubernetesProbeManager = this@routing.get<KubernetesProbeManager>()
             val checkResults = kubernetesProbeManager.runReadynessProbe()
-            returnResultOfChecks( checkResults)
+            returnResultOfChecks(checkResults)
         }
 
         get("/metrics") {
@@ -50,7 +50,7 @@ fun Application.nais() {
             val readyResults = kubernetesProbeManager.runReadynessProbe()
             val liveResults = kubernetesProbeManager.runLivenessProbe()
             val combinedResults = ProbeResult(
-        liveResults.healthyComponents +
+                liveResults.healthyComponents +
                     liveResults.unhealthyComponents +
                     readyResults.healthyComponents +
                     readyResults.unhealthyComponents

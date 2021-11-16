@@ -58,16 +58,18 @@ fun main() {
 
         mainLogger.info("La til probable komponentner")
 
-        Runtime.getRuntime().addShutdownHook(Thread {
-            LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
+        Runtime.getRuntime().addShutdownHook(
+            Thread {
+                LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
 
-            sendAltinnBrevJob.stop()
-            varslingSenderJob.stop()
-            manglendeInntektsmeldingMottak.stop()
-            updateReadStatusJob.stop()
+                sendAltinnBrevJob.stop()
+                varslingSenderJob.stop()
+                manglendeInntektsmeldingMottak.stop()
+                updateReadStatusJob.stop()
 
-            httpServer.stop(1000, 1000)
-        })
+                httpServer.stop(1000, 1000)
+            }
+        )
     }
 }
 
@@ -75,10 +77,10 @@ private fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
     val kubernetesProbeManager = koin.get<KubernetesProbeManager>()
 
     koin.getAllOfType<LivenessComponent>()
-            .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
+        .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
 
     koin.getAllOfType<ReadynessComponent>()
-            .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
+        .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
 }
 
 @KtorExperimentalAPI

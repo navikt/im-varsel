@@ -11,8 +11,8 @@ import java.util.*
 
 object TestData {
     val Varsling = Varsling(
-            virksomhetsNr = "123456785",
-            liste = mutableSetOf(PersonVarsling("Ole", "123", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()))
+        virksomhetsNr = "123456785",
+        liste = mutableSetOf(PersonVarsling("Ole", "123", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()))
     )
 
     val AltinnBrevmal = AltinnBrevmal(
@@ -27,12 +27,10 @@ object TestData {
         "brevkode_i_joark"
     )
 
-
     val AltinnBrevutsendelse_Ubehandlet = AltinnBrevUtesendelse(
         1,
-            AltinnBrevmal.id,
-            false,
-            "123456785",
+        AltinnBrevmal.id,
+        false,
+        "123456785",
     )
 }
-

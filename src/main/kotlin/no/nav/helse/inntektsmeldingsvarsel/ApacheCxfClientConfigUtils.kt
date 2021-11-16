@@ -19,25 +19,23 @@ val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:sts-policies/untPolicy.xml"
 val STS_SAML_POLICY = "classpath:sts-policies/requestSamlPolicy.xml"
 val STS_SAML_POLICY_NO_TRANSPORT_BINDING = "classpath:sts-policies/requestSamlPolicyNoTransportBinding.xml"
 
-
 object Clients {
 
     fun iCorrespondenceExternalBasic(serviceUrl: String): ICorrespondenceAgencyExternalBasic =
-            createServicePort(
-                    serviceUrl = serviceUrl,
-                    serviceClazz = ICorrespondenceAgencyExternalBasic::class.java
-            )
+        createServicePort(
+            serviceUrl = serviceUrl,
+            serviceClazz = ICorrespondenceAgencyExternalBasic::class.java
+        )
 
     private fun <PORT_TYPE> createServicePort(
-            serviceUrl: String,
-            serviceClazz: Class<PORT_TYPE>
+        serviceUrl: String,
+        serviceClazz: Class<PORT_TYPE>
     ): PORT_TYPE = JaxWsProxyFactoryBean().apply {
         address = serviceUrl
         serviceClass = serviceClazz
         features = listOf()
     }.create(serviceClazz)
 }
-
 
 fun wsStsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
     val bus = BusFactory.getDefaultBus()
@@ -47,8 +45,8 @@ fun wsStsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
         location = stsUrl
         // features = listOf(LoggingFeature())
         properties = mapOf(
-                SecurityConstants.USERNAME to credentials.first,
-                SecurityConstants.PASSWORD to credentials.second
+            SecurityConstants.USERNAME to credentials.first,
+            SecurityConstants.PASSWORD to credentials.second
         )
         setPolicy(bus.resolvePolicy(STS_CLIENT_AUTHENTICATION_POLICY))
     }

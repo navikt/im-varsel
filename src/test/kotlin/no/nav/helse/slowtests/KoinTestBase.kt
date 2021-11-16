@@ -29,9 +29,11 @@ abstract class KoinTestBase : KoinComponent {
     fun initKoinContext() {
         clearAllDatabaseTables()
 
-        val runLocalModule = localDevConfig(MapApplicationConfig(
+        val runLocalModule = localDevConfig(
+            MapApplicationConfig(
                 "altinn_melding.kafka_topic" to KafkaProducerForTests.topicName
-        ))
+            )
+        )
 
         startKoin {
             modules(listOf(common, runLocalModule))
@@ -46,7 +48,7 @@ abstract class KoinTestBase : KoinComponent {
     }
 }
 
-class TestKoinBaseTest: KoinTestBase() {
+class TestKoinBaseTest : KoinTestBase() {
     @BeforeAll
     fun init() {
         println("test before")
