@@ -51,7 +51,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-
 @KtorExperimentalAPI
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
@@ -117,7 +116,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
-    single { object : AccessTokenProvider { override fun getToken(): String { return "fake token"} } } bind AccessTokenProvider::class
+    single { object : AccessTokenProvider { override fun getToken(): String { return "fake token" } } } bind AccessTokenProvider::class
     single {MockReadReceiptProvider() as ReadReceiptProvider}
 
     single {
@@ -161,7 +160,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
-    single { VarslingService(get(), get(), get(), get(), get(), get(), PilotAllowList(setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'))) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
 
     single { MockVarslingSender(get()) as VarslingSender }
     single { PollForVarslingsmeldingJob(get(), get()) }
@@ -238,7 +237,7 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
-    single { VarslingService(get(), get(), get(), get(), get(), get(), PilotAllowList(setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'))) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
 
     single { PollForVarslingsmeldingJob(get(), get()) }
     single { SendVarslingJob(get(), get()) }
