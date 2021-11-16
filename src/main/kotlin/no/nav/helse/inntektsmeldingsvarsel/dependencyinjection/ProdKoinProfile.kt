@@ -16,6 +16,9 @@ import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevM
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtsendelseRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevUtsendelseRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevmalRepository
+import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
+import no.nav.helse.inntektsmeldingsvarsel.db.IStatsRepo
+import no.nav.helse.inntektsmeldingsvarsel.db.StatsRepoImpl
 import no.nav.helse.inntektsmeldingsvarsel.db.createHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.getDataSource
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
@@ -72,6 +75,9 @@ fun prodConfig(config: ApplicationConfig) = module {
 
     single { PostgresVarslingRepository(get()) as VarslingRepository }
     single { PostgresVentendeBehandlingerRepository(get()) as VentendeBehandlingerRepository }
+
+    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { StatsRepoImpl(get()) } bind IStatsRepo::class
 
     single { VarslingMapper(get()) }
     single { DokarkivKlientImpl(config.getString("dokarkiv.base_url"), get(), get()) as DokarkivKlient }
