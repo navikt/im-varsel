@@ -19,7 +19,7 @@ class StatsRepoImpl(
             SELECT
                 extract('week' from behandlet) as uke,
                 count(*) filter( WHERE sent = true) as sent,
-                count(*) filter( WHERE read=true and sent = true) as read
+                count(*) filter( WHERE read=true and sent = true) as lest
             from varsling
             group by extract('week' from behandlet)
             order by extract('week' from behandlet);
