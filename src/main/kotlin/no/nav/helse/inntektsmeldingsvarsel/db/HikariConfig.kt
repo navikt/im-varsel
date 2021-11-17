@@ -15,6 +15,5 @@ fun createHikariConfig(jdbcUrl: String, username: String? = null, password: Stri
         password?.let { this.password = it }
     }
 
-
 fun createLocalHikariConfig() =
-        createHikariConfig("jdbc:postgresql://localhost:5432/im-varsel", "im-varsel", "im-varsel")
+    createHikariConfig("jdbc:postgresql://localhost:5432/im-varsel", "im-varsel", "im-varsel")

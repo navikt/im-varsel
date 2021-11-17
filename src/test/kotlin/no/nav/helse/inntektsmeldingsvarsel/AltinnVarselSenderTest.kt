@@ -30,28 +30,27 @@ class AltinnVarselSenderTest {
     private val password = "test-password"
 
     private val response = JournalpostResponse(
-            journalpostId = "12345",
-            journalpostFerdigstilt = true,
-            journalStatus = "J",
-            dokumenter = listOf(DokumentResponse(null,null,null))
+        journalpostId = "12345",
+        journalpostFerdigstilt = true,
+        journalStatus = "J",
+        dokumenter = listOf(DokumentResponse(null, null, null))
     )
 
     val altinnSender = AltinnVarselSender(
-            joarkMock,
-            altinnVarselMapperMock,
-            serviceMock,
-            soapClientMock,
-            username,
-            password
+        joarkMock,
+        altinnVarselMapperMock,
+        serviceMock,
+        soapClientMock,
+        username,
+        password
     )
 
     private val varsling = Varsling(
-            virksomhetsNr = "123456785",
-            liste = mutableSetOf(PersonVarsling("Ole", "123", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()))
+        virksomhetsNr = "123456785",
+        liste = mutableSetOf(PersonVarsling("Ole", "123", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()))
     )
 
     val mappedSoapMessage = InsertCorrespondenceV2()
-
 
     @Test
     fun `Sjekker allowlist, journalfører og sender`() {
@@ -65,11 +64,12 @@ class AltinnVarselSenderTest {
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
         verify(exactly = 1) {
             soapClientMock.insertCorrespondenceBasicV2(
-                    username,
-                    password,
-                    AltinnVarselSender.SYSTEM_USER_CODE,
-                    varsling.uuid,
-                    mappedSoapMessage)
+                username,
+                password,
+                AltinnVarselSender.SYSTEM_USER_CODE,
+                varsling.uuid,
+                mappedSoapMessage
+            )
         }
     }
 
@@ -85,11 +85,12 @@ class AltinnVarselSenderTest {
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
         verify(exactly = 1) {
             soapClientMock.insertCorrespondenceBasicV2(
-                    username,
-                    password,
-                    AltinnVarselSender.SYSTEM_USER_CODE,
-                    varsling.uuid,
-                    mappedSoapMessage)
+                username,
+                password,
+                AltinnVarselSender.SYSTEM_USER_CODE,
+                varsling.uuid,
+                mappedSoapMessage
+            )
         }
     }
 }

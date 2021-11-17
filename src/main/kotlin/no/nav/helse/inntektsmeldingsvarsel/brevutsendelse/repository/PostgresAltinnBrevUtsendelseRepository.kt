@@ -21,8 +21,8 @@ class PostgresAltinnBrevUtsendelseRepository(private val ds: DataSource) : Altin
     override fun insertUtsendelse(altinnMalId: UUID, virksomhetsnummere: Set<String>) {
         val malId = altinnMalId.toString()
         val validatedNumbers = virksomhetsnummere
-                .filter { orgnr -> orgnr.length == 9 && orgnr.all { it.isDigit() } }
-                .joinToString { "('$it', '$malId')" }
+            .filter { orgnr -> orgnr.length == 9 && orgnr.all { it.isDigit() } }
+            .joinToString { "('$it', '$malId')" }
 
         ds.connection.use {
             it.prepareStatement(insertStatement + validatedNumbers).executeUpdate()
@@ -53,14 +53,13 @@ class PostgresAltinnBrevUtsendelseRepository(private val ds: DataSource) : Altin
         }
     }
 
-
     private fun mapToDto(res: ResultSet): AltinnBrevUtesendelse {
         return AltinnBrevUtesendelse(
-                id = res.getInt("id"),
-                altinnBrevMalId = UUID.fromString(res.getString("altinnBrevMalId")),
-                sent = res.getBoolean("sent"),
-                behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
-                virksomhetsNr = res.getString("virksomhetsNr")
+            id = res.getInt("id"),
+            altinnBrevMalId = UUID.fromString(res.getString("altinnBrevMalId")),
+            sent = res.getBoolean("sent"),
+            behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
+            virksomhetsNr = res.getString("virksomhetsNr")
         )
     }
 }

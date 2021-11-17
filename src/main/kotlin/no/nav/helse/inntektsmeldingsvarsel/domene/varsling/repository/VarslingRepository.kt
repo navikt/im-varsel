@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 interface VarslingRepository {
     // for å hente ut alle aggregat i en gitt status
-    fun findBySentStatus(status: Boolean, max: Int) : List<VarslingDbEntity>
+    fun findBySentStatus(status: Boolean, max: Int): List<VarslingDbEntity>
 
     fun findSentButUnread(max: Int): List<VarslingDbEntity>
 

@@ -46,10 +46,12 @@ val common = module {
     om.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
     om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    om.setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
-        indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-        indentObjectsWith(DefaultIndenter("  ", "\n"))
-    })
+    om.setDefaultPrettyPrinter(
+        DefaultPrettyPrinter().apply {
+            indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+            indentObjectsWith(DefaultIndenter("  ", "\n"))
+        }
+    )
 
     single { om }
 
@@ -82,17 +84,19 @@ fun ApplicationConfig.getString(path: String): String {
 
 @KtorExperimentalAPI
 fun ApplicationConfig.getjdbcUrlFromProperties(): String {
-    return String.format("jdbc:postgresql://%s:%s/%s",
-            this.property("database.host").getString(),
-            this.property("database.port").getString(),
-            this.property("database.name").getString())
+    return String.format(
+        "jdbc:postgresql://%s:%s/%s",
+        this.property("database.host").getString(),
+        this.property("database.port").getString(),
+        this.property("database.name").getString()
+    )
 }
 
 inline fun <reified T : Any> Koin.getAllOfType(): Collection<T> =
-        let { koin ->
-            koin.rootScope.beanRegistry
-                    .getAllDefinitions()
-                    .filter { it.kind == Kind.Single }
-                    .map { koin.get<Any>(clazz = it.primaryType, qualifier = null, parameters = null) }
-                    .filterIsInstance<T>()
-        }
+    let { koin ->
+        koin.rootScope.beanRegistry
+            .getAllDefinitions()
+            .filter { it.kind == Kind.Single }
+            .map { koin.get<Any>(clazz = it.primaryType, qualifier = null, parameters = null) }
+            .filterIsInstance<T>()
+    }

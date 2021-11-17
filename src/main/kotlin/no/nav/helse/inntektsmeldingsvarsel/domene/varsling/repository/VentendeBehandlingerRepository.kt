@@ -16,11 +16,11 @@ interface VentendeBehandlingerRepository {
      * Benytter fnr, virksomhet og fom som nøkkel for å upserte en sak som venter på IM
      */
     fun insertIfNotExists(
-            fnr: String,
-            virksomhet: String,
-            fom: LocalDate,
-            tom: LocalDate,
-            opprettet: LocalDateTime
+        fnr: String,
+        virksomhet: String,
+        fom: LocalDate,
+        tom: LocalDate,
+        opprettet: LocalDateTime
     )
 
     /**

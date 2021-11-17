@@ -15,7 +15,7 @@ internal class PDFGeneratorTest {
 
         val allTextInDocument = extractTextFromPdf(pdf)
 
-        TestData.Varsling.liste.forEach{
+        TestData.Varsling.liste.forEach {
             assertThat(allTextInDocument).contains(it.navn)
             assertThat(allTextInDocument).contains(it.personnumer)
         }

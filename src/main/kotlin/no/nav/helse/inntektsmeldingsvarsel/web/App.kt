@@ -15,6 +15,7 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.SendAltinnBrevUtsendelseJob
+import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
@@ -54,20 +55,26 @@ fun main() {
         val sendAltinnBrevJob = koin.get<SendAltinnBrevUtsendelseJob>()
         sendAltinnBrevJob.startAsync(retryOnFail = true)
 
+        val datapakkeJob = koin.get<DatapakkePublisherJob>()
+        datapakkeJob.startAsync(retryOnFail = true)
+
         runBlocking { autoDetectProbableComponents(koin) }
 
         mainLogger.info("La til probable komponentner")
 
-        Runtime.getRuntime().addShutdownHook(Thread {
-            LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
+        Runtime.getRuntime().addShutdownHook(
+            Thread {
+                LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
 
-            sendAltinnBrevJob.stop()
-            varslingSenderJob.stop()
-            manglendeInntektsmeldingMottak.stop()
-            updateReadStatusJob.stop()
+                sendAltinnBrevJob.stop()
+                varslingSenderJob.stop()
+                manglendeInntektsmeldingMottak.stop()
+                updateReadStatusJob.stop()
+                datapakkeJob.stop()
 
-            httpServer.stop(1000, 1000)
-        })
+                httpServer.stop(1000, 1000)
+            }
+        )
     }
 }
 
@@ -75,10 +82,10 @@ private fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
     val kubernetesProbeManager = koin.get<KubernetesProbeManager>()
 
     koin.getAllOfType<LivenessComponent>()
-            .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
+        .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
 
     koin.getAllOfType<ReadynessComponent>()
-            .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
+        .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
 }
 
 @KtorExperimentalAPI

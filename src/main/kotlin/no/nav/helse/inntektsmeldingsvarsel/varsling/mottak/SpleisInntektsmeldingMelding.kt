@@ -5,12 +5,12 @@ import java.time.LocalDateTime
 
 // https://github.com/navikt/helse-spre-arbeidsgiver/blob/fe59201a62c28749cf48f43bd226b014ab10c5d3/src/main/kotlin/no/nav/helse/App.kt#L109
 data class SpleisInntektsmeldingMelding(
-        val organisasjonsnummer: String,
-        val fom: LocalDate,
-        val tom: LocalDate,
-        val opprettet: LocalDateTime, // Dette er tidspunktet da vedtakssystemet ville ha en inntektsmelding
-        val fødselsnummer: String,
-        val type: Meldingstype = Meldingstype.TRENGER_INNTEKTSMELDING
+    val organisasjonsnummer: String,
+    val fom: LocalDate,
+    val tom: LocalDate,
+    val opprettet: LocalDateTime, // Dette er tidspunktet da vedtakssystemet ville ha en inntektsmelding
+    val fødselsnummer: String,
+    val type: Meldingstype = Meldingstype.TRENGER_INNTEKTSMELDING
 ) {
 
     enum class Meldingstype {

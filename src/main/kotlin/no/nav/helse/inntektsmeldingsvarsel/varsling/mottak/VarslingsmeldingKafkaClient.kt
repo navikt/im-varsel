@@ -15,12 +15,12 @@ interface ManglendeInntektsmeldingMeldingProvider {
 }
 
 class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: String) :
-        ManglendeInntektsmeldingMeldingProvider,
-        LivenessComponent {
+    ManglendeInntektsmeldingMeldingProvider,
+    LivenessComponent {
     private var currentBatch: List<String> = emptyList()
     private var lastThrown: Exception? = null
     private val consumer: KafkaConsumer<String, String>
-    private val  topicPartition = TopicPartition(topicName, 0)
+    private val topicPartition = TopicPartition(topicName, 0)
 
     private val log = LoggerFactory.getLogger(VarslingsmeldingKafkaClient::class.java)
 
@@ -35,11 +35,13 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
         consumer = KafkaConsumer<String, String>(props, StringDeserializer(), StringDeserializer())
         consumer.assign(Collections.singletonList(topicPartition))
 
-        Runtime.getRuntime().addShutdownHook(Thread {
-            log.debug("Got shutdown message, closing Kafka connection...")
-            consumer.close()
-            log.debug("Kafka connection closed")
-        })
+        Runtime.getRuntime().addShutdownHook(
+            Thread {
+                log.debug("Got shutdown message, closing Kafka connection...")
+                consumer.close()
+                log.debug("Kafka connection closed")
+            }
+        )
     }
 
     fun stop() = consumer.close()
@@ -51,7 +53,7 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
 
         try {
             val kafkaMessages = consumer.poll(Duration.ofSeconds(10))
-            val payloads = kafkaMessages.map {it.value() }
+            val payloads = kafkaMessages.map { it.value() }
             lastThrown = null
             currentBatch = payloads
 
@@ -73,4 +75,3 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
         lastThrown?.let { throw lastThrown as Exception }
     }
 }
-
