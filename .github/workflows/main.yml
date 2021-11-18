@@ -6,7 +6,8 @@ on:
       - main
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}/im-varsel:${{ github.sha }}
+  IMAGE: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}
+
 
 jobs:
 
