@@ -36,7 +36,7 @@ sonarqube {
 }
 
 tasks.jacocoTestReport {
-    executionData("build/jacoco/test.exec", "build/jacoco/slowTests.exec")
+    dependsOn(tasks.test)
     reports {
         xml.isEnabled = true
         html.isEnabled = true
@@ -191,5 +191,5 @@ task<Test>("slowTests") {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "6.0.1"
+    gradleVersion = "7.0.3"
 }
