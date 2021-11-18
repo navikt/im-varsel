@@ -1,12 +1,14 @@
 package no.nav.helse.inntektsmeldingsvarsel
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.time.Duration
 
+@ExperimentalCoroutinesApi
 internal class RecurringJobTests {
 
     private val testCoroutineDispatcher = TestCoroutineDispatcher()

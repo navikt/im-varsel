@@ -8,7 +8,7 @@ import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil
 enum class Role {
     admin, user, readonly;
 
-    override fun toString() = name.toLowerCase()
+    override fun toString() = name.lowercase()
 }
 
 fun getDataSource(hikariConfig: HikariConfig, dbName: String, vaultMountpath: String?) =

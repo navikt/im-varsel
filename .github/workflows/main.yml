@@ -32,7 +32,7 @@ jobs:
       - name: Build and test
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: --console=plain build test slowTests jacocoTestReport sonarqube
+          arguments: --console=plain build test slowTests jacocoTestReport sonarqube --stacktrace
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
