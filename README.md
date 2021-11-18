@@ -17,8 +17,7 @@ For å bygge koden og kjøre enhetstester:
 
 For å kjøre integrasjonstester kreves noen avhengigheter som kjøres i Docker og Docker Compose. 
 Start evhengighetene ved å kjøre 
->cd docker/local
->docker-compose up
+>cd docker/local && docker-compose up
 
 Når avhengighetene er oppe kan man kjøre integrasjonstester slik:
 >./gradlew slowTests

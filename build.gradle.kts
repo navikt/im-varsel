@@ -19,7 +19,7 @@ val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
 
 plugins {
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.6.0"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("org.sonarqube") version "2.8"
     jacoco
@@ -86,8 +86,8 @@ dependencies {
     }
     implementation("com.sun.activation:javax.activation:1.2.0")
 
-    implementation("org.koin:koin-core:$koinVersion")
-    implementation("org.koin:koin-ktor:$koinVersion")
+    implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-ktor:$koinVersion")
 
     implementation(kotlin("stdlib"))
 
@@ -142,9 +142,7 @@ java {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
-    maven("https://kotlin.bintray.com/ktor")
     maven {
         credentials {
             username = "x-access-token"
