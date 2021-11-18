@@ -21,6 +21,7 @@ class StatsRepoImpl(
                 count(*) filter( WHERE sent = true) as sent,
                 count(*) filter( WHERE read=true and sent = true) as lest
             from varsling
+                where extract('week' from behandlet) < extract('week' from now()) + 1
             group by extract('week' from behandlet)
             order by extract('week' from behandlet);
         """.trimIndent()
