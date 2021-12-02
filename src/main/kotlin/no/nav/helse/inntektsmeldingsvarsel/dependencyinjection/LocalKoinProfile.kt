@@ -1,5 +1,6 @@
 package no.nav.helse.inntektsmeldingsvarsel.dependencyinjection
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.config.*
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
@@ -21,6 +22,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
+import no.nav.helse.inntektsmeldingsvarsel.varsling.utsendelse.SendtVarselKafkaProducer
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -35,6 +37,17 @@ fun localDevConfig(config: ApplicationConfig) = module {
                 "max.poll.interval.ms" to "30000"
             ),
             config.getString("altinn_melding.kafka_topic")
+        )
+    }
+
+    single {
+        SendtVarselKafkaProducer(
+            mutableMapOf<String, Any>(
+                "bootstrap.servers" to "localhost:9092",
+                "max.poll.interval.ms" to "30000"
+            ),
+            config.getString("kafka.producertopicname"),
+            get()
         )
     }
 

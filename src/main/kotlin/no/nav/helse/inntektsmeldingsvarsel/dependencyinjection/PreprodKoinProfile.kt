@@ -29,6 +29,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
+import no.nav.helse.inntektsmeldingsvarsel.varsling.utsendelse.SendtVarselKafkaProducer
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.common.config.SaslConfigs
 import org.koin.dsl.bind
@@ -55,6 +56,20 @@ fun preprodConfig(config: ApplicationConfig) = module {
                     "username=\"${config.getString("kafka.username")}\" password=\"${config.getString("kafka.password")}\";"
             ),
             config.getString("altinn_melding.kafka_topic")
+        )
+    }
+
+    single {
+        SendtVarselKafkaProducer(
+            mutableMapOf<String, Any>(
+                "bootstrap.servers" to config.getString("kafka.endpoint"),
+                CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL",
+                SaslConfigs.SASL_MECHANISM to "PLAIN",
+                SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+                    "username=\"${config.getString("kafka.username")}\" password=\"${config.getString("kafka.password")}\";"
+            ),
+            config.getString("kafka.producertopicname"),
+            get()
         )
     }
 
