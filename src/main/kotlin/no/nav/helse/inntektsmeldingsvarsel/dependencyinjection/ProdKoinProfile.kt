@@ -101,7 +101,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
-    single { VarslingService(get(), get(), get(), get(), get(), get(), PilotAllowList(setOf('0', '1', '2', '3'))) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll())) }
     single<ReadReceiptProvider> {
         AltinnReadReceiptClient(
             get(),
