@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.*
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
@@ -22,6 +23,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import org.koin.core.Koin
 import org.koin.core.definition.Kind
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 @KtorExperimentalAPI
@@ -68,6 +70,18 @@ val common = module {
             }
         }
     }
+
+    val httpProxy = System.getenv("HTTPS_PROXY")
+    val httpClientProxy = HttpClient(Apache) {
+        engine {
+            proxy = if (httpProxy.isNullOrEmpty()) null else ProxyBuilder.http(httpProxy)
+        }
+        install(JsonFeature) {
+            serializer = JacksonSerializer()
+        }
+    }
+
+    single(named("PROXY")) { httpClientProxy }
 
     single { httpClient }
 

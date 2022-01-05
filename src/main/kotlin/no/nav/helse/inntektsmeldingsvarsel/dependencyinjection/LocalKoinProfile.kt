@@ -17,6 +17,8 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVa
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
+import no.nav.helse.inntektsmeldingsvarsel.integrasjon.brreg.BrregClient
+import no.nav.helse.inntektsmeldingsvarsel.integrasjon.brreg.MockBrregClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
@@ -40,7 +42,13 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single { VarslingMapper(get()) }
 
-    single { object : AccessTokenProvider { override fun getToken(): String { return "fake token" } } } bind AccessTokenProvider::class
+    single {
+        object : AccessTokenProvider {
+            override fun getToken(): String {
+                return "fake token"
+            }
+        }
+    } bind AccessTokenProvider::class
     single<ReadReceiptProvider> { MockReadReceiptProvider() }
 
     single {
@@ -94,4 +102,5 @@ fun localDevConfig(config: ApplicationConfig) = module {
     single<AltinnBrevMalRepository> { PostgresAltinnBrevmalRepository(get(), get()) }
     single<AltinnBrevutsendelseSender> { MockAltinnBrevutsendelseSender() }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
+    single { MockBrregClient() } bind BrregClient::class
 }
