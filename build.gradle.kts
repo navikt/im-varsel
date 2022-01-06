@@ -4,7 +4,7 @@ val githubPassword: String by project
 val ktorVersion = "1.5.3"
 val logback_version = "1.2.1"
 val logback_contrib_version = "0.1.5"
-val jacksonVersion = "2.12.0"
+val jacksonVersion = "2.13.1"
 val prometheusVersion = "0.6.0"
 val hikariVersion = "3.3.1"
 val vaultJdbcVersion = "1.3.1"
