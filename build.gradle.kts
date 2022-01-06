@@ -14,7 +14,7 @@ val junitJupiterVersion = "5.5.0-RC2"
 val assertJVersion = "3.12.2"
 val mockKVersion = "1.9.3"
 val koinVersion = "2.0.1"
-val cxfVersion = "3.4.2"
+val cxfVersion = "3.5.0"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
 
