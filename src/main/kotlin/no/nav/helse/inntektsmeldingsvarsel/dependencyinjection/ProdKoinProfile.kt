@@ -111,7 +111,7 @@ fun prodConfig(config: ApplicationConfig) = module {
     } bind AccessTokenProvider::class
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
-    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll(), get()) }
     single<ReadReceiptProvider> {
         AltinnReadReceiptClient(
             get(),

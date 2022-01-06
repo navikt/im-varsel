@@ -17,6 +17,7 @@ psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
         opprettet timestamp NOT NULL,
         behandlet timestamp,
         virksomhetsNr varchar(9) NOT NULL,
+        virksomhetsNavn varchar(9) NOT NULL,
         data jsonb NOT NULL
     );
 

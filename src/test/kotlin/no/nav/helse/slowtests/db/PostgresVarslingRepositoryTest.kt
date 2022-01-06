@@ -24,7 +24,8 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
         sent = false,
         read = false,
         opprettet = LocalDateTime.now(),
-        virksomhetsNr = "123456789"
+        virksomhetsNr = "123456789",
+        virksomhetsNavn = "Stark Industries"
     )
 
     @BeforeEach

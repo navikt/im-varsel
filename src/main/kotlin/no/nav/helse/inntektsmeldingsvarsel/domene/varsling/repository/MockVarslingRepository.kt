@@ -6,9 +6,9 @@ import java.util.*
 
 class MockVarslingRepository() : VarslingRepository {
 
-    private val varsling1 = VarslingDbEntity(data = "[]", read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789")
-    private val varsling2 = VarslingDbEntity(data = "[]", read = false, uuid = UUID.randomUUID().toString(), sent = true, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789")
-    private val varsling3 = VarslingDbEntity(data = "[]", read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789")
+    private val varsling1 = VarslingDbEntity(data = "[]", read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789", virksomhetsNavn = "Stark Industries")
+    private val varsling2 = VarslingDbEntity(data = "[]", read = false, uuid = UUID.randomUUID().toString(), sent = true, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789", virksomhetsNavn = "Stark Industries")
+    private val varsling3 = VarslingDbEntity(data = "[]", read = false, uuid = UUID.randomUUID().toString(), sent = false, opprettet = LocalDateTime.now(), virksomhetsNr = "123456789", virksomhetsNavn = "Stark Industries")
 
     val list = listOf(varsling1, varsling2, varsling3).toMutableList()
 

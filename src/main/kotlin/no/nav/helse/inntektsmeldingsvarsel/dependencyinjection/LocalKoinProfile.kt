@@ -91,7 +91,7 @@ fun localDevConfig(config: ApplicationConfig) = module {
 
     single<VarslingRepository> { PostgresVarslingRepository(get()) }
     single<VentendeBehandlingerRepository> { PostgresVentendeBehandlingerRepository(get()) }
-    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll(), get()) }
 
     single<VarslingSender> { MockVarslingSender(get()) }
     single { PollForVarslingsmeldingJob(get(), get()) }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.zaxxer.hikari.HikariDataSource
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -13,6 +14,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlPersonNavnMetadata
 import no.nav.helse.inntektsmeldingsvarsel.PilotAllowList
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
+import no.nav.helse.inntektsmeldingsvarsel.integrasjon.brreg.BrregClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_IKKE_INNTEKTSMELDING
 import org.junit.jupiter.api.Test
@@ -25,6 +27,9 @@ internal class VarslingServiceTest {
     val ventendeRepoMock = mockk<VentendeBehandlingerRepository>(relaxed = true)
     val altinnVarselMapperMock = mockk<VarslingMapper>()
     val datasourceMock = mockk<HikariDataSource>(relaxed = true)
+    val brregClientMock = mockk<BrregClient>(relaxed = true) {
+        coEvery { getVirksomhetsNavn(any()) } returns "Stark Industries"
+    }
 
     val pdlClientMock = mockk<PdlClient>() {
         every { personNavn(any()) } returns PdlHentPersonNavn.PdlPersonNavneliste(
@@ -49,7 +54,8 @@ internal class VarslingServiceTest {
         altinnVarselMapperMock,
         objectMapper,
         pdlClientMock,
-        allowMock
+        allowMock,
+        brregClientMock
     )
 
     private val msg_mangler = SpleisInntektsmeldingMelding(

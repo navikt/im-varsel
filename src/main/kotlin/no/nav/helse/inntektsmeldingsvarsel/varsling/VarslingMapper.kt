@@ -14,6 +14,7 @@ class VarslingMapper(private val mapper: ObjectMapper) {
             sent = varsling.varslingSendt,
             opprettet = varsling.opprettet,
             virksomhetsNr = varsling.virksomhetsNr,
+            virksomhetsNavn = varsling.virksomhetsNavn,
             read = varsling.varslingLest
         )
     }
@@ -21,6 +22,7 @@ class VarslingMapper(private val mapper: ObjectMapper) {
     fun mapDomain(dbEntity: VarslingDbEntity): Varsling {
         return Varsling(
             virksomhetsNr = dbEntity.virksomhetsNr,
+            virksomhetsNavn = dbEntity.virksomhetsNavn,
             uuid = dbEntity.uuid,
             opprettet = dbEntity.opprettet,
             varslingSendt = dbEntity.sent,
