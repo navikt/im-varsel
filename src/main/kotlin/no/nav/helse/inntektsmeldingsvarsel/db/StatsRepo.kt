@@ -17,13 +17,14 @@ class StatsRepoImpl(
     override fun getVarselStats(): List<VarselStats> {
         val query = """
             SELECT
-                extract('week' from behandlet) as uke,
+                extract('week' from date_trunc('week',behandlet)) as uke,
+                extract('year' from date_trunc('week',behandlet)) as year,
                 count(*) filter( WHERE sent = true) as sent,
                 count(*) filter( WHERE read=true and sent = true) as lest
             from varsling
-                where extract('week' from behandlet) < extract('week' from now()) + 1
-            group by extract('week' from behandlet)
-            order by extract('week' from behandlet);
+            where behandlet > NOW()::DATE - INTERVAL '12 MONTHS'
+            group by  extract('year' from date_trunc('week',behandlet)), extract('week' from date_trunc('week',behandlet))
+            order by  extract('year' from date_trunc('week',behandlet)), extract('week' from date_trunc('week',behandlet));
         """.trimIndent()
 
         ds.connection.use {
