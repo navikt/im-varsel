@@ -74,7 +74,7 @@ class AltinnVarselSender(
                 avsenderMottaker = AvsenderMottaker(
                     id = varsel.virksomhetsNr,
                     idType = IdType.ORGNR,
-                    navn = "Arbeidsgiver"
+                    navn = varsel.virksomhetsNavn
                 ),
                 dokumenter = listOf(
                     Dokument(
@@ -111,7 +111,7 @@ class AltinnVarselSender(
                 avsenderMottaker = AvsenderMottaker(
                     id = varsel.virksomhetsNr,
                     idType = IdType.ORGNR,
-                    navn = "Arbeidsgiver"
+                    navn = varsel.virksomhetsNavn
                 ),
                 dokumenter = listOf(
                     Dokument(

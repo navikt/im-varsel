@@ -44,31 +44,34 @@ spec:
   secureLogs:
     enabled: true
   env:
-  - name: KOIN_PROFILE
-    value: PREPROD
-  - name: DATABASE_HOST
-    value: b27dbvl013.preprod.local
-  - name: DATABASE_PORT
-    value: "5432"
-  - name: DATABASE_NAME
-    value: im-varsel
-  - name: VAULT_MOUNTPATH
-    value: postgresql/preprod-fss/
-  - name: KAFKA_ENDPOINTS
-    value: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
-  - name: PARTNER_GATEWAY_ALTINN_ENDPOINT
-    value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
-  - name: SECURITYTOKENSERVICE_URL
-    value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
-  - name: SECURITYTOKENSERVICE_REST_URL
-    value: https://security-token-service.nais.preprod.local/rest/v1/sts/token
-  - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
-    value: helse-spam-mottak-test
-  - name: DOKARKIV_URL
-    value: https://dokarkiv-q1.nais.preprod.local
-  - name: ALTINN_BREVUTSENDELSE_UI_ENABLED
-    value: "true"
-  - name: DATAPAKKE_ID
-    value: "5683d0148392e99e79737fe6889aae68"
-  - name: DATAPAKKE_API_URL
-    value: "https://datakatalog-api.dev.intern.nav.no/v1/datapackage"
+    - name: KOIN_PROFILE
+      value: PREPROD
+    - name: DATABASE_HOST
+      value: b27dbvl013.preprod.local
+    - name: DATABASE_PORT
+      value: "5432"
+    - name: DATABASE_NAME
+      value: im-varsel
+    - name: VAULT_MOUNTPATH
+      value: postgresql/preprod-fss/
+    - name: KAFKA_ENDPOINTS
+      value: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
+    - name: PARTNER_GATEWAY_ALTINN_ENDPOINT
+      value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
+    - name: SECURITYTOKENSERVICE_URL
+      value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
+    - name: SECURITYTOKENSERVICE_REST_URL
+      value: https://security-token-service.nais.preprod.local/rest/v1/sts/token
+    - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
+      value: helse-spam-mottak-test
+    - name: DOKARKIV_URL
+      value: https://dokarkiv-q1.nais.preprod.local
+    - name: ALTINN_BREVUTSENDELSE_UI_ENABLED
+      value: "true"
+    - name: DATAPAKKE_ID
+      value: "5683d0148392e99e79737fe6889aae68"
+    - name: DATAPAKKE_API_URL
+      value: "https://datakatalog-api.dev.intern.nav.no/v1/datapackage"
+    - name: ENHETSREGISTERET
+      value: https://data.brreg.no/enhetsregisteret/api/underenheter/
+

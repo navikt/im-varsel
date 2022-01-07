@@ -13,7 +13,7 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
     private val tableName = "varsling"
     private val logger = LoggerFactory.getLogger(PostgresVarslingRepository::class.java)
 
-    private val insertStatement = "INSERT INTO $tableName (data, sent, opprettet, virksomhetsNr, uuid) VALUES(?::json, ?, ?, ?, ?::uuid)"
+    private val insertStatement = "INSERT INTO $tableName (data, sent, opprettet, virksomhetsNr, virksomhetsNavn, uuid) VALUES(?::json, ?, ?, ?, ?, ?::uuid)"
 
     private val updateDataStatement = "UPDATE $tableName SET data = ?::json WHERE uuid = ?"
     private val updatesentStatement = "UPDATE $tableName SET sent = ?, behandlet = ? WHERE uuid = ?"
@@ -74,7 +74,8 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
             setBoolean(2, dbEntity.sent)
             setTimestamp(3, Timestamp.valueOf(dbEntity.opprettet))
             setString(4, dbEntity.virksomhetsNr)
-            setString(5, dbEntity.uuid)
+            setString(5, dbEntity.virksomhetsNavn)
+            setString(6, dbEntity.uuid)
         }.executeUpdate()
     }
 
@@ -104,7 +105,8 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
             read = res.getBoolean("read"),
             opprettet = res.getTimestamp("opprettet").toLocalDateTime(),
             behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
-            virksomhetsNr = res.getString("virksomhetsNr")
+            virksomhetsNr = res.getString("virksomhetsNr"),
+            virksomhetsNavn = res.getString("virksomhetsNavn")
         )
     }
 }

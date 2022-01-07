@@ -25,6 +25,8 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVa
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
+import no.nav.helse.inntektsmeldingsvarsel.integrasjon.brreg.BrregClient
+import no.nav.helse.inntektsmeldingsvarsel.integrasjon.brreg.BrregClientImp
 import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
@@ -32,6 +34,7 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafka
 import org.apache.cxf.frontend.ClientProxy
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.common.config.SaslConfigs
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import javax.sql.DataSource
@@ -98,10 +101,17 @@ fun prodConfig(config: ApplicationConfig) = module {
         )
     }
 
-    single { RestSTSAccessTokenProvider(config.getString("service_user.username"), config.getString("service_user.password"), config.getString("sts_rest_url"), get()) } bind AccessTokenProvider::class
+    single {
+        RestSTSAccessTokenProvider(
+            config.getString("service_user.username"),
+            config.getString("service_user.password"),
+            config.getString("sts_rest_url"),
+            get()
+        )
+    } bind AccessTokenProvider::class
     single { PdlClientImpl(config.getString("pdl_url"), get(), get(), get()) } bind PdlClient::class
 
-    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll()) }
+    single { VarslingService(get(), get(), get(), get(), get(), get(), AllowAll(), get()) }
     single<ReadReceiptProvider> {
         AltinnReadReceiptClient(
             get(),
@@ -128,4 +138,5 @@ fun prodConfig(config: ApplicationConfig) = module {
         )
     }
     single { SendAltinnBrevUtsendelseJob(get(), get()) }
+    single { BrregClientImp(get(qualifier = named("PROXY")), config.getString("berreg_enhet_url")) } bind BrregClient::class
 }

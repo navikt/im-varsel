@@ -1,6 +1,7 @@
 package no.nav.helse.inntektsmeldingsvarsel.varsling
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.inntektsmeldingsvarsel.ANTALL_FILTRERTE_VARSLER
 import no.nav.helse.inntektsmeldingsvarsel.AllowList
@@ -9,6 +10,7 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.PersonVarsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
+import no.nav.helse.inntektsmeldingsvarsel.integrasjon.brreg.BrregClient
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_IKKE_INNTEKTSMELDING
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.SpleisInntektsmeldingMelding.Meldingstype.TRENGER_INNTEKTSMELDING
@@ -23,7 +25,8 @@ class VarslingService(
     private val mapper: VarslingMapper,
     private val om: ObjectMapper,
     private val pdlClient: PdlClient,
-    private val allowList: AllowList
+    private val allowList: AllowList,
+    private val brregClient: BrregClient
 ) {
 
     val logger = LoggerFactory.getLogger(VarslingService::class.java)
@@ -73,6 +76,7 @@ class VarslingService(
             .map { gruppe ->
                 Varsling(
                     virksomhetsNr = gruppe.key,
+                    virksomhetsNavn = hentVirksomhetsNavn(gruppe.key),
                     liste = gruppe.value.map {
                         val navn = hentNavn(it)
                         PersonVarsling(
@@ -103,6 +107,10 @@ class VarslingService(
         val pdlResponse = pdlClient.personNavn(it.fødselsnummer)?.navn?.firstOrNull()
         val navn = if (pdlResponse != null) "${pdlResponse.fornavn} ${pdlResponse.etternavn}" else ""
         return navn
+    }
+
+    private fun hentVirksomhetsNavn(orgnr: String): String {
+        return runBlocking { brregClient.getVirksomhetsNavn(orgnr) }
     }
 
     fun oppdaterLestStatus(varsling: Varsling, lestStatus: Boolean) {
