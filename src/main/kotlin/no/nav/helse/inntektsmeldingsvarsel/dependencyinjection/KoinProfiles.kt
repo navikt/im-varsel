@@ -77,7 +77,15 @@ val common = module {
             proxy = if (httpProxy.isNullOrEmpty()) null else ProxyBuilder.http(httpProxy)
         }
         install(JsonFeature) {
-            serializer = JacksonSerializer()
+            serializer = JacksonSerializer {
+                registerModule(KotlinModule())
+                registerModule(Jdk8Module())
+                registerModule(JavaTimeModule())
+                disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                configure(SerializationFeature.INDENT_OUTPUT, true)
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            }
         }
     }
 
