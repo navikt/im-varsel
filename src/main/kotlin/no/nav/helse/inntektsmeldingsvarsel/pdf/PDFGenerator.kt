@@ -36,6 +36,8 @@ class PDFGenerator {
         contentStream.showText("Melding om manglende inntektsmelding")
         contentStream.setFont(font, FONT_SIZE)
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 4)
+        contentStream.showText("Virksomhetsnavn: ${varsling.virksomhetsNavn}")
+        contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 2)
         contentStream.showText("Virksomhetsnummer: ${varsling.virksomhetsNr}")
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 2)
         contentStream.showText("Personer:")
@@ -71,12 +73,12 @@ class PDFGenerator {
         contentStream.newLineAtOffset(0F, -LINE_HEIGHT * 4)
 
         mal.bodyHtml
-                .replace(Regex("<[^>]*>"), "")
-                .split('\n')
-                .forEach {
-                    contentStream.newLineAtOffset(0F, -LINE_HEIGHT)
-                    contentStream.showText(it.trim())
-                }
+            .replace(Regex("<[^>]*>"), "")
+            .split('\n')
+            .forEach {
+                contentStream.newLineAtOffset(0F, -LINE_HEIGHT)
+                contentStream.showText(it.trim())
+            }
 
         contentStream.endText()
         contentStream.close()

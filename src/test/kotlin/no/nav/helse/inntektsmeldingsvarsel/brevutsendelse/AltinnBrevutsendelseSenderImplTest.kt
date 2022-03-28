@@ -5,13 +5,11 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum
-import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic
 import no.nav.helse.TestData
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokumentResponse
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.JournalpostResponse
-import no.nav.helse.inntektsmeldingsvarsel.AltinnVarselSender
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSenderImpl.Companion.SYSTEM_USER_CODE
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMalRepository
 import org.junit.jupiter.api.Test
@@ -26,18 +24,18 @@ class AltinnBrevutsendelseSenderImplTest {
     private val password = "test-password"
 
     private val response = JournalpostResponse(
-            journalpostId = "12345",
-            journalpostFerdigstilt = true,
-            journalStatus = "J",
-            dokumenter = listOf(DokumentResponse(null,null,null))
+        journalpostId = "12345",
+        journalpostFerdigstilt = true,
+        journalStatus = "J",
+        dokumenter = listOf(DokumentResponse(null, null, null))
     )
 
     val altinnSender = AltinnBrevutsendelseSenderImpl(
-            joarkMock,
-            brevmalRepoMock,
-            soapClientMock,
-            username,
-            password
+        joarkMock,
+        brevmalRepoMock,
+        soapClientMock,
+        username,
+        password
     )
 
     @Test
@@ -52,11 +50,12 @@ class AltinnBrevutsendelseSenderImplTest {
         verify(exactly = 1) { brevmalRepoMock.get(TestData.AltinnBrevmal.id) }
         verify(exactly = 1) {
             soapClientMock.insertCorrespondenceBasicV2(
-                    username,
-                    password,
-                    AltinnBrevutsendelseSenderImpl.SYSTEM_USER_CODE,
-                    any(),
-                    any())
+                username,
+                password,
+                AltinnBrevutsendelseSenderImpl.SYSTEM_USER_CODE,
+                any(),
+                any()
+            )
         }
     }
 
@@ -72,11 +71,12 @@ class AltinnBrevutsendelseSenderImplTest {
         verify(exactly = 1) { brevmalRepoMock.get(TestData.AltinnBrevmal.id) }
         verify(exactly = 1) {
             soapClientMock.insertCorrespondenceBasicV2(
-                    username,
-                    password,
-                    AltinnBrevutsendelseSenderImpl.SYSTEM_USER_CODE,
-                    any(),
-                    any())
+                username,
+                password,
+                AltinnBrevutsendelseSenderImpl.SYSTEM_USER_CODE,
+                any(),
+                any()
+            )
         }
     }
 }

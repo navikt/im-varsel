@@ -19,7 +19,7 @@ val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
 
 plugins {
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.6.0"
     id("com.github.ben-manes.versions") version "0.27.0"
     id("org.sonarqube") version "2.8"
     jacoco
@@ -36,7 +36,7 @@ sonarqube {
 }
 
 tasks.jacocoTestReport {
-    executionData("build/jacoco/test.exec", "build/jacoco/slowTests.exec")
+    dependsOn(tasks.test)
     reports {
         xml.isEnabled = true
         html.isEnabled = true
@@ -86,8 +86,8 @@ dependencies {
     }
     implementation("com.sun.activation:javax.activation:1.2.0")
 
-    implementation("org.koin:koin-core:$koinVersion")
-    implementation("org.koin:koin-ktor:$koinVersion")
+    implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-ktor:$koinVersion")
 
     implementation(kotlin("stdlib"))
 
@@ -108,7 +108,7 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2021.08.27-15-00-1d672")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2022.01.18-08-47-f6aa0")
     implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
 
     implementation("com.github.tomakehurst:wiremock-standalone:2.25.1")
@@ -142,9 +142,7 @@ java {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
-    maven("https://kotlin.bintray.com/ktor")
     maven {
         credentials {
             username = "x-access-token"
@@ -193,5 +191,5 @@ task<Test>("slowTests") {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "6.0.1"
+    gradleVersion = "7.0.3"
 }

@@ -7,10 +7,10 @@ import no.nav.helse.inntektsmeldingsvarsel.RecurringJob
 import java.time.Duration
 
 class UpdateReadStatusJob(
-        private val service: VarslingService,
-        private val receiptReader: ReadReceiptProvider,
-        coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
-        waitTimeWhenEmptyQueue: Duration = Duration.ofHours(12)
+    private val service: VarslingService,
+    private val receiptReader: ReadReceiptProvider,
+    coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    waitTimeWhenEmptyQueue: Duration = Duration.ofHours(12)
 ) : RecurringJob(coroutineScope, waitTimeWhenEmptyQueue) {
 
     override fun doJob() {

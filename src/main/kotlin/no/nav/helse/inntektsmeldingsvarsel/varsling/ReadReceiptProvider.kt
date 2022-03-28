@@ -5,4 +5,3 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 interface ReadReceiptProvider {
     fun isRead(varsel: Varsling): Boolean
 }
-

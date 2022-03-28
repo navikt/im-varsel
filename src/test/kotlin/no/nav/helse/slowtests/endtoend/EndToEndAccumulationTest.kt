@@ -1,5 +1,7 @@
 package no.nav.helse.slowtests.endtoend
 
+import io.mockk.every
+import io.mockk.mockkStatic
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VarslingRepository
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.VentendeBehandlingerRepository
 import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
@@ -13,6 +15,7 @@ import no.nav.helse.slowtests.clearAllDatabaseTables
 import no.nav.helse.slowtests.kafka.KafkaProducerForTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.koin.core.get
 import java.time.LocalDate
@@ -28,6 +31,13 @@ class EndToEndAccumulationTest : KoinTestBase() {
         LocalDateTime.now().minusDays(VarslingService.VENTETID_I_DAGER),
         "01234567890"
     )
+
+    // For å kunne sende varslingsjobben må den sendes mellom 8 og 16
+    @BeforeAll
+    internal fun setup() {
+        mockkStatic(LocalDateTime::class)
+        every { LocalDateTime.now() } returns LocalDateTime.parse("2040-01-01T12:00:00")
+    }
 
     @AfterAll
     internal fun tearDown() {

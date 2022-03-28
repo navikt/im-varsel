@@ -10,11 +10,13 @@ import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.Varsling
 import no.nav.helse.inntektsmeldingsvarsel.varsling.ReadReceiptProvider
 import org.slf4j.LoggerFactory
 
-class AltinnReadReceiptClient(private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
-                              private val username: String,
-                              private val password: String,
-                              private val altinnSerivceCode: String,
-                              private val om: ObjectMapper) : ReadReceiptProvider {
+class AltinnReadReceiptClient(
+    private val iCorrespondenceAgencyExternalBasic: ICorrespondenceAgencyExternalBasic,
+    private val username: String,
+    private val password: String,
+    private val altinnSerivceCode: String,
+    private val om: ObjectMapper
+) : ReadReceiptProvider {
 
     private val log = LoggerFactory.getLogger("AltinnReadReceiptClient")
 
@@ -23,14 +25,15 @@ class AltinnReadReceiptClient(private val iCorrespondenceAgencyExternalBasic: IC
     override fun isRead(varsel: Varsling): Boolean {
         try {
             val query = CorrespondenceStatusFilterV3()
-                    .withSendersReference(varsel.uuid)
-                    .withServiceCode(altinnSerivceCode)
-                    .withServiceEditionCode(1)
-                    .withReportee(varsel.virksomhetsNr)
-                    .withSdpSearchOptions(SdpStatusSearchOptions().withIncludeCorrespondence(true))
+                .withSendersReference(varsel.uuid)
+                .withServiceCode(altinnSerivceCode)
+                .withServiceEditionCode(1)
+                .withReportee(varsel.virksomhetsNr)
+                .withSdpSearchOptions(SdpStatusSearchOptions().withIncludeCorrespondence(true))
 
             val receiptExternal = iCorrespondenceAgencyExternalBasic.getCorrespondenceStatusDetailsBasicV3(
-                    username, password, query)
+                username, password, query
+            )
 
             log.trace(om.writeValueAsString(receiptExternal))
 
