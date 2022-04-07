@@ -16,7 +16,7 @@ psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
         read bool NOT NULL DEFAULT false,
         opprettet timestamp NOT NULL,
         behandlet timestamp,
-        lestTidspunkt timestamp DEFAULT NULL,
+        lestTidspunkt timestamp,
         virksomhetsNr varchar(9) NOT NULL,
         virksomhetsNavn varchar(255) NOT NULL DEFAULT('Arbeidsgiver'),
         data jsonb NOT NULL
