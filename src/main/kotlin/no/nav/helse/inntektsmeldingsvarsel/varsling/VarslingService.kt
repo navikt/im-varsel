@@ -115,7 +115,7 @@ class VarslingService(
 
     fun oppdaterLestStatus(varsling: Varsling, lestStatus: Boolean) {
         logger.debug("Oppdaterer lest status på ${varsling.uuid} til $lestStatus")
-        varselRepository.updateReadStatus(varsling.uuid, lestStatus)
+        varselRepository.updateReadStatus(varsling.uuid, LocalDateTime.now(), lestStatus)
     }
 
     companion object {

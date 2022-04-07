@@ -18,5 +18,5 @@ interface VarslingRepository {
     fun updateSentStatus(uuid: String, timeOfUpdate: LocalDateTime, status: Boolean)
     fun updateData(uuid: String, data: String)
 
-    fun updateReadStatus(uuid: String, readStatus: Boolean)
+    fun updateReadStatus(uuid: String, lestTidspunkt: LocalDateTime, readStatus: Boolean)
 }

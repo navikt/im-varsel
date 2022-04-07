@@ -10,7 +10,7 @@ class UpdateReadStatusJob(
     private val service: VarslingService,
     private val receiptReader: ReadReceiptProvider,
     coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
-    waitTimeWhenEmptyQueue: Duration = Duration.ofHours(12)
+    waitTimeWhenEmptyQueue: Duration = Duration.ofHours(1)
 ) : RecurringJob(coroutineScope, waitTimeWhenEmptyQueue) {
 
     override fun doJob() {
