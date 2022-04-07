@@ -17,7 +17,7 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
 
     private val updateDataStatement = "UPDATE $tableName SET data = ?::json WHERE uuid = ?"
     private val updatesentStatement = "UPDATE $tableName SET sent = ?, behandlet = ? WHERE uuid = ?"
-    private val updateReadStatusStatement = "UPDATE $tableName SET read = ? WHERE uuid = ?"
+    private val updateReadStatusStatement = "UPDATE $tableName SET read = ?, lestTidspunkt = ? WHERE uuid = ?"
 
     private val deleteStatement = "DELETE FROM $tableName WHERE uuid = ?"
     private val waitingAggregatesStatement = "SELECT * FROM $tableName WHERE sent=? LIMIT ?"
@@ -63,8 +63,8 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
         ds.connection.use {
             it.prepareStatement(updateReadStatusStatement).apply {
                 setBoolean(1, readStatus)
-                setString(2, uuid)
-                setTimestamp(3, Timestamp.valueOf(timeOfUpdate))
+                setTimestamp(2, Timestamp.valueOf(timeOfUpdate))
+                setString(3, uuid)
             }.executeUpdate()
         }
     }

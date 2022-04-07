@@ -34,6 +34,6 @@ class MockVarslingRepository() : VarslingRepository {
     override fun updateData(uuid: String, data: String) {
     }
 
-    override fun updateReadStatus(uuid: String, readStatus: Boolean) {
+    override fun updateReadStatus(uuid: String, lestTidspunkt: LocalDateTime, readStatus: Boolean) {
     }
 }

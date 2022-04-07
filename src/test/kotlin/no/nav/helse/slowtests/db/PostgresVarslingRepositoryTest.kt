@@ -70,7 +70,7 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
     @Test
     internal fun `kan oppdatere lest status`() {
         val timeOfUpdate = LocalDateTime.now()
-        repo.updateReadStatus(dbVarsling.uuid, timeOfUpdate,true)
+        repo.updateReadStatus(dbVarsling.uuid, timeOfUpdate, true)
 
         val afterUpdate = repo.findBySentStatus(false, 1)[0]
 
