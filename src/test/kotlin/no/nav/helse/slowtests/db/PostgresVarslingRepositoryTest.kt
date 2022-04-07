@@ -79,6 +79,13 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
     }
 
     @Test
+    internal fun `ikke feil hvis lestTidspunkt null`() {
+        val afterUpdate = repo.findBySentStatus(false, 1)[0]
+        assertThat(afterUpdate?.read).isEqualTo(false)
+        assertThat(afterUpdate?.lestTidspunkt).isNull()
+    }
+
+    @Test
     internal fun `Kan hente sendte men uleste`() {
         repo.updateSentStatus(dbVarsling.uuid, LocalDateTime.now(), true)
 
