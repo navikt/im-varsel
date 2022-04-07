@@ -59,11 +59,12 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
         }
     }
 
-    override fun updateReadStatus(uuid: String, readStatus: Boolean) {
+    override fun updateReadStatus(uuid: String, timeOfUpdate: LocalDateTime, readStatus: Boolean) {
         ds.connection.use {
             it.prepareStatement(updateReadStatusStatement).apply {
                 setBoolean(1, readStatus)
                 setString(2, uuid)
+                setTimestamp(3, Timestamp.valueOf(timeOfUpdate))
             }.executeUpdate()
         }
     }
@@ -105,6 +106,7 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
             read = res.getBoolean("read"),
             opprettet = res.getTimestamp("opprettet").toLocalDateTime(),
             behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
+            lestTidspunkt = res.getTimestamp("lestTidspunkt")?.toLocalDateTime(),
             virksomhetsNr = res.getString("virksomhetsNr"),
             virksomhetsNavn = res.getString("virksomhetsNavn")
         )
