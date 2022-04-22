@@ -12,8 +12,8 @@ val kafkaVersion = "2.1.1"
 val mainClass = "no.nav.helse.inntektsmeldingsvarsel.web.AppKt"
 val junitJupiterVersion = "5.5.0-RC2"
 val assertJVersion = "3.12.2"
-val mockKVersion = "1.9.3"
-val koinVersion = "2.0.1"
+val mockKVersion = "1.12.3"
+val koinVersion = "3.1.3"
 val cxfVersion = "3.4.2"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
@@ -117,6 +117,7 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
+    testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2")
     testImplementation("io.mockk:mockk:$mockKVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")

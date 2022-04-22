@@ -10,23 +10,17 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.*
+import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.http
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.config.ApplicationConfig
-import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
-import no.nav.helse.inntektsmeldingsvarsel.*
-import no.nav.helse.inntektsmeldingsvarsel.varsling.*
-import org.koin.core.Koin
-import org.koin.core.definition.Kind
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-@KtorExperimentalAPI
 fun selectModuleBasedOnProfile(config: ApplicationConfig): List<Module> {
     val envModule = when (config.property("koin.profile").getString()) {
         "TEST" -> buildAndTestConfig()
@@ -98,13 +92,6 @@ val common = module {
 
 fun buildAndTestConfig() = module {}
 
-// utils
-@KtorExperimentalAPI
-fun ApplicationConfig.getString(path: String): String {
-    return this.property(path).getString()
-}
-
-@KtorExperimentalAPI
 fun ApplicationConfig.getjdbcUrlFromProperties(): String {
     return String.format(
         "jdbc:postgresql://%s:%s/%s",
@@ -113,12 +100,3 @@ fun ApplicationConfig.getjdbcUrlFromProperties(): String {
         this.property("database.name").getString()
     )
 }
-
-inline fun <reified T : Any> Koin.getAllOfType(): Collection<T> =
-    let { koin ->
-        koin.rootScope.beanRegistry
-            .getAllDefinitions()
-            .filter { it.kind == Kind.Single }
-            .map { koin.get<Any>(clazz = it.primaryType, qualifier = null, parameters = null) }
-            .filterIsInstance<T>()
-    }

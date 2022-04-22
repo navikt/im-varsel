@@ -1,6 +1,5 @@
 package no.nav.helse.inntektsmeldingsvarsel.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
 import io.ktor.config.*
@@ -10,106 +9,115 @@ import io.ktor.jackson.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
-import kotlinx.coroutines.runBlocking
+import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
+import no.nav.helse.arbeidsgiver.system.AppEnv
+import no.nav.helse.arbeidsgiver.system.getEnvironment
+import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.SendAltinnBrevUtsendelseJob
 import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
-import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
 import no.nav.helse.inntektsmeldingsvarsel.varsling.SendVarslingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.UpdateReadStatusJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
-import org.koin.ktor.ext.Koin
-import org.koin.ktor.ext.get
-import org.koin.ktor.ext.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.slf4j.LoggerFactory
 
 val mainLogger = LoggerFactory.getLogger("main()")
 
-@KtorExperimentalAPI
-fun main() {
-    Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
-        mainLogger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
+class ImVarselApplication(val port: Int = 8080) : KoinComponent {
+    private val logger = LoggerFactory.getLogger(ImVarselApplication::class.simpleName)
+    private var webserver: NettyApplicationEngine? = null
+    private var appConfig: HoconApplicationConfig = HoconApplicationConfig(ConfigFactory.load())
+    private val runtimeEnvironment = appConfig.getEnvironment()
+
+    fun start() {
+        if (runtimeEnvironment == AppEnv.PREPROD || runtimeEnvironment == AppEnv.PROD) {
+            logger.info("Sover i 30s i påvente av SQL proxy sidecar")
+            Thread.sleep(30000)
+        }
+
+        startKoin { modules(selectModuleBasedOnProfile(appConfig)) }
+        // migrateDatabase()
+
+        configAndStartBackgroundWorker()
+        autoDetectProbeableComponents()
+        configAndStartWebserver()
     }
 
-    embeddedServer(Netty, createApplicationEnvironment()).let { httpServer ->
-        mainLogger.info("Starter opp KTOR")
-        httpServer.start(wait = false)
-        mainLogger.info("KTOR Startet")
+    private fun autoDetectProbeableComponents() {
+        val kubernetesProbeManager = get<KubernetesProbeManager>()
 
-        val koin = httpServer.application.getKoin()
-        mainLogger.info("Koin Startet")
+        getKoin().getAll<LivenessComponent>()
+            .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
 
-        val manglendeInntektsmeldingMottak = koin.get<PollForVarslingsmeldingJob>()
-        manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
+        getKoin().getAll<ReadynessComponent>()
+            .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
 
-        val varslingSenderJob = koin.get<SendVarslingJob>()
-        varslingSenderJob.startAsync(retryOnFail = true)
+        logger.debug("La til probeable komponenter")
+    }
 
-        val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
-        updateReadStatusJob.startAsync(retryOnFail = true)
+    fun shutdown() {
+        webserver?.stop(1000, 1000)
+        get<BakgrunnsjobbService>().stop()
+        stopKoin()
+    }
 
-        val sendAltinnBrevJob = koin.get<SendAltinnBrevUtsendelseJob>()
-        sendAltinnBrevJob.startAsync(retryOnFail = true)
+    private fun configAndStartWebserver() {
+        webserver = embeddedServer(
+            Netty,
+            applicationEngineEnvironment {
+                config = appConfig
+                connector {
+                    port = this@ImVarselApplication.port
+                }
 
-        val datapakkeJob = koin.get<DatapakkePublisherJob>()
-        datapakkeJob.startAsync(retryOnFail = true)
+                module {
+                    if (runtimeEnvironment != AppEnv.PROD) {
+                        // localCookieDispenser(config)
+                    }
 
-        runBlocking { autoDetectProbableComponents(koin) }
-
-        mainLogger.info("La til probable komponentner")
-
-        Runtime.getRuntime().addShutdownHook(
-            Thread {
-                LoggerFactory.getLogger("shutdownHook").info("Received shutdown signal")
-
-                sendAltinnBrevJob.stop()
-                varslingSenderJob.stop()
-                manglendeInntektsmeldingMottak.stop()
-                updateReadStatusJob.stop()
-                datapakkeJob.stop()
-
-                httpServer.stop(1000, 1000)
+                    imVarselModule(config)
+                }
             }
         )
+        mainLogger.info("Starter opp KTOR")
+        webserver!!.start(wait = false)
+        mainLogger.info("KTOR Startet")
+    }
+
+    private fun configAndStartBackgroundWorker() {
+        if (appConfig.getString("run_background_workers") == "true") {
+            get<DatapakkePublisherJob>().startAsync(true)
+            get<PollForVarslingsmeldingJob>().startAsync(retryOnFail = true)
+            get<SendVarslingJob>().startAsync(retryOnFail = true)
+            get<UpdateReadStatusJob>().startAsync(retryOnFail = true)
+            get<SendAltinnBrevUtsendelseJob>().startAsync(retryOnFail = true)
+            get<DatapakkePublisherJob>().startAsync(retryOnFail = true)
+        }
     }
 }
 
-private fun autoDetectProbableComponents(koin: org.koin.core.Koin) {
-    val kubernetesProbeManager = koin.get<KubernetesProbeManager>()
+fun main() {
+    val logger = LoggerFactory.getLogger("main")
 
-    koin.getAllOfType<LivenessComponent>()
-        .forEach { kubernetesProbeManager.registerLivenessComponent(it) }
-
-    koin.getAllOfType<ReadynessComponent>()
-        .forEach { kubernetesProbeManager.registerReadynessComponent(it) }
-}
-
-@KtorExperimentalAPI
-fun createApplicationEnvironment() = applicationEngineEnvironment {
-    config = HoconApplicationConfig(ConfigFactory.load())
-
-    connector {
-        port = 8080
+    Thread.currentThread().setUncaughtExceptionHandler { thread, err ->
+        logger.error("uncaught exception in thread ${thread.name}: ${err.message}", err)
     }
 
-    module {
-        install(Koin) {
-            modules(selectModuleBasedOnProfile(config))
-        }
+    val application = ImVarselApplication()
+    application.start()
 
-        install(ContentNegotiation) {
-            val commonObjectMapper = get<ObjectMapper>()
-            register(ContentType.Application.Json, JacksonConverter(commonObjectMapper))
+    Runtime.getRuntime().addShutdownHook(
+        Thread {
+            logger.info("Fikk shutdown-signal, avslutter...")
+            application.shutdown()
+            logger.info("Avsluttet OK")
         }
-
-        nais()
-
-        if (config.getString("altinn_brevutsendelse.ui_enabled").equals("true")) {
-            altinnBrevRoutes()
-        }
-    }
+    )
 }

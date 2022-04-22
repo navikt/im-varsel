@@ -3,6 +3,7 @@ package no.nav.helse.inntektsmeldingsvarsel.dependencyinjection
 import io.ktor.config.*
 import no.nav.helse.arbeidsgiver.integrasjoner.AccessTokenProvider
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.*
+import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.inntektsmeldingsvarsel.AllowAll
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.MockAltinnBrevutsendelseSender

@@ -18,7 +18,6 @@ import java.util.*
  *
  * GUIet og APIet må skrus på via miljøvariabelen ALTINN_BREVUTSENDELSE_UI_ENABLED=true
  */
-@KtorExperimentalAPI
 fun Application.altinnBrevRoutes() {
 
     routing {

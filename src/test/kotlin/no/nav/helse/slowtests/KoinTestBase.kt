@@ -9,10 +9,10 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.get
 
 /**
  * Disse testene krever en kjørende Kafka broker på localhost:9092
@@ -56,7 +56,7 @@ class TestKoinBaseTest : KoinTestBase() {
 
     @Test
     internal fun name() {
-        val om = get<ObjectMapper>()
+        get<ObjectMapper>()
         println("test")
     }
 
