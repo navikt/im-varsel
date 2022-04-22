@@ -11,7 +11,7 @@ import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.koin.core.get
+import org.koin.core.component.get
 import java.time.LocalDate
 import java.time.LocalDateTime
 

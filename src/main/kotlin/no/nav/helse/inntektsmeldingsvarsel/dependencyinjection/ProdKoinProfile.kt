@@ -8,6 +8,7 @@ import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlient
 import no.nav.helse.arbeidsgiver.integrasjoner.dokarkiv.DokarkivKlientImpl
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClient
 import no.nav.helse.arbeidsgiver.integrasjoner.pdl.PdlClientImpl
+import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.inntektsmeldingsvarsel.*
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSender
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.AltinnBrevutsendelseSenderImpl
@@ -31,7 +32,6 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.*
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeldingMeldingProvider
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
-import org.apache.cxf.frontend.ClientProxy
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.common.config.SaslConfigs
 import org.koin.core.qualifier.named
@@ -66,10 +66,6 @@ fun prodConfig(config: ApplicationConfig) = module {
         val altinnMeldingWsClient = Clients.iCorrespondenceExternalBasic(
             config.getString("altinn_melding.pep_gw_endpoint")
         )
-
-        val client = ClientProxy.getClient(altinnMeldingWsClient)
-        // client.inInterceptors.add(LoggingInInterceptor())
-        // client.outInterceptors.add(LoggingOutInterceptor())
 
         val sts = wsStsClient(
             config.getString("sts_url"),

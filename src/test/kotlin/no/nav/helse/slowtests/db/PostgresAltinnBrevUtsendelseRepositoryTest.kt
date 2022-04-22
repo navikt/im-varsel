@@ -7,7 +7,6 @@ import no.nav.helse.slowtests.KoinTestBase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.koin.core.get
 import java.time.LocalDateTime
 import java.util.*
 
