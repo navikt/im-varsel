@@ -18,7 +18,6 @@ fun getDataSource(hikariConfig: HikariConfig, dbName: String, vaultMountpath: St
         HikariDataSource(hikariConfig)
     }
 
-@KtorExperimentalAPI
 fun dataSourceFromVault(hikariConfig: HikariConfig, dbName: String, vaultMountpath: String, role: Role): HikariDataSource {
     return HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration(
         hikariConfig,

@@ -15,7 +15,6 @@ import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.arbeidsgiver.system.AppEnv
 import no.nav.helse.arbeidsgiver.system.getEnvironment
-import no.nav.helse.arbeidsgiver.system.getString
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.SendAltinnBrevUtsendelseJob
 import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
@@ -28,7 +27,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.slf4j.LoggerFactory
 
-val mainLogger = LoggerFactory.getLogger("main()")
+//val mainLogger = LoggerFactory.getLogger("main()")
 
 class ImVarselApplication(val port: Int = 8080) : KoinComponent {
     private val logger = LoggerFactory.getLogger(ImVarselApplication::class.simpleName)
@@ -86,20 +85,18 @@ class ImVarselApplication(val port: Int = 8080) : KoinComponent {
                 }
             }
         )
-        mainLogger.info("Starter opp KTOR")
+//        mainLogger.info("Starter opp KTOR")
         webserver!!.start(wait = false)
-        mainLogger.info("KTOR Startet")
+//        mainLogger.info("KTOR Startet")
     }
 
     private fun configAndStartBackgroundWorker() {
-        if (appConfig.getString("run_background_workers") == "true") {
-            get<DatapakkePublisherJob>().startAsync(true)
-            get<PollForVarslingsmeldingJob>().startAsync(retryOnFail = true)
-            get<SendVarslingJob>().startAsync(retryOnFail = true)
-            get<UpdateReadStatusJob>().startAsync(retryOnFail = true)
-            get<SendAltinnBrevUtsendelseJob>().startAsync(retryOnFail = true)
-            get<DatapakkePublisherJob>().startAsync(retryOnFail = true)
-        }
+//        get<DatapakkePublisherJob>().startAsync(true)
+
+        get<PollForVarslingsmeldingJob>().startAsync(retryOnFail = true)
+        get<SendVarslingJob>().startAsync(retryOnFail = true)
+        get<UpdateReadStatusJob>().startAsync(retryOnFail = true)
+        get<SendAltinnBrevUtsendelseJob>().startAsync(retryOnFail = true)
     }
 }
 
