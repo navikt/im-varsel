@@ -52,7 +52,7 @@ class AltinnBrevutsendelseSenderImplTest {
             soapClientMock.insertCorrespondenceBasicV2(
                 username,
                 password,
-                AltinnBrevutsendelseSenderImpl.SYSTEM_USER_CODE,
+                SYSTEM_USER_CODE,
                 any(),
                 any()
             )
@@ -73,7 +73,7 @@ class AltinnBrevutsendelseSenderImplTest {
             soapClientMock.insertCorrespondenceBasicV2(
                 username,
                 password,
-                AltinnBrevutsendelseSenderImpl.SYSTEM_USER_CODE,
+                SYSTEM_USER_CODE,
                 any(),
                 any()
             )

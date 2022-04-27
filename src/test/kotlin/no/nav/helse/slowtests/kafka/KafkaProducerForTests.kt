@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit
 
 class KafkaProducerForTests(private val om: ObjectMapper) {
 
-    val adminClient = KafkaAdminClient.create(Companion.testProps)
-    val producer = KafkaProducer<String, String>(Companion.testProps, StringSerializer(), StringSerializer())
+    val adminClient = KafkaAdminClient.create(testProps)
+    val producer = KafkaProducer<String, String>(testProps, StringSerializer(), StringSerializer())
 
     fun sendSync(spleisMelding: SpleisInntektsmeldingMelding) {
         createTopicIfNotExists()

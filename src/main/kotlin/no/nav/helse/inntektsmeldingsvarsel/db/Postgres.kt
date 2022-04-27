@@ -2,7 +2,6 @@ package no.nav.helse.inntektsmeldingsvarsel.db
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil
 
 enum class Role {

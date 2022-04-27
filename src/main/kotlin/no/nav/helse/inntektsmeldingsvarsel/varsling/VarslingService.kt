@@ -71,7 +71,7 @@ class VarslingService(
     }
 
     fun opprettVarslingerFraVentendeMeldinger() {
-        ventendeRepo.findOlderThan(LocalDateTime.now().minusDays(Companion.VENTETID_I_DAGER))
+        ventendeRepo.findOlderThan(LocalDateTime.now().minusDays(VENTETID_I_DAGER))
             .groupBy { it.organisasjonsnummer }
             .map { gruppe ->
                 Varsling(

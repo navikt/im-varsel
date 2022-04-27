@@ -19,7 +19,6 @@ import no.nav.helse.slowtests.KoinTestBase
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import java.util.*
 import kotlin.random.Random
 
 class DatapakkePublisherJobTest : KoinTestBase() {

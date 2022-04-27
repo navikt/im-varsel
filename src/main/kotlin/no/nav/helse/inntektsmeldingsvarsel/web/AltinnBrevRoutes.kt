@@ -1,14 +1,21 @@
 package no.nav.helse.inntektsmeldingsvarsel.web
 
-import io.ktor.application.*
-import io.ktor.http.content.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.util.*
-import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.http.content.defaultResource
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.response.respondBytes
+import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.put
+import io.ktor.routing.route
+import io.ktor.routing.routing
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevMalRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtsendelseRepository
+import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevmal
 import no.nav.helse.inntektsmeldingsvarsel.pdf.PDFGenerator
 import org.koin.ktor.ext.get
 import java.util.*
@@ -30,34 +37,36 @@ fun Application.altinnBrevRoutes() {
     routing {
         val brevMalRepository = get<AltinnBrevMalRepository>()
 
-        get("/brevmal") {
-            val mal = brevMalRepository.getAll()
-            call.respond(mal)
-        }
+        route("/brevmal") {
+            get {
+                val mal = brevMalRepository.getAll()
+                call.respond(mal)
+            }
 
-        get("/brevmal/{id}") {
-            val uuid = UUID.fromString(call.parameters.get("id"))
-            val mal = brevMalRepository.get(uuid)
-            call.respond(mal)
-        }
+            get("/{id}") {
+                val uuid = UUID.fromString(call.parameters.get("id"))
+                val mal = brevMalRepository.get(uuid)
+                call.respond(mal)
+            }
 
-        get("/brevmal/{id}.pdf") {
-            val uuid = UUID.fromString(call.parameters.get("id"))
-            val mal = brevMalRepository.get(uuid)
-            val pdf = PDFGenerator().lagPDF(mal)
-            call.respondBytes(pdf)
-        }
+            get("/{id}.pdf") {
+                val uuid = UUID.fromString(call.parameters.get("id"))
+                val mal = brevMalRepository.get(uuid)
+                val pdf = PDFGenerator().lagPDF(mal)
+                call.respondBytes(pdf)
+            }
 
-        put("/brevmal") {
-            val mal = call.receive<AltinnBrevmal>()
-            brevMalRepository.update(mal)
-            call.respond(mal)
-        }
+            put {
+                val mal = call.receive<AltinnBrevmal>()
+                brevMalRepository.update(mal)
+                call.respond(mal)
+            }
 
-        post("/brevmal") {
-            val mal = call.receive<AltinnBrevmal>()
-            brevMalRepository.insert(mal)
-            call.respond(mal)
+            post {
+                val mal = call.receive<AltinnBrevmal>()
+                brevMalRepository.insert(mal)
+                call.respond(mal)
+            }
         }
     }
 
