@@ -75,15 +75,15 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
         val afterUpdate = repo.findBySentStatus(false, 1)[0]
 
         assertThat(afterUpdate.read).isEqualTo(true)
-        assertThat(afterUpdate?.read).isEqualTo(true)
-        assertThat(afterUpdate?.lestTidspunkt).isEqualTo(timeOfUpdate)
+        assertThat(afterUpdate.read).isEqualTo(true)
+        assertThat(afterUpdate.lestTidspunkt).isEqualTo(timeOfUpdate)
     }
 
     @Test
     internal fun `ikke feil hvis lestTidspunkt null`() {
         val afterUpdate = repo.findBySentStatus(false, 1)[0]
-        assertThat(afterUpdate?.read).isEqualTo(false)
-        assertThat(afterUpdate?.lestTidspunkt).isNull()
+        assertThat(afterUpdate.read).isEqualTo(false)
+        assertThat(afterUpdate.lestTidspunkt).isNull()
     }
 
     @Test
