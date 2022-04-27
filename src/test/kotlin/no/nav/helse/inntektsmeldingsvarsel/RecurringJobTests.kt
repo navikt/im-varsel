@@ -87,7 +87,7 @@ internal class RecurringJobTests {
     }
 
     internal class TestRecurringJob(coroutineScope: CoroutineScope, waitTimeBetweenRuns: Duration) : RecurringJob(coroutineScope, waitTimeBetweenRuns) {
-        public var failOnJob: Boolean = false
+        var failOnJob: Boolean = false
         private var jobCompletedCounter = 0
         fun getJobCompletedCounter(): Int {
             return jobCompletedCounter

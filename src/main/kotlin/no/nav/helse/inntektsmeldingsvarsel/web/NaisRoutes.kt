@@ -13,15 +13,11 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeResult
 import no.nav.helse.arbeidsgiver.kubernetes.ProbeState
 import org.koin.ktor.ext.get
-import org.slf4j.LoggerFactory
 import java.util.*
 
 private val collectorRegistry = CollectorRegistry.defaultRegistry
 
-@KtorExperimentalAPI
 fun Application.nais() {
-
-    val log = LoggerFactory.getLogger("Metrics Routes")
 
     DefaultExports.initialize()
 

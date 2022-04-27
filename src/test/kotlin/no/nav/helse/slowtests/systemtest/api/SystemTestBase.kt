@@ -45,7 +45,7 @@ open class SystemTestBase : KoinTest {
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     companion object {
-        val testServerPort = 8989
+        val testServerPort = 8080
         var app: ImVarselApplication? = null
     }
 
@@ -87,7 +87,6 @@ open class SystemTestBase : KoinTest {
     fun suspendableTest(block: suspend CoroutineScope.() -> Unit) {
         runBlocking {
             block()
-            Unit
         }
     }
 

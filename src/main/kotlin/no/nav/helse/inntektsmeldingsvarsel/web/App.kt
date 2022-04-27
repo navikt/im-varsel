@@ -1,14 +1,12 @@
 package no.nav.helse.inntektsmeldingsvarsel.web
 
 import com.typesafe.config.ConfigFactory
-import io.ktor.application.*
-import io.ktor.config.*
-import io.ktor.features.*
-import io.ktor.http.*
-import io.ktor.jackson.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.util.*
+import io.ktor.config.HoconApplicationConfig
+import io.ktor.server.engine.applicationEngineEnvironment
+import io.ktor.server.engine.connector
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.netty.NettyApplicationEngine
 import no.nav.helse.arbeidsgiver.bakgrunnsjobb.BakgrunnsjobbService
 import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
@@ -27,7 +25,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.slf4j.LoggerFactory
 
-//val mainLogger = LoggerFactory.getLogger("main()")
+val mainLogger = LoggerFactory.getLogger("main()")
 
 class ImVarselApplication(val port: Int = 8080) : KoinComponent {
     private val logger = LoggerFactory.getLogger(ImVarselApplication::class.simpleName)
@@ -42,7 +40,6 @@ class ImVarselApplication(val port: Int = 8080) : KoinComponent {
         }
 
         startKoin { modules(selectModuleBasedOnProfile(appConfig)) }
-        // migrateDatabase()
 
         configAndStartBackgroundWorker()
         autoDetectProbeableComponents()
@@ -77,21 +74,17 @@ class ImVarselApplication(val port: Int = 8080) : KoinComponent {
                 }
 
                 module {
-                    if (runtimeEnvironment != AppEnv.PROD) {
-                        // localCookieDispenser(config)
-                    }
-
                     imVarselModule(config)
                 }
             }
         )
-//        mainLogger.info("Starter opp KTOR")
+        mainLogger.info("Starter opp KTOR")
         webserver!!.start(wait = false)
-//        mainLogger.info("KTOR Startet")
+        mainLogger.info("KTOR Startet")
     }
 
     private fun configAndStartBackgroundWorker() {
-//        get<DatapakkePublisherJob>().startAsync(true)
+        get<DatapakkePublisherJob>().startAsync(true)
 
         get<PollForVarslingsmeldingJob>().startAsync(retryOnFail = true)
         get<SendVarslingJob>().startAsync(retryOnFail = true)

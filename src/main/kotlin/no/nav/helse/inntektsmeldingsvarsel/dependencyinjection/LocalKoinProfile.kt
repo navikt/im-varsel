@@ -12,6 +12,9 @@ import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevM
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.AltinnBrevUtsendelseRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevUtsendelseRepository
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.repository.PostgresAltinnBrevmalRepository
+import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
+import no.nav.helse.inntektsmeldingsvarsel.db.IStatsRepo
+import no.nav.helse.inntektsmeldingsvarsel.db.StatsRepoImpl
 import no.nav.helse.inntektsmeldingsvarsel.db.createLocalHikariConfig
 import no.nav.helse.inntektsmeldingsvarsel.db.getDataSource
 import no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository.PostgresVarslingRepository
@@ -89,6 +92,9 @@ fun localDevConfig(config: ApplicationConfig) = module {
                 )
         }
     } bind PdlClient::class
+
+    single { DatapakkePublisherJob(get(), get(), config.getString("datapakke.api_url"), config.getString("datapakke.id"), get()) }
+    single { StatsRepoImpl(get()) } bind IStatsRepo::class
 
     single<VarslingRepository> { PostgresVarslingRepository(get()) }
     single<VentendeBehandlingerRepository> { PostgresVentendeBehandlingerRepository(get()) }

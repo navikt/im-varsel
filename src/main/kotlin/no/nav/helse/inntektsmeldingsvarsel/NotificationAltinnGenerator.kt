@@ -9,15 +9,6 @@ internal object NotificationAltinnGenerator {
     private const val NORSK_BOKMAL = "1044"
     private const val FRA_EPOST_ALTINN = "noreply@altinn.no"
 
-    private fun urlEncode(lenke: String): String {
-        return lenke.replace("=".toRegex(), "%3D")
-    }
-
-    @JvmStatic
-    fun lenkeAltinnPortal(): String {
-        return "https://www.altinn.no/ui/MessageBox?O=\$reporteeNumber$"
-    }
-
     @JvmStatic
     fun opprettEpostNotification(vararg text: String): Notification {
         return opprettNotification(FRA_EPOST_ALTINN, TransportType.EMAIL, *text)
@@ -37,7 +28,7 @@ internal object NotificationAltinnGenerator {
         return Notification()
             .withLanguageCode(NORSK_BOKMAL)
             .withNotificationType("TokenTextOnly")
-            .withFromAddress(mapNullable(fraEpost, Function { epost: String? -> epost }))
+            .withFromAddress(mapNullable(fraEpost, { epost: String? -> epost }))
             .withReceiverEndPoints(
                 ReceiverEndPointBEList()
                     .withReceiverEndPoint(ReceiverEndPoint().withTransportType(type))
