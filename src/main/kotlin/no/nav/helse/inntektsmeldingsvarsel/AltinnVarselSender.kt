@@ -28,7 +28,7 @@ class AltinnVarselSender(
     }
 
     override fun send(varsling: Varsling) {
-
+        log.info("Forsøker å sende varsel med uuid: ${varsling.uuid}")
         try {
             varsling.liste.forEach {
                 if (it.joarkRef == null) {
