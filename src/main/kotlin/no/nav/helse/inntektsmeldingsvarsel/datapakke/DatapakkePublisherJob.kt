@@ -16,6 +16,7 @@ import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDateTime
 
+// Todo: Gjør om til datafortelling
 class DatapakkePublisherJob(
     private val statsRepo: IStatsRepo,
     private val httpClient: HttpClient,

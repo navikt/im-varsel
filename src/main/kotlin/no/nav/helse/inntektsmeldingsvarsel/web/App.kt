@@ -15,7 +15,6 @@ import no.nav.helse.arbeidsgiver.kubernetes.KubernetesProbeManager
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.arbeidsgiver.kubernetes.ReadynessComponent
 import no.nav.helse.inntektsmeldingsvarsel.brevutsendelse.SendAltinnBrevUtsendelseJob
-import no.nav.helse.inntektsmeldingsvarsel.datapakke.DatapakkePublisherJob
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getAllOfType
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.getString
 import no.nav.helse.inntektsmeldingsvarsel.dependencyinjection.selectModuleBasedOnProfile
@@ -55,9 +54,6 @@ fun main() {
         val sendAltinnBrevJob = koin.get<SendAltinnBrevUtsendelseJob>()
         sendAltinnBrevJob.startAsync(retryOnFail = true)
 
-        val datapakkeJob = koin.get<DatapakkePublisherJob>()
-        datapakkeJob.startAsync(retryOnFail = true)
-
         runBlocking { autoDetectProbableComponents(koin) }
 
         mainLogger.info("La til probable komponentner")
@@ -70,7 +66,6 @@ fun main() {
                 varslingSenderJob.stop()
                 manglendeInntektsmeldingMottak.stop()
                 updateReadStatusJob.stop()
-                datapakkeJob.stop()
 
                 httpServer.stop(1000, 1000)
             }
