@@ -3,7 +3,6 @@ package no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.ResultSet
-import java.sql.SQLType
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
@@ -79,7 +78,7 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
             setString(4, dbEntity.virksomhetsNr)
             setString(5, dbEntity.virksomhetsNavn)
             if (dbEntity.journalpostId == null) {
-                setNull(6,  java.sql.Types.VARCHAR)
+                setNull(6, java.sql.Types.VARCHAR)
             } else {
                 setString(6, dbEntity.journalpostId)
             }
