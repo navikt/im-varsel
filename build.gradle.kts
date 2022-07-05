@@ -1,37 +1,38 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val githubPassword: String by project
 
-val ktorVersion = "1.5.3"
-val logback_version = "1.2.11"
-val logback_contrib_version = "0.1.5"
-val logbackEncoderVersion = "4.9"
-val jacksonVersion = "2.12.0"
-val prometheusVersion = "0.6.0"
-val hikariVersion = "3.3.1"
-val vaultJdbcVersion = "1.3.1"
-val kafkaVersion = "2.1.1"
-val junitJupiterVersion = "5.5.0-RC2"
-val assertJVersion = "3.12.2"
-val mockKVersion = "1.9.3"
-val koinVersion = "2.0.1"
-val cxfVersion = "3.4.2"
-val jaxwsVersion = "2.3.1"
-val jaxwsToolsVersion = "2.3.1"
-val postgresVersion = "42.2.13"
-val altinnVersion = "1.2019.09.25-00.21-49b69f0625e0"
-val navCommonLog = "2.2020.10.15_11.43-b1f02e7bd6ae"
-val xmlSchemaVersion = "2.2.4"
-val kotlinCoroutinesTestVersion = "1.3.2"
-val wiremockStandaloneVersion = "2.25.1"
-val fellesBackendVersion = "2022.01.18-08-47-f6aa0"
-val jacksonModuleKotlinVersion = "2.9.+"
-val nimbusJoseJwtVersion = "8.15"
-val janinoVersion = "3.0.6"
-val pdfBoxVersion = "2.0.19"
-val sunActivationVersion = "1.2.0"
-val comonsCollectionVersion = "3.2.2"
-val apacheHttpClientVersion = "4.5.13"
-val guavaVersion = "30.0-jre"
+val ktorVersion: String by project
+val logback_version: String by project
+val logback_contrib_version: String by project
+val logbackEncoderVersion: String by project
+val jacksonVersion: String by project
+val prometheusVersion: String by project
+val hikariVersion: String by project
+val vaultJdbcVersion: String by project
+val kafkaVersion: String by project
+val junitJupiterVersion: String by project
+val assertJVersion: String by project
+val mockKVersion: String by project
+val koinVersion: String by project
+val cxfVersion: String by project
+val jaxwsVersion: String by project
+val jaxwsToolsVersion: String by project
+val postgresVersion: String by project
+val altinnVersion: String by project
+val navCommonLog: String by project
+val xmlSchemaVersion: String by project
+val kotlinCoroutinesTestVersion: String by project
+val wiremockStandaloneVersion: String by project
+val fellesBackendVersion: String by project
+val jacksonModuleKotlinVersion: String by project
+val nimbusJoseJwtVersion: String by project
+val janinoVersion: String by project
+val pdfBoxVersion: String by project
+val sunActivationVersion: String by project
+val comonsCollectionVersion: String by project
+val apacheHttpClientVersion: String by project
+val guavaVersion: String by project
+val slf4Version: String by project
 
 // Application
 val mainClass = "no.nav.helse.inntektsmeldingsvarsel.web.AppKt"
@@ -103,7 +104,7 @@ dependencies {
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation(kotlin("stdlib"))
-    implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-api:$slf4Version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("ch.qos.logback.contrib:logback-jackson:$logback_contrib_version")
     implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
