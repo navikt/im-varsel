@@ -48,7 +48,10 @@ class AltinnVarselSenderTest {
     private val varsling = Varsling(
         virksomhetsNr = "123456785",
         virksomhetsNavn = "Stark Industries",
-        liste = mutableSetOf(PersonVarsling("Ole", "123", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()))
+        liste = mutableSetOf(
+            PersonVarsling("Ole", "123", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()),
+            PersonVarsling("Kari", "456", Periode(LocalDate.now(), LocalDate.now()), LocalDateTime.now()).copy(joarkRef = "abc-123")
+        )
     )
 
     val mappedSoapMessage = InsertCorrespondenceV2()
