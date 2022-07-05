@@ -4,12 +4,12 @@ val githubPassword: String by project
 val ktorVersion = "1.5.3"
 val logback_version = "1.2.11"
 val logback_contrib_version = "0.1.5"
+val logbackEncoderVersion = "4.9"
 val jacksonVersion = "2.12.0"
 val prometheusVersion = "0.6.0"
 val hikariVersion = "3.3.1"
 val vaultJdbcVersion = "1.3.1"
 val kafkaVersion = "2.1.1"
-val mainClass = "no.nav.helse.inntektsmeldingsvarsel.web.AppKt"
 val junitJupiterVersion = "5.5.0-RC2"
 val assertJVersion = "3.12.2"
 val mockKVersion = "1.9.3"
@@ -17,6 +17,24 @@ val koinVersion = "2.0.1"
 val cxfVersion = "3.4.2"
 val jaxwsVersion = "2.3.1"
 val jaxwsToolsVersion = "2.3.1"
+val postgresVersion = "42.2.13"
+val altinnVersion = "1.2019.09.25-00.21-49b69f0625e0"
+val navCommonLog = "2.2020.10.15_11.43-b1f02e7bd6ae"
+val xmlSchemaVersion = "2.2.4"
+val kotlinCoroutinesTestVersion = "1.3.2"
+val wiremockStandaloneVersion = "2.25.1"
+val fellesBackendVersion = "2022.01.18-08-47-f6aa0"
+val jacksonModuleKotlinVersion = "2.9.+"
+val nimbusJoseJwtVersion = "8.15"
+val janinoVersion = "3.0.6"
+val pdfBoxVersion = "2.0.19"
+val sunActivationVersion = "1.2.0"
+val comonsCollectionVersion = "3.2.2"
+val apacheHttpClientVersion = "4.5.13"
+val guavaVersion = "30.0-jre"
+
+// Application
+val mainClass = "no.nav.helse.inntektsmeldingsvarsel.web.AppKt"
 
 plugins {
     kotlin("jvm") version "1.6.0"
@@ -60,9 +78,9 @@ buildscript {
 dependencies {
     // SNYK-fikser - Disse kan fjernes etterhver som våre avhengigheter oppdaterer sine versjoner
     // Forsøk å fjerne en og en og kjør snyk test --configuration-matching=runtimeClasspath
-    implementation("commons-collections:commons-collections:3.2.2") // overstyrer transiente 3.2.1
-    implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 via ktor-client-apache
-    implementation("com.google.guava:guava:30.0-jre") // overstyrer transiente 29.0-jre
+    implementation("commons-collections:commons-collections:$comonsCollectionVersion") // overstyrer transiente 3.2.1
+    implementation("org.apache.httpcomponents:httpclient:$apacheHttpClientVersion") // overstyrer transiente 4.5.6 via ktor-client-apache
+    implementation("com.google.guava:guava:$guavaVersion") // overstyrer transiente 29.0-jre
     // -- end snyk fixes
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -73,18 +91,18 @@ dependencies {
     implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
 
-    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:1.2019.09.25-00.21-49b69f0625e0")
+    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnVersion")
 
     implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.ws.xmlschema:xmlschema-core:2.2.4") // Force newer version of XMLSchema to fix illegal reflective access warning
+    implementation("org.apache.ws.xmlschema:xmlschema-core:$xmlSchemaVersion") // Force newer version of XMLSchema to fix illegal reflective access warning
     implementation("com.sun.xml.ws:jaxws-tools:$jaxwsToolsVersion") {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
-    implementation("com.sun.activation:javax.activation:1.2.0")
+    implementation("com.sun.activation:javax.activation:$sunActivationVersion")
 
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
@@ -95,29 +113,29 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("ch.qos.logback.contrib:logback-jackson:$logback_contrib_version")
     implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
-    implementation("net.logstash.logback:logstash-logback-encoder:4.9")
-    implementation("org.codehaus.janino:janino:3.0.6")
-    implementation("com.nimbusds:nimbus-jose-jwt:8.15")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
+    implementation("org.codehaus.janino:janino:$janinoVersion")
+    implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
-    implementation("org.apache.pdfbox:pdfbox:2.0.19")
+    implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion")
 
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
-    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:2022.01.18-08-47-f6aa0")
-    implementation("no.nav.common:log:2.2020.10.15_11.43-b1f02e7bd6ae")
+    implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
+    implementation("no.nav.common:log:$navCommonLog")
 
-    implementation("com.github.tomakehurst:wiremock-standalone:2.25.1")
-    implementation("org.postgresql:postgresql:42.2.13")
+    implementation("com.github.tomakehurst:wiremock-standalone:$wiremockStandaloneVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
 
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesTestVersion")
     testImplementation("io.mockk:mockk:$mockKVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
