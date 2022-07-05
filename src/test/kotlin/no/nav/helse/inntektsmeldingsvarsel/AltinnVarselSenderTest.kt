@@ -61,6 +61,7 @@ class AltinnVarselSenderTest {
 
         altinnSender.send(varsling)
 
+        verify(exactly = 1) { serviceMock.oppdaterJournalført(any(), any()) }
         verify(exactly = 2) { joarkMock.journalførDokument(any(), any(), any()) }
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
         verify(exactly = 1) {
@@ -83,6 +84,7 @@ class AltinnVarselSenderTest {
         assertThrows<IllegalStateException> { altinnSender.send(varsling) }
 
         verify(exactly = 2) { joarkMock.journalførDokument(any(), any(), any()) }
+        verify(exactly = 1) { serviceMock.oppdaterJournalført(any(), any()) }
         verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varsling) }
         verify(exactly = 1) {
             soapClientMock.insertCorrespondenceBasicV2(
@@ -90,6 +92,30 @@ class AltinnVarselSenderTest {
                 password,
                 AltinnVarselSender.SYSTEM_USER_CODE,
                 varsling.uuid,
+                mappedSoapMessage
+            )
+        }
+    }
+
+    @Test
+    fun `Ikke journalfør virksomheter som allerede er journalført`() {
+        val varslingTidligere = varsling.copy(journalpostId = "123")
+        every { joarkMock.journalførDokument(any(), any(), any()) } returns response
+        every { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varslingTidligere) } returns mappedSoapMessage
+        every { soapClientMock.insertCorrespondenceBasicV2(any(), any(), any(), any(), any()) } returns ReceiptExternal().withReceiptStatusCode(ReceiptStatusEnum.UN_EXPECTED_ERROR)
+
+        assertThrows<IllegalStateException> { altinnSender.send(varslingTidligere) }
+
+        verify(exactly = 0) { serviceMock.oppdaterJournalført(any(), any()) }
+        verify(exactly = 1) { joarkMock.journalførDokument(any(), any(), any()) }
+
+        verify(exactly = 1) { altinnVarselMapperMock.mapVarslingTilInsertCorrespondence(varslingTidligere) }
+        verify(exactly = 1) {
+            soapClientMock.insertCorrespondenceBasicV2(
+                username,
+                password,
+                AltinnVarselSender.SYSTEM_USER_CODE,
+                varslingTidligere.uuid,
                 mappedSoapMessage
             )
         }

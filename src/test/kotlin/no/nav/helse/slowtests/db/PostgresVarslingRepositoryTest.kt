@@ -94,6 +94,13 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
         assertThat(unread).hasSize(1)
     }
 
+    @Test
+    internal fun `skal kunne oppdatere journalpostId via journalført`() {
+        val afterUpdate =  repo.updateJournalført(dbVarsling.uuid, "jp-123-789")
+        //assertThat(afterUpdate?.journalpostId).isEqualTo("jp-123-789")
+        //assertThat(afterUpdate?.journalpostId).isNull()
+    }
+
     @AfterEach
     internal fun tearDown() {
         clearAllDatabaseTables()

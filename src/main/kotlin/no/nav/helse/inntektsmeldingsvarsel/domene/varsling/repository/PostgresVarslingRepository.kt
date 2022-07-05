@@ -3,6 +3,7 @@ package no.nav.helse.inntektsmeldingsvarsel.domene.varsling.repository
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.ResultSet
+import java.sql.SQLType
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
@@ -13,10 +14,11 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
     private val tableName = "varsling"
     private val logger = LoggerFactory.getLogger(PostgresVarslingRepository::class.java)
 
-    private val insertStatement = "INSERT INTO $tableName (data, sent, opprettet, virksomhetsNr, virksomhetsNavn, uuid) VALUES(?::json, ?, ?, ?, ?, ?::uuid)"
+    private val insertStatement = "INSERT INTO $tableName (data, sent, opprettet, virksomhetsNr, virksomhetsNavn, journalpostId, uuid) VALUES(?::json, ?, ?, ?, ?, ?, ?::uuid)"
 
     private val updateDataStatement = "UPDATE $tableName SET data = ?::json WHERE uuid = ?"
     private val updatesentStatement = "UPDATE $tableName SET sent = ?, behandlet = ? WHERE uuid = ?"
+    private val updateJournalførtStatement = "UPDATE $tableName SET journalpostId = ? WHERE uuid = ?"
     private val updateReadStatusStatement = "UPDATE $tableName SET read = ?, lestTidspunkt = ? WHERE uuid = ?"
 
     private val deleteStatement = "DELETE FROM $tableName WHERE uuid = ?"
@@ -76,7 +78,12 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
             setTimestamp(3, Timestamp.valueOf(dbEntity.opprettet))
             setString(4, dbEntity.virksomhetsNr)
             setString(5, dbEntity.virksomhetsNavn)
-            setString(6, dbEntity.uuid)
+            if (dbEntity.journalpostId == null) {
+                setNull(6,  java.sql.Types.VARCHAR)
+            } else {
+                setString(6, dbEntity.journalpostId)
+            }
+            setString(7, dbEntity.uuid)
         }.executeUpdate()
     }
 
@@ -98,6 +105,15 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
         }
     }
 
+    override fun updateJournalført(uuid: String, journalpostId: String) {
+        ds.connection.use {
+            it.prepareStatement(updateJournalførtStatement).apply {
+                setString(1, journalpostId)
+                setString(2, uuid)
+            }.executeUpdate()
+        }
+    }
+
     private fun mapToDto(res: ResultSet): VarslingDbEntity {
         return VarslingDbEntity(
             data = res.getString("data"),
@@ -108,7 +124,8 @@ class PostgresVarslingRepository(private val ds: DataSource) : VarslingRepositor
             behandlet = res.getTimestamp("behandlet")?.toLocalDateTime(),
             lestTidspunkt = res.getTimestamp("lestTidspunkt")?.toLocalDateTime(),
             virksomhetsNr = res.getString("virksomhetsNr"),
-            virksomhetsNavn = res.getString("virksomhetsNavn")
+            virksomhetsNavn = res.getString("virksomhetsNavn"),
+            journalpostId = res.getString("journalpostId")
         )
     }
 }

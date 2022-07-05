@@ -4,18 +4,29 @@ import java.sql.Connection
 import java.time.LocalDateTime
 
 interface VarslingRepository {
-    // for å hente ut alle aggregat i en gitt status
+    /**
+     * for å hente ut alle aggregat i en gitt status
+     */
     fun findBySentStatus(status: Boolean, max: Int): List<VarslingDbEntity>
 
     fun findSentButUnread(max: Int): List<VarslingDbEntity>
 
-    // sette inn nytt varsel
+    /**
+     * sette inn nytt varsel
+     */
     fun insert(varsling: VarslingDbEntity, connection: Connection)
 
     fun remove(uuid: String)
 
-    // for å sette status til sendt når melding for aggregatet er sendt
+    /**
+     * for å sette status til sendt når melding for aggregatet er sendt
+     */
     fun updateSentStatus(uuid: String, timeOfUpdate: LocalDateTime, status: Boolean)
+
+    /**
+     * Setter at varslingen er journalført for virksomheten
+     */
+    fun updateJournalført(uuid: String, journalpostId: String)
     fun updateData(uuid: String, data: String)
 
     fun updateReadStatus(uuid: String, lestTidspunkt: LocalDateTime, readStatus: Boolean)

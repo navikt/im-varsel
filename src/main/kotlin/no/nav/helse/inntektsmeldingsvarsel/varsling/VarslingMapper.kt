@@ -15,7 +15,8 @@ class VarslingMapper(private val mapper: ObjectMapper) {
             opprettet = varsling.opprettet,
             virksomhetsNr = varsling.virksomhetsNr,
             virksomhetsNavn = varsling.virksomhetsNavn,
-            read = varsling.varslingLest
+            read = varsling.varslingLest,
+            journalpostId = varsling.journalpostId
         )
     }
 
@@ -27,7 +28,8 @@ class VarslingMapper(private val mapper: ObjectMapper) {
             opprettet = dbEntity.opprettet,
             varslingSendt = dbEntity.sent,
             varslingLest = dbEntity.read,
-            liste = mapper.readValue(dbEntity.data)
+            liste = mapper.readValue(dbEntity.data),
+            journalpostId = dbEntity.journalpostId
         )
     }
 }

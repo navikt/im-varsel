@@ -31,6 +31,10 @@ class MockVarslingRepository() : VarslingRepository {
         println("updateStatus $uuid $sent")
     }
 
+    override fun updateJournalført(uuid: String, journalpostId: String) {
+        println("updateStatus $uuid journalført i journalpostId $journalpostId")
+    }
+
     override fun updateData(uuid: String, data: String) {
     }
 
