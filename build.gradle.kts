@@ -82,7 +82,6 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:$apacheHttpClientVersion") // overstyrer transiente 4.5.6 via ktor-client-apache
     implementation("com.google.guava:guava:$guavaVersion") // overstyrer transiente 29.0-jre
     // -- end snyk fixes
-
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -90,9 +89,7 @@ dependencies {
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
-
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$altinnVersion")
-
     implementation("javax.xml.ws:jaxws-api:$jaxwsVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
@@ -103,12 +100,9 @@ dependencies {
         exclude(group = "com.sun.xml.ws", module = "policy")
     }
     implementation("com.sun.activation:javax.activation:$sunActivationVersion")
-
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
-
     implementation(kotlin("stdlib"))
-
     implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("ch.qos.logback.contrib:logback-jackson:$logback_contrib_version")
@@ -116,31 +110,24 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackEncoderVersion")
     implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
-
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlinVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfBoxVersion")
-
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     implementation("no.nav.helsearbeidsgiver:helse-arbeidsgiver-felles-backend:$fellesBackendVersion")
     implementation("no.nav.common:log:$navCommonLog")
-
     implementation("com.github.tomakehurst:wiremock-standalone:$wiremockStandaloneVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
-
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesTestVersion")
     testImplementation("io.mockk:mockk:$mockKVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")
-
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
 }
 
