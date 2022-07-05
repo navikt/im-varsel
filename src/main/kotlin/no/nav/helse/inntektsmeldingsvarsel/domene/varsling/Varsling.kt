@@ -19,5 +19,6 @@ data class Varsling(
     val uuid: String = UUID.randomUUID().toString(), // Uuid sendes også til Altinn som referanse
     val opprettet: LocalDateTime = LocalDateTime.now(),
     val varslingSendt: Boolean = false,
-    val varslingLest: Boolean = false
+    val varslingLest: Boolean = false,
+    var journalpostId: String? = null
 )

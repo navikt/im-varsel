@@ -23,7 +23,7 @@ jobs:
         run: cd docker/local && docker-compose up -d && sleep 15
 
       - name: Build and test
-        run: bash ./gradlew --console=plain build test slowTests jacocoTestReport sonarqube --stacktrace
+        run: bash ./gradlew --console=plain build test slowTests jacocoTestReport --stacktrace
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

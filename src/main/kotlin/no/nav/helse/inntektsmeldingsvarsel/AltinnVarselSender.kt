@@ -37,7 +37,14 @@ class AltinnVarselSender(
                 }
             }
 
-            journalfør(varsling)
+            if (varsling.journalpostId == null) {
+                log.info("Har ikke journalført ${varsling.uuid}")
+                val journalpostId = journalfør(varsling)
+                varslingService.oppdaterJournalført(varsling, journalpostId)
+            } else {
+                log.info("Har allerede journalført ${varsling.uuid} i journalpostID ${varsling.journalpostId}")
+                ANTALL_RETRY_VARSLER.inc()
+            }
 
             val receiptExternal = iCorrespondenceAgencyExternalBasic.insertCorrespondenceBasicV2(
                 username, password,

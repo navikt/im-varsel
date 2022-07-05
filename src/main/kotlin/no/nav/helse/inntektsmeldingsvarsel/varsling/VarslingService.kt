@@ -118,6 +118,11 @@ class VarslingService(
         varselRepository.updateReadStatus(varsling.uuid, LocalDateTime.now(), lestStatus)
     }
 
+    fun oppdaterJournalført(varsling: Varsling, journalpostId: String) {
+        logger.debug("Oppdaterer journalført på ${varsling.uuid} til $journalpostId")
+        varselRepository.updateJournalført(varsling.uuid, journalpostId)
+    }
+
     companion object {
         val VENTETID_I_DAGER = 21L
     }
