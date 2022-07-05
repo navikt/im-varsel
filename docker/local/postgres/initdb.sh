@@ -19,7 +19,7 @@ psql -v ON_ERROR_STOP=1 --username "im-varsel" --dbname "im-varsel" <<-EOSQL
         lestTidspunkt timestamp,
         virksomhetsNr varchar(9) NOT NULL,
         virksomhetsNavn varchar(255) NOT NULL DEFAULT('Arbeidsgiver'),
-        journalpostID varchar(20),
+        journalpostId varchar(20),
         data jsonb NOT NULL
     );
 
