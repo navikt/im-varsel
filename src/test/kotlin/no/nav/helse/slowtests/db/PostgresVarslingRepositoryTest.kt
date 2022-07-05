@@ -98,7 +98,7 @@ internal class PostgresVarslingRepositoryTest : KoinTestBase() {
     internal fun `skal kunne oppdatere journalpostId via journalført`() {
         repo.updateJournalført(dbVarsling.uuid, "jp-123-789")
         val afterUpdate = repo.findBySentStatus(false, 1)[0]
-        assertThat(afterUpdate?.journalpostId).isEqualTo("jp-123-666")
+        assertThat(afterUpdate.journalpostId).isEqualTo("jp-123-789")
     }
 
     @AfterEach
