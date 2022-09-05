@@ -99,7 +99,7 @@ dependencies {
     implementation("org.codehaus.janino:janino:3.0.6")
     implementation("com.nimbusds:nimbus-jose-jwt:8.15")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.+")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
