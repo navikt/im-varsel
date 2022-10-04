@@ -60,7 +60,7 @@ class VarslingService(
 
     fun handleMessage(jsonMessageString: String) {
         val msg = om.readValue(jsonMessageString, SpleisInntektsmeldingMelding::class.java)
-        logger.info("Fikk en melding fra kafka på virksomhetsnummer ${msg.organisasjonsnummer} fra ${msg.opprettet} og type: ${msg.type}")
+        logger.info("Fikk en melding fra kafka på virksomhetsnummer ${msg.organisasjonsnummer} og fnr: ${msg.fødselsnummer} fra ${msg.opprettet} og type: ${msg.type}")
 
         when (msg.type) {
             TRENGER_INNTEKTSMELDING -> ventendeRepo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
