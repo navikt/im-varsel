@@ -63,7 +63,7 @@ spec:
     - name: SECURITYTOKENSERVICE_REST_URL
       value: https://security-token-service.nais.preprod.local/rest/v1/sts/token
     - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
-      value: helse-spam-mottak-test
+      value: aapen-helse-spre-arbeidsgiver
     - name: DOKARKIV_URL
       value: https://dokarkiv-q1.nais.preprod.local
     - name: ALTINN_BREVUTSENDELSE_UI_ENABLED
