@@ -27,11 +27,9 @@ plugins {
 
 sonarqube {
     properties {
-        property("sonar.projectKey", "navikt_im-varsel")
+        property("sonar.projectKey", "navikt_im")
         property("sonar.organization", "navikt")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.login", System.getenv("SONAR_TOKEN"))
-        property("sonar.exclusions", "**/Koin*,**Mock**,**/App**,**/ApacheCxfClientConfigUtils*,**/AltinnBrevRoutes*")
     }
 }
 
