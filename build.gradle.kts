@@ -60,7 +60,7 @@ dependencies {
     // Forsøk å fjerne en og en og kjør snyk test --configuration-matching=runtimeClasspath
     implementation("commons-collections:commons-collections:3.2.2") // overstyrer transiente 3.2.1
     implementation("org.apache.httpcomponents:httpclient:4.5.13") // overstyrer transiente 4.5.6 via ktor-client-apache
-    implementation("com.google.guava:guava:30.0-jre") // overstyrer transiente 29.0-jre
+    implementation("com.google.guava:guava:31.1-jre") // overstyrer transiente 29.0-jre
     // -- end snyk fixes
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
