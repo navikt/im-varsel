@@ -11,5 +11,6 @@ data class VarslingDbEntity(
     val behandlet: LocalDateTime? = null,
     val lestTidspunkt: LocalDateTime? = null,
     val virksomhetsNr: String,
-    val virksomhetsNavn: String
+    val virksomhetsNavn: String,
+    val journalpostId: String? = null
 )

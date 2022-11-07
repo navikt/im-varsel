@@ -40,7 +40,7 @@ val mainClass = "no.nav.helse.inntektsmeldingsvarsel.web.AppKt"
 plugins {
     kotlin("jvm") version "1.6.0"
     id("com.github.ben-manes.versions") version "0.27.0"
-    id("org.sonarqube") version "2.8"
+    id("org.sonarqube") version "3.3"
     jacoco
 }
 

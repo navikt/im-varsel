@@ -40,7 +40,7 @@ class VarslingService(
     }
 
     fun oppdaterSendtStatus(varsling: Varsling, sendtStatus: Boolean) {
-        logger.debug("Oppdaterer sendt status på ${varsling.uuid} til $sendtStatus")
+        logger.info("Oppdaterer sendt status på ${varsling.uuid} til $sendtStatus")
         varselRepository.updateSentStatus(varsling.uuid, LocalDateTime.now(), sendtStatus)
     }
 
@@ -60,7 +60,7 @@ class VarslingService(
 
     fun handleMessage(jsonMessageString: String) {
         val msg = om.readValue(jsonMessageString, SpleisInntektsmeldingMelding::class.java)
-        logger.debug("Fikk en melding fra kafka på virksomhetsnummer ${msg.organisasjonsnummer} fra ${msg.opprettet}")
+        logger.info("Fikk en melding fra kafka på virksomhetsnummer ${msg.organisasjonsnummer} fra ${msg.opprettet} og type: ${msg.type}")
 
         when (msg.type) {
             TRENGER_INNTEKTSMELDING -> ventendeRepo.insertIfNotExists(msg.fødselsnummer, msg.organisasjonsnummer, msg.fom, msg.tom, msg.opprettet)
@@ -94,7 +94,7 @@ class VarslingService(
                         varselRepository.insert(mapper.mapDto(varsling), con)
                     } else {
                         ANTALL_FILTRERTE_VARSLER.inc()
-                        logger.debug("Virksomheten er ikke tillatt")
+                        logger.info("Virksomheten er ikke tillatt")
                     }
 
                     varsling.liste
@@ -114,8 +114,13 @@ class VarslingService(
     }
 
     fun oppdaterLestStatus(varsling: Varsling, lestStatus: Boolean) {
-        logger.debug("Oppdaterer lest status på ${varsling.uuid} til $lestStatus")
+        logger.info("Oppdaterer lest status på ${varsling.uuid} til $lestStatus")
         varselRepository.updateReadStatus(varsling.uuid, LocalDateTime.now(), lestStatus)
+    }
+
+    fun oppdaterJournalført(varsling: Varsling, journalpostId: String) {
+        logger.info("Oppdaterer journalført på ${varsling.uuid} til $journalpostId")
+        varselRepository.updateJournalført(varsling.uuid, journalpostId)
     }
 
     companion object {

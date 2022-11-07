@@ -7,7 +7,7 @@ insert into
 values ('000-111-222-002' , 0, now(), now(), '222333444', 'Stark Industries', '[{"navn": "Onkel Skrue", "personnumer": "123456789" }]');
 
 insert into
-    varsling (uuid, status, opprettet, dato, virksomhetsNr, virksomhetsNavn, data)
-values ('000-111-222-003' , 0, now(), now(), '222333555', 'Stark Industries', '[{"navn": "Donald Duck", "personnumer": "123456789" }]');
+    varsling (uuid, status, opprettet, dato, virksomhetsNr, virksomhetsNavn, journalpostId, data)
+values ('000-111-222-003' , 0, now(), now(), '222333555', 'Stark Industries', 'jp-123', '[{"navn": "Donald Duck", "personnumer": "123456789" }]');
 
-
+/* alter table varsling add column journalpostId varchar(20); */
