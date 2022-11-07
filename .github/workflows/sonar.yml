@@ -32,8 +32,6 @@ jobs:
             ${{ runner.os }}-gradle-cache-
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
-        with:
-          arguments: sonar
         env:
           ORG_GRADLE_PROJECT_githubUser: x-access-token
           ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
