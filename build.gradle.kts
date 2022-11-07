@@ -25,6 +25,14 @@ plugins {
     jacoco
 }
 
+sonarqube {
+    properties {
+        property("sonar.projectKey", "navikt_im")
+        property("sonar.organization", "navikt")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
