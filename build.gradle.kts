@@ -93,7 +93,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("ch.qos.logback.contrib:logback-jackson:$logback_contrib_version")
     implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
-    implementation("net.logstash.logback:logstash-logback-encoder:4.9")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("org.codehaus.janino:janino:3.0.6")
     implementation("com.nimbusds:nimbus-jose-jwt:8.15")
 
