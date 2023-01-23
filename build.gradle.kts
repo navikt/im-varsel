@@ -95,7 +95,7 @@ dependencies {
     implementation("ch.qos.logback.contrib:logback-json-classic:$logback_contrib_version")
     implementation("net.logstash.logback:logstash-logback-encoder:4.9")
     implementation("org.codehaus.janino:janino:3.0.6")
-    implementation("com.nimbusds:nimbus-jose-jwt:8.15")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.29")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.+")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
