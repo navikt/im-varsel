@@ -32,7 +32,9 @@ import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.ManglendeInntektsmeld
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.PollForVarslingsmeldingJob
 import no.nav.helse.inntektsmeldingsvarsel.varsling.mottak.VarslingsmeldingKafkaClient
 import org.apache.kafka.clients.CommonClientConfigs
-import org.apache.kafka.common.config.SaslConfigs
+import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.security.auth.SecurityProtocol
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -48,15 +50,24 @@ fun preprodConfig(config: ApplicationConfig) = module {
         )
     }
 
+    val aivenConfig = mutableMapOf<String, Any>(
+        CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG to config.getString("kafka.aiven.brokers"),
+        CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
+
+        SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "",
+        SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to "jks",
+        SslConfigs.SSL_KEYSTORE_TYPE_CONFIG to "PKCS12",
+        SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG to config.getString("kafka.aiven.truststore_path"),
+        SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG to config.getString("kafka.aiven.credstore_password"),
+        SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG to config.getString("kafka.aiven.keystore_path"),
+        SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to config.getString("kafka.aiven.credstore_password"),
+
+        ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION to "1"
+    )
+
     single<ManglendeInntektsmeldingMeldingProvider> {
         VarslingsmeldingKafkaClient(
-            mutableMapOf(
-                "bootstrap.servers" to config.getString("kafka.endpoint"),
-                CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL",
-                SaslConfigs.SASL_MECHANISM to "PLAIN",
-                SaslConfigs.SASL_JAAS_CONFIG to "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-                    "username=\"${config.getString("kafka.username")}\" password=\"${config.getString("kafka.password")}\";"
-            ),
+            aivenConfig,
             config.getString("altinn_melding.kafka_topic")
         )
     }
@@ -127,7 +138,9 @@ fun preprodConfig(config: ApplicationConfig) = module {
     single<AltinnBrevMalRepository> { PostgresAltinnBrevmalRepository(get(), get()) }
     single<AltinnBrevutsendelseSender> {
         AltinnBrevutsendelseSenderImpl(
-            get(), get(), get(),
+            get(),
+            get(),
+            get(),
             config.getString("altinn_melding.username"),
             config.getString("altinn_melding.password")
         )
