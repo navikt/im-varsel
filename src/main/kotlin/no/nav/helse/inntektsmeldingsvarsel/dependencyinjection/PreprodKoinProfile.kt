@@ -50,22 +50,22 @@ fun preprodConfig(config: ApplicationConfig) = module {
         )
     }
 
-    val aivenConfig = mutableMapOf<String, Any>(
-        CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG to config.getString("kafka.aiven.brokers"),
-        CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
-
-        SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "",
-        SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to "jks",
-        SslConfigs.SSL_KEYSTORE_TYPE_CONFIG to "PKCS12",
-        SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG to config.getString("kafka.aiven.truststore_path"),
-        SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG to config.getString("kafka.aiven.credstore_password"),
-        SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG to config.getString("kafka.aiven.keystore_path"),
-        SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to config.getString("kafka.aiven.credstore_password"),
-
-        ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION to "1"
-    )
-
     single<ManglendeInntektsmeldingMeldingProvider> {
+        val aivenConfig = mutableMapOf<String, Any>(
+            CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG to config.getString("kafka.aiven.brokers"),
+            CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to SecurityProtocol.SSL.name,
+
+            SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG to "",
+            SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG to "jks",
+            SslConfigs.SSL_KEYSTORE_TYPE_CONFIG to "PKCS12",
+            SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG to config.getString("kafka.aiven.truststore_path"),
+            SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG to config.getString("kafka.aiven.credstore_password"),
+            SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG to config.getString("kafka.aiven.keystore_path"),
+            SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to config.getString("kafka.aiven.credstore_password"),
+
+            ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION to "1"
+        )
+
         VarslingsmeldingKafkaClient(
             aivenConfig,
             config.getString("altinn_melding.kafka_topic")

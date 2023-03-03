@@ -32,7 +32,7 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
             put("auto.offset.reset", "earliest")
         }
 
-        consumer = KafkaConsumer<String, String>(props, StringDeserializer(), StringDeserializer())
+        consumer = KafkaConsumer(props, StringDeserializer(), StringDeserializer())
         consumer.assign(Collections.singletonList(topicPartition))
 
         Runtime.getRuntime().addShutdownHook(

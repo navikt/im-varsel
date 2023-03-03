@@ -64,8 +64,6 @@ spec:
       value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
     - name: SECURITYTOKENSERVICE_REST_URL
       value: https://security-token-service.nais.preprod.local/rest/v1/sts/token
-    - name: INNTEKTSMELDING_VARSEL_TOPIC_NAME
-      value: aapen-helse-spre-arbeidsgiver
     - name: INNTEKTSMELDING_VARSEL_AIVEN_TOPIC_NAME
       value: tbd.aapen-helse-spre-arbeidsgiver
     - name: DOKARKIV_URL
