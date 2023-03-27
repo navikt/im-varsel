@@ -3,11 +3,9 @@ package no.nav.helse.inntektsmeldingsvarsel.varsling.mottak
 import no.nav.helse.arbeidsgiver.kubernetes.LivenessComponent
 import no.nav.helse.inntektsmeldingsvarsel.ANTALL_INNKOMMENDE_MELDINGER
 import org.apache.kafka.clients.consumer.KafkaConsumer
-import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
 import java.time.Duration
-import java.util.*
 
 interface ManglendeInntektsmeldingMeldingProvider {
     fun getMessagesToProcess(): List<String>
@@ -20,7 +18,6 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
     private var currentBatch: List<String> = emptyList()
     private var lastThrown: Exception? = null
     private val consumer: KafkaConsumer<String, String>
-    private val topicPartition = TopicPartition(topicName, 0)
 
     private val log = LoggerFactory.getLogger(VarslingsmeldingKafkaClient::class.java)
 
@@ -28,19 +25,19 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
         props.apply {
             put("enable.auto.commit", false)
             put("group.id", "helsearbeidsgiver-im-varsel")
-            put("max.poll.interval.ms", Duration.ofMinutes(60).toMillis().toInt())
+            put("max.poll.interval.ms", Duration.ofMinutes(10).toMillis().toInt())
             put("auto.offset.reset", "earliest")
         }
 
         consumer = KafkaConsumer(props, StringDeserializer(), StringDeserializer())
-        consumer.assign(Collections.singletonList(topicPartition))
+        consumer.subscribe(listOf(topicName))
 
         Runtime.getRuntime().addShutdownHook(
             Thread {
                 log.debug("Got shutdown message, closing Kafka connection...")
                 consumer.close()
                 log.debug("Kafka connection closed")
-            }
+            },
         )
     }
 
