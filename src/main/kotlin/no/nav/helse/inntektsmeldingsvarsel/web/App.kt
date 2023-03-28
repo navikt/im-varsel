@@ -46,7 +46,7 @@ fun main() {
         manglendeInntektsmeldingMottak.startAsync(retryOnFail = true)
 
         val varslingSenderJob = koin.get<SendVarslingJob>()
-        // varslingSenderJob.startAsync(retryOnFail = true)
+        varslingSenderJob.startAsync(retryOnFail = true)
 
         val updateReadStatusJob = koin.get<UpdateReadStatusJob>()
         updateReadStatusJob.startAsync(retryOnFail = true)
