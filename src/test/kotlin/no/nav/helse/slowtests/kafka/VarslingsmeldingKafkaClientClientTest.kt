@@ -53,8 +53,6 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
 
         assertThat(noMessagesExpected).isEmpty()
 
-        client.confirmProcessingDone()
-
         kafkaProdusent.sendSync(
             SpleisInntektsmeldingMelding(
                 "222323",
@@ -64,7 +62,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
                 "0102030405718",
             ),
         )
-
+        Thread.sleep(100)
         val oneMessageExpected = client.getMessagesToProcess()
         assertThat(oneMessageExpected).hasSize(1)
 
