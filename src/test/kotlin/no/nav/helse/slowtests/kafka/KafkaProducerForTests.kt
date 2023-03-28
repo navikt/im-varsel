@@ -17,8 +17,9 @@ class KafkaProducerForTests(private val om: ObjectMapper) {
 
     fun sendSync(spleisMelding: SpleisInntektsmeldingMelding) {
         createTopicIfNotExists()
+        val record: ProducerRecord<String, String> = ProducerRecord(topicName, om.writeValueAsString(spleisMelding))
         producer.send(
-            ProducerRecord(topicName, om.writeValueAsString(spleisMelding))
+            record,
         ).get(10, TimeUnit.SECONDS)
     }
 
@@ -53,7 +54,7 @@ class KafkaProducerForTests(private val om: ObjectMapper) {
         val topicName = "manglende-inntektsmelding-test"
         val testProps = mutableMapOf<String, Any>(
             "bootstrap.servers" to "localhost:9092",
-            "max.poll.interval.ms" to "30000"
+            "max.poll.interval.ms" to "30000",
         )
     }
 }
