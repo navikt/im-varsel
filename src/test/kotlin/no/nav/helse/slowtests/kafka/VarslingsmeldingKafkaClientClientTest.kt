@@ -47,7 +47,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
 
     @Test
     fun getMessages() {
-        val client = VarslingsmeldingKafkaClient(testProps, topicName)
+        val client = VarslingsmeldingKafkaClient(testProps, topicName, "varslingsmeldingkafka-test")
         val noMessagesExpected = client.getMessagesToProcess()
 
         assertThat(noMessagesExpected).isEmpty()

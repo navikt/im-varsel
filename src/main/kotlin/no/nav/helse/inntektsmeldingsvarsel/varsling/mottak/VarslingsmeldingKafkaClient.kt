@@ -12,7 +12,7 @@ interface ManglendeInntektsmeldingMeldingProvider {
     fun confirmProcessingDone()
 }
 
-class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: String) :
+class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: String, groupId: String = "helsearbeidsgiver-im-varsel") :
     ManglendeInntektsmeldingMeldingProvider,
     LivenessComponent {
     private var currentBatch: List<String> = emptyList()
@@ -24,7 +24,7 @@ class VarslingsmeldingKafkaClient(props: MutableMap<String, Any>, topicName: Str
     init {
         props.apply {
             put("enable.auto.commit", false)
-            put("group.id", "helsearbeidsgiver-im-varsel")
+            put("group.id", groupId)
             put("max.poll.interval.ms", Duration.ofMinutes(10).toMillis().toInt())
             put("auto.offset.reset", "earliest")
         }
