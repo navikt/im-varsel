@@ -48,11 +48,12 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
 
     @Test
     fun getMessages() {
-
         val client = VarslingsmeldingKafkaClient(testProps, topicName)
         val noMessagesExpected = client.getMessagesToProcess()
 
         assertThat(noMessagesExpected).isEmpty()
+
+        client.confirmProcessingDone()
 
         kafkaProdusent.sendSync(
             SpleisInntektsmeldingMelding(
@@ -60,8 +61,8 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
                 LocalDate.now(),
                 LocalDate.now().plusDays(7),
                 LocalDateTime.now(),
-                "0102030405718"
-            )
+                "0102030405718",
+            ),
         )
 
         val oneMessageExpected = client.getMessagesToProcess()
