@@ -21,6 +21,7 @@ internal class VarslingsmeldingKafkaClientClientTest : KoinTestBase() {
     @BeforeAll
     internal fun setUp() {
         kafkaProdusent = KafkaProducerForTests(get())
+        kafkaProdusent.createTopicIfNotExists()
     }
 
     @AfterAll
